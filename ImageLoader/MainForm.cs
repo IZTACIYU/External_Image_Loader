@@ -1,13 +1,12 @@
 ﻿using System.Diagnostics;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
-using ImageMagick;
-using System.IO;
-using MetadataExtractor;
+using ImageMagick;       // MagickImage
+using MetadataExtractor; // EXIF
 
-namespace ImageLoader // B-H-N-B
-{   
-    // Body Combined With Head
+namespace ImageLoader
+{
     public partial class MainForm : Form
     {
         private const string Ptn = @"\{([^}]+)\}";
@@ -40,7 +39,7 @@ namespace ImageLoader // B-H-N-B
             {
                 var token = m.Groups[1].Value;
 
-                // num, name, situation은 특수 토큰이므로 동적 컨트롤을 생성하지 않음
+                // num, name, situation은 특수 토큰
                 if (token == "num" || token == "name" || token == "situation") continue;
 
                 var panel = new FlowLayoutPanel
@@ -92,7 +91,7 @@ namespace ImageLoader // B-H-N-B
                 St_Num = (int)_numSt.Value,
                 En_Num = (int)_numEn.Value,
                 Multi_Call_Num = (int)_numPl.Value
-            };           
+            };
 
             var opt = new JsonSerializerOptions { WriteIndented = true };
             var json = JsonSerializer.Serialize(dat, opt);
@@ -140,8 +139,8 @@ namespace ImageLoader // B-H-N-B
                     _tNam.Text = string.Empty;
                     _tSit.Text = string.Empty;
 
-                    _numSt.Value = 11;
-                    _numEn.Value = 11;
+                    _numSt.Value = 0; // 11 -> 0
+                    _numEn.Value = 0; // 11 -> 0
                     _numPl.Value = 1;
 
                 }
@@ -178,12 +177,12 @@ namespace ImageLoader // B-H-N-B
 
             try
             {
-                // 동시 실행 수(_numPl)를 FetchAllAsync에 전달
+                // 동시 실행 수 FetchAllAsync에 전달
                 await FetchAllAsync(jobs, (int)_numPl.Value, _cts.Token);
             }
             catch (OperationCanceledException)
             {
-                // 중지됨
+                // 중지
             }
             catch (Exception ex)
             {
@@ -368,16 +367,20 @@ namespace ImageLoader // B-H-N-B
 
             await Task.WhenAll(tasks);
         }
+
         private async Task FetchOneAsync(Job job, CancellationToken ct)
         {
             HttpResponseMessage? resp = null;
+            bool exifSuccess = false; // EXIF 파싱 성공 여부
+            Image img = null;
+
             try
             {
                 resp = await _http.GetAsync(job.Url, HttpCompletionOption.ResponseHeadersRead, ct);
 
                 if (!resp.IsSuccessStatusCode)
                 {
-                    AddTile(job, null, $"HTTP {(int)resp.StatusCode}", ok: false);
+                    AddTile(job, null, $"HTTP {(int)resp.StatusCode}", ok: false, exifSuccess: false);
                     return;
                 }
 
@@ -385,16 +388,20 @@ namespace ImageLoader // B-H-N-B
 
                 if (!(contentType?.StartsWith("image/") ?? false))
                 {
-                    AddTile(job, null, "콘텐츠 타입 아님", ok: false);
+                    AddTile(job, null, "콘텐츠 타입 아님", ok: false, exifSuccess: false);
                     return;
                 }
 
                 await using var stream = await resp.Content.ReadAsStreamAsync(ct);
                 using var ms = new MemoryStream();
                 await stream.CopyToAsync(ms, ct);
-                ms.Position = 0;
-                Image img;
 
+                // 1. EXIF 읽기 시도
+                ms.Position = 0;
+                exifSuccess = ReadExif(ms);
+
+                // 2. 이미지 로드
+                ms.Position = 0; // MagickImage를 위해 스트림 리셋
                 try
                 {
                     using (var magickImage = new MagickImage(ms))
@@ -404,31 +411,34 @@ namespace ImageLoader // B-H-N-B
                 }
                 catch (Exception ex)
                 {
-                    AddTile(job, null, $"이미지 파싱 실패: {ex.GetType().Name}", ok: false);
+                    AddTile(job, null, $"이미지 파싱 실패: {ex.GetType().Name}", ok: false, exifSuccess: false);
                     return;
                 }
 
-                AddTile(job, img, $"{img.Width}x{img.Height}", ok: true);
+                // 3. 타일 추가 (EXIF 정보 포함)
+                AddTile(job, img, $"{img.Width}x{img.Height}", ok: true, exifSuccess: exifSuccess);
             }
             catch (TaskCanceledException)
             {
-                AddTile(job, null, "취소됨", ok: false);
+                AddTile(job, null, "취소됨", ok: false, exifSuccess: false);
             }
             catch (Exception ex)
             {
-                AddTile(job, null, ex.GetType().Name, ok: false);
+                AddTile(job, null, ex.GetType().Name, ok: false, exifSuccess: false);
             }
             finally
             {
                 resp?.Dispose();
             }
         }
-        private void AddTile(Job job, Image? img, string note, bool ok)
+
+        private void AddTile(Job job, Image? img, string note, bool ok, bool exifSuccess)
         {
 
             if (InvokeRequired)
             {
-                BeginInvoke(new Action(() => AddTile(job, img, note, ok)));
+                // exifSuccess 파라미터 추가
+                BeginInvoke(new Action(() => AddTile(job, img, note, ok, exifSuccess)));
                 return;
             }
 
@@ -475,14 +485,14 @@ namespace ImageLoader // B-H-N-B
                 var viewer = new Form { Text = $"{title} - {job.Url}", Width = 900, Height = 700 };
                 var pic = new PictureBox { Dock = DockStyle.Fill, SizeMode = PictureBoxSizeMode.Zoom, Image = img };
                 var openBtn = new Button { Text = "브라우저로 열기", Dock = DockStyle.Bottom, Height = 30 };
-                var saveOne = new Button { Text = "이 이미지를 저장", Dock = DockStyle.Bottom, Height = 30 };
-                var saveAll = new Button { Text = "전체 이미지를 저장", Dock = DockStyle.Bottom, Height = 30 };
+                var chkExif = new Button { Text = "EXIF 확인", Dock = DockStyle.Bottom, Height = 30 };
+                var saveOne = new Button { Text = "다운로드", Dock = DockStyle.Bottom, Height = 30 };
                 openBtn.Click += (_, __) => Process.Start(new ProcessStartInfo { FileName = job.Url, UseShellExecute = true });
 
                 viewer.Controls.Add(pic);
                 viewer.Controls.Add(openBtn);
+                viewer.Controls.Add(chkExif); // (중복 추가됨, 원본 코드와 동일하게 유지)
                 viewer.Controls.Add(saveOne);
-                viewer.Controls.Add(openBtn);
                 viewer.Show();
             };
 
@@ -510,18 +520,131 @@ namespace ImageLoader // B-H-N-B
                     Process.Start(new ProcessStartInfo { FileName = u, UseShellExecute = true });
             };
 
+            // EXIF 라벨
+            var exifLbl = new Label
+            {
+                Text = "EXIF",
+                ForeColor = Color.White,
+                BackColor = exifSuccess ? Color.SeaGreen : Color.IndianRed,
+                Font = new Font(Font, FontStyle.Bold),
+                Size = new Size(40, 18),
+                TextAlign = ContentAlignment.MiddleCenter
+            };
+
+            // 레이아웃
             pb.Top = 6; pb.Left = 6;
             titleLbl.Top = pb.Bottom + 6; titleLbl.Left = 6;
             meta.Top = titleLbl.Bottom + 2; meta.Left = 6;
+            exifLbl.Top = meta.Bottom + 4; exifLbl.Left = 6; // meta 라벨 아래에 배치
 
             panel.Controls.Add(pb);
             panel.Controls.Add(titleLbl);
             panel.Controls.Add(meta);
+            panel.Controls.Add(exifLbl); // EXIF 라벨 추가
 
             _flp.Controls.Add(panel);
         }
+
+        private bool ReadExif(MemoryStream ms)
+        {
+            try
+            {
+                ms.Position = 0; // 스트림 위치 리셋
+                var directories = ImageMetadataReader.ReadMetadata(ms);
+
+                var slug = new Dictionary<string, string>();
+                var filterKeys = new HashSet<string>() { "Software", "Source", "Comment" };
+
+                foreach (var directory in directories)
+                {
+                    foreach (var tag in directory.Tags)
+                    {
+                        if (filterKeys.Contains(tag.Name))
+                        {
+                            slug[tag.Name] = tag.Description;
+                        }
+                        else if (tag.Name == "Textual Data")
+                        {
+                            var parts = tag.Description.Split(new[] { ':' }, 2);
+                            if (parts.Length == 2)
+                            {
+                                string key = parts[0].Trim();
+                                string value = parts[1].Trim();
+                                if (filterKeys.Contains(key))
+                                {
+                                    slug[key] = value;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if (slug.TryGetValue("Comment", out string commentJson))
+                {
+                    var metadata = JsonSerializer.Deserialize<RawParameters>(commentJson);
+                    var simplified = new Simplified
+                    {
+                        Software = slug.GetValueOrDefault("Software"),
+                        Source = IdentifyModel(slug.GetValueOrDefault("Source"), metadata.Prompt)
+                    };
+
+                    if (simplified.Software == "NovelAI")
+                    {
+                        return true;
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+            return false;
+        }
+        private string IdentifyModel(string software, string prompt)
+        {
+            string nameTag = "";
+
+            var sf = software.Split(' ');
+            var pr = prompt.Split(',');
+
+            if (sf.Last() == "37C2B166") // V3 퍼리
+                nameTag = software + "(NAI Diffusion Furry V3)";
+            if (sf.Last() == "7BCCAA2C") // V3 아니메
+                nameTag = software + "(NAI Diffusion Anime V3)";
+            if (sf.Last() == "7ABFFA2A")
+            {
+                if (pr[0] == "fur dataset")
+                    nameTag = software + "(NAI Diffusion V4 Curated + Furry)";
+                else
+                    nameTag = software + "(NAI Diffusion V4 Curated)";
+            }   // V4 큐레이트 + 퍼리
+            if (sf.Last() == "37442FCA")
+            {
+                if (pr[0] == "fur dataset")
+                    nameTag = software + "(NAI Diffusion V4 Full + Furry)";
+                else
+                    nameTag = software + "(NAI Diffusion V4 Full)";
+            }   // V4 풀 + 퍼리
+            if (sf.Last() == "C02D4F98")
+            {
+                if (pr[0] == "fur dataset")
+                    nameTag = software + "(NAI Diffusion V4.5 Curated + Furry)";
+                else
+                    nameTag = software + "(NAI Diffusion V4.5 Curated)";
+            }   // V4.5 큐레이트 + 퍼리
+            if (sf.Last() == "4BDE2A90")
+            {
+                if (pr[0] == "fur dataset")
+                    nameTag = software + "(NAI Diffusion V4.5 Full + Furry)";
+                else
+                    nameTag = software + "(NAI Diffusion V4.5 Full)";
+            }   // V4.5 풀 + 퍼리
+
+            return nameTag;
+        }
     }
-    // Bridge
+
+    // --- (MainForm.Designer.cs - Bridge) ---
     public partial class MainForm
     {
         protected override void Dispose(bool disposing)
@@ -555,7 +678,7 @@ namespace ImageLoader // B-H-N-B
             this.PerformLayout();
         }
     }
-    // Bridge Elements 
+    // --- (MainForm.Designer.cs - Bridge Elements) ---
     public partial class MainForm
     {
         private System.ComponentModel.IContainer components = null;
@@ -811,114 +934,7 @@ namespace ImageLoader // B-H-N-B
             this.MinimumSize = new Size(500, 300);
 
             this.Name = "MainForm";
-            this.Text = "이미지 호스팅 체크 V1";
+            this.Text = "이미지 호스팅 체크 V1.1";
         }
     }
-
-    //Bridge
-    //public partial class MainForm
-    //{
-    //    public void AT()
-    //    {
-    //    }
-
-    //    public void ReadExif(Image img)
-    //    {
-    //        if (img == null) return;
-
-    //        //var directories = ImageMetadataReader.ReadMetadata(path);
-            
-
-    //        var filterKeys = new HashSet<string>() {
-    //        "Image Width",
-    //        "Image Height",
-    //        "Software",
-    //        "Source",
-    //        "Comment"
-    //    };
-    //        var slug = new Dictionary<string, string>();
-
-    //        // 전체 메타데이터 획득
-    //        foreach (var directory in directories)
-    //        {
-    //            foreach (var tag in directory.Tags)
-    //            {
-    //                if (filterKeys.Contains(tag.Name))
-    //                {
-    //                    slug[tag.Name] = tag.Description;
-    //                }
-    //                else if (tag.Name == "Textual Data")
-    //                {
-    //                    var parts = tag.Description.Split(new[] { ':' }, 2);
-
-    //                    if (parts.Length == 2)
-    //                    {
-    //                        string key = parts[0].Trim();
-    //                        string value = parts[1].Trim();
-
-    //                        if (filterKeys.Contains(key))
-    //                        {
-    //                            slug[key] = value;
-    //                        }
-    //                    }
-    //                }
-    //            }
-    //        }
-
-    //        // 메타데이터중 필요 부분 큰 필터링
-    //        Console.WriteLine("--- 필터링 및 파싱된 메타데이터 (slug) ---");
-    //        foreach (var kvp in slug)
-    //        {
-    //            if (kvp.Key == "Comment") continue;
-    //            Console.WriteLine($"{kvp.Key}: {kvp.Value}");
-    //        }
-
-    //        // Comment 내부 파싱
-    //        var bulk = new Dictionary<string, object>();
-    //        if (slug.TryGetValue("Comment", out string commentJson))
-    //        {
-    //            try
-    //            {
-    //                bulk = JsonSerializer.Deserialize<Dictionary<string, object>>(commentJson);
-
-    //                Console.WriteLine("\n--- 'Comment' JSON 상세 (bulk) ---");
-    //                foreach (var kvp in bulk)
-    //                {
-    //                    string valuePreview = kvp.Value?.ToString() ?? "null";
-
-    //                    if (kvp.Key == "extra_passthrough_testing") continue;
-    //                    if (kvp.Key == "v4_prompt") continue;
-    //                    if (kvp.Key == "v4_negative_prompt") continue;
-
-    //                    Console.WriteLine($"  [{kvp.Key}]: {valuePreview}");
-    //                }
-    //            }
-    //            catch (JsonException ex)
-    //            {
-    //                Console.WriteLine($"\n'Comment' JSON 파싱 오류: {ex.Message}");
-    //            }
-    //        }
-    //        else
-    //        {
-    //            Console.WriteLine("\n'Comment' 키를 slug 딕셔너리에서 찾을 수 없습니다.");
-    //        }
-
-    //        var _m = new ImageMetaData();
-
-    //        _m.Software = slug.GetValueOrDefault("Software");
-    //        _m.Source = slug.GetValueOrDefault("Source");
-    //        _m.Width = slug.GetValueOrDefault("Image Width");
-    //        _m.Height = slug.GetValueOrDefault("Image Height");
-
-    //    _m.Prompt = bulk.GetValueOrDefault("prompt")?.ToString();
-    //        _m.Steps = bulk.GetValueOrDefault("steps")?.ToString();
-    //        _m.Scale = bulk.GetValueOrDefault("scale")?.ToString();
-    //        _m.Uncond_Scale = bulk.GetValueOrDefault("uncond_scale")?.ToString();
-    //        _m.Cfg_rescale = bulk.GetValueOrDefault("cfg_rescale")?.ToString();
-    //        _m.Seed = bulk.GetValueOrDefault("seed")?.ToString();
-    //        _m.N_Samples = bulk.GetValueOrDefault("n_samples")?.ToString();
-    //        _m.Noise_Schedule = bulk.GetValueOrDefault("noise_schedule")?.ToString();
-    //        _m.Sampler = bulk.GetValueOrDefault("sampler")?.ToString();
-    //    }
-    //}
 }

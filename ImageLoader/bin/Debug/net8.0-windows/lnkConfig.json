@@ -1,9 +1,9 @@
 {
-  "BaseURL": "https://izta.us/GSTAR_IMAGE_ASSETS/0.png",
-  "Code": "",
-  "NameToken": "",
+  "BaseURL": "https://izta.us/",
+  "Code": "{name}/{num}.png",
+  "NameToken": "JN,SH,SR",
   "SituationToken": "",
   "St_Num": 0,
-  "En_Num": 0,
-  "Multi_Call_Num": 1
+  "En_Num": 2,
+  "Multi_Call_Num": 9
 }
