@@ -49,9 +49,17 @@
               "target": "Package",
               "version": "[14.9.1, )"
             },
+            "Magick.NET.Core": {
+              "target": "Package",
+              "version": "[14.9.1, )"
+            },
             "Magick.NET.SystemDrawing": {
               "target": "Package",
               "version": "[8.0.12, )"
+            },
+            "MetadataExtractor": {
+              "target": "Package",
+              "version": "[2.9.0, )"
             }
           },
           "imports": [

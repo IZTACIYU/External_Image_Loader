@@ -27,3 +27,5 @@ C:\Users\Administrator\Desktop\정호준\External_Image_Loader\ImageLoader\obj\D
 C:\Users\Administrator\Desktop\정호준\External_Image_Loader\ImageLoader\obj\Debug\net8.0-windows\ImageLoader.pdb
 C:\Users\Administrator\Desktop\정호준\External_Image_Loader\ImageLoader\obj\Debug\net8.0-windows\ImageLoader.genruntimeconfig.cache
 C:\Users\Administrator\Desktop\정호준\External_Image_Loader\ImageLoader\obj\Debug\net8.0-windows\ref\ImageLoader.dll
+C:\Users\Administrator\Desktop\정호준\External_Image_Loader\ImageLoader\bin\Debug\net8.0-windows\MetadataExtractor.dll
+C:\Users\Administrator\Desktop\정호준\External_Image_Loader\ImageLoader\bin\Debug\net8.0-windows\XmpCore.dll

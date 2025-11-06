@@ -1,12 +1,13 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using ImageMagick;
+using System.IO;
+using MetadataExtractor;
 
-namespace ImageLoader
-{
-
+namespace ImageLoader // B-H-N-B
+{   
+    // Body Combined With Head
     public partial class MainForm : Form
     {
         private const string Ptn = @"\{([^}]+)\}";
@@ -424,6 +425,7 @@ namespace ImageLoader
         }
         private void AddTile(Job job, Image? img, string note, bool ok)
         {
+
             if (InvokeRequired)
             {
                 BeginInvoke(new Action(() => AddTile(job, img, note, ok)));
@@ -519,7 +521,41 @@ namespace ImageLoader
             _flp.Controls.Add(panel);
         }
     }
+    // Bridge
+    public partial class MainForm
+    {
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing && (components != null))
+            {
+                components.Dispose();
+            }
+            base.Dispose(disposing);
+        }
+        private void InitializeComponent()
+        {
+            this.SetInstc();
 
+            this.SuspendLayout();
+
+            this.Controls.Add(this._pnlCt);
+            this._pnlCt.Controls.Add(this._flp);
+
+            this.SetLabel();
+            this.SetInput();
+            this.SetBtnID();
+            this.SetSpcCtl();
+            this.SetRunCtl();
+            this.SetBtFnc();
+            this.SetPnCnt();
+            this.SetFlPnl();
+            this.SetMForm();
+
+            this.ResumeLayout(false);
+            this.PerformLayout();
+        }
+    }
+    // Bridge Elements 
     public partial class MainForm
     {
         private System.ComponentModel.IContainer components = null;
@@ -551,40 +587,6 @@ namespace ImageLoader
 
         private Panel _pnlCt;
         private FlowLayoutPanel _flp;
-
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing && (components != null))
-            {
-                components.Dispose();
-            }
-            base.Dispose(disposing);
-        }
-
-        private void InitializeComponent()
-        {
-            this.SetInstc();
-
-            this.SuspendLayout();
-
-            this.Controls.Add(this._pnlCt);
-            this._pnlCt.Controls.Add(this._flp);
-
-            this.SetLabel();
-            this.SetInput();
-            this.SetBtnID();
-            this.SetSpcCtl();
-            this.SetRunCtl();
-            this.SetBtFnc();
-            this.SetPnCnt();
-            this.SetFlPnl();
-            this.SetMForm();
-
-            this.ResumeLayout(false);
-            this.PerformLayout();
-        }
-
 
         private void SetInstc()
         {
@@ -663,7 +665,6 @@ namespace ImageLoader
             this._btPrs.Text = "토큰 파싱";
             this._btPrs.UseVisualStyleBackColor = true;
         }
-
         private void SetSpcCtl()
         {
             // Row: Name
@@ -712,7 +713,6 @@ namespace ImageLoader
             this._numEn.Maximum = 1000000;
             this._numEn.Value = 0;
         }
-
         private void SetRunCtl()
         {
             // Row: Parallel & Start/Stop
@@ -814,4 +814,111 @@ namespace ImageLoader
             this.Text = "이미지 호스팅 체크 V1";
         }
     }
+
+    //Bridge
+    //public partial class MainForm
+    //{
+    //    public void AT()
+    //    {
+    //    }
+
+    //    public void ReadExif(Image img)
+    //    {
+    //        if (img == null) return;
+
+    //        //var directories = ImageMetadataReader.ReadMetadata(path);
+            
+
+    //        var filterKeys = new HashSet<string>() {
+    //        "Image Width",
+    //        "Image Height",
+    //        "Software",
+    //        "Source",
+    //        "Comment"
+    //    };
+    //        var slug = new Dictionary<string, string>();
+
+    //        // 전체 메타데이터 획득
+    //        foreach (var directory in directories)
+    //        {
+    //            foreach (var tag in directory.Tags)
+    //            {
+    //                if (filterKeys.Contains(tag.Name))
+    //                {
+    //                    slug[tag.Name] = tag.Description;
+    //                }
+    //                else if (tag.Name == "Textual Data")
+    //                {
+    //                    var parts = tag.Description.Split(new[] { ':' }, 2);
+
+    //                    if (parts.Length == 2)
+    //                    {
+    //                        string key = parts[0].Trim();
+    //                        string value = parts[1].Trim();
+
+    //                        if (filterKeys.Contains(key))
+    //                        {
+    //                            slug[key] = value;
+    //                        }
+    //                    }
+    //                }
+    //            }
+    //        }
+
+    //        // 메타데이터중 필요 부분 큰 필터링
+    //        Console.WriteLine("--- 필터링 및 파싱된 메타데이터 (slug) ---");
+    //        foreach (var kvp in slug)
+    //        {
+    //            if (kvp.Key == "Comment") continue;
+    //            Console.WriteLine($"{kvp.Key}: {kvp.Value}");
+    //        }
+
+    //        // Comment 내부 파싱
+    //        var bulk = new Dictionary<string, object>();
+    //        if (slug.TryGetValue("Comment", out string commentJson))
+    //        {
+    //            try
+    //            {
+    //                bulk = JsonSerializer.Deserialize<Dictionary<string, object>>(commentJson);
+
+    //                Console.WriteLine("\n--- 'Comment' JSON 상세 (bulk) ---");
+    //                foreach (var kvp in bulk)
+    //                {
+    //                    string valuePreview = kvp.Value?.ToString() ?? "null";
+
+    //                    if (kvp.Key == "extra_passthrough_testing") continue;
+    //                    if (kvp.Key == "v4_prompt") continue;
+    //                    if (kvp.Key == "v4_negative_prompt") continue;
+
+    //                    Console.WriteLine($"  [{kvp.Key}]: {valuePreview}");
+    //                }
+    //            }
+    //            catch (JsonException ex)
+    //            {
+    //                Console.WriteLine($"\n'Comment' JSON 파싱 오류: {ex.Message}");
+    //            }
+    //        }
+    //        else
+    //        {
+    //            Console.WriteLine("\n'Comment' 키를 slug 딕셔너리에서 찾을 수 없습니다.");
+    //        }
+
+    //        var _m = new ImageMetaData();
+
+    //        _m.Software = slug.GetValueOrDefault("Software");
+    //        _m.Source = slug.GetValueOrDefault("Source");
+    //        _m.Width = slug.GetValueOrDefault("Image Width");
+    //        _m.Height = slug.GetValueOrDefault("Image Height");
+
+    //    _m.Prompt = bulk.GetValueOrDefault("prompt")?.ToString();
+    //        _m.Steps = bulk.GetValueOrDefault("steps")?.ToString();
+    //        _m.Scale = bulk.GetValueOrDefault("scale")?.ToString();
+    //        _m.Uncond_Scale = bulk.GetValueOrDefault("uncond_scale")?.ToString();
+    //        _m.Cfg_rescale = bulk.GetValueOrDefault("cfg_rescale")?.ToString();
+    //        _m.Seed = bulk.GetValueOrDefault("seed")?.ToString();
+    //        _m.N_Samples = bulk.GetValueOrDefault("n_samples")?.ToString();
+    //        _m.Noise_Schedule = bulk.GetValueOrDefault("noise_schedule")?.ToString();
+    //        _m.Sampler = bulk.GetValueOrDefault("sampler")?.ToString();
+    //    }
+    //}
 }
