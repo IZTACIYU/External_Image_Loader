@@ -162,10 +162,7 @@ namespace ImageLoader
             {
                 jobs = GenerateJobs();
                 if (jobs.Count == 0)
-                {
-                    // GenerateJobs 내부에서 알림
                     return;
-                }
             }
             catch (Exception ex)
             {
@@ -178,7 +175,6 @@ namespace ImageLoader
             _cts = new CancellationTokenSource();
             SetButtons(running: true);
 
-            // 3. 작업 실행
             try
             {
                 // 동시 실행 수(_numPl)를 FetchAllAsync에 전달
@@ -477,9 +473,13 @@ namespace ImageLoader
                 var viewer = new Form { Text = $"{title} - {job.Url}", Width = 900, Height = 700 };
                 var pic = new PictureBox { Dock = DockStyle.Fill, SizeMode = PictureBoxSizeMode.Zoom, Image = img };
                 var openBtn = new Button { Text = "브라우저로 열기", Dock = DockStyle.Bottom, Height = 30 };
+                var saveOne = new Button { Text = "이 이미지를 저장", Dock = DockStyle.Bottom, Height = 30 };
+                var saveAll = new Button { Text = "전체 이미지를 저장", Dock = DockStyle.Bottom, Height = 30 };
                 openBtn.Click += (_, __) => Process.Start(new ProcessStartInfo { FileName = job.Url, UseShellExecute = true });
 
                 viewer.Controls.Add(pic);
+                viewer.Controls.Add(openBtn);
+                viewer.Controls.Add(saveOne);
                 viewer.Controls.Add(openBtn);
                 viewer.Show();
             };
