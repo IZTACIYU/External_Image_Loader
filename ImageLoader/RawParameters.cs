@@ -7,8 +7,6 @@ using System.Threading.Tasks;
 
 namespace ImageLoader
 {
-
-    // --- (RawParameters.cs) ---
     public class RawParameters
     {
         [JsonPropertyName("prompt")]
@@ -41,14 +39,101 @@ namespace ImageLoader
         [JsonPropertyName("noise_schedule")]
         public string NoiseSchedule { get; set; }
 
+        [JsonPropertyName("legacy_v3_extend")]
+        public bool LegacyV3Extend { get; set; }
+
+        [JsonPropertyName("reference_information_extracted_multiple")]
+        public List<object> ReferenceInformationExtractedMultiple { get; set; }
+
+        [JsonPropertyName("reference_strength_multiple")]
+        public List<object> ReferenceStrengthMultiple { get; set; }
+
+        [JsonPropertyName("extra_passthrough_testing")]
+        public ExtraPassthroughTesting ExtraPassthroughTesting { get; set; }
+
         [JsonPropertyName("v4_prompt")]
         public V4Prompt V4Prompt { get; set; }
 
         [JsonPropertyName("v4_negative_prompt")]
         public V4NegativePrompt V4NegativePrompt { get; set; }
 
+        [JsonPropertyName("director_reference_strengths")]
+        public object DirectorReferenceStrengths { get; set; }
+
+        [JsonPropertyName("director_reference_descriptions")]
+        public object DirectorReferenceDescriptions { get; set; }
+
+        [JsonPropertyName("director_reference_information_extracted")]
+        public object DirectorReferenceInformationExtracted { get; set; }
+
+        [JsonPropertyName("director_reference_secondary_strengths")]
+        public object DirectorReferenceSecondaryStrengths { get; set; }
+
         [JsonPropertyName("sampler")]
         public string Sampler { get; set; }
+
+        [JsonPropertyName("controlnet_strength")]
+        public double ControlnetStrength { get; set; }
+
+        [JsonPropertyName("controlnet_model")]
+        public object ControlnetModel { get; set; }
+
+        [JsonPropertyName("dynamic_thresholding")]
+        public bool DynamicThresholding { get; set; }
+
+        [JsonPropertyName("dynamic_thresholding_percentile")]
+        public double DynamicThresholdingPercentile { get; set; }
+
+        [JsonPropertyName("dynamic_thresholding_mimic_scale")]
+        public double DynamicThresholdingMimicScale { get; set; }
+
+        [JsonPropertyName("sm")]
+        public bool Sm { get; set; }
+
+        [JsonPropertyName("sm_dyn")]
+        public bool SmDyn { get; set; }
+
+        [JsonPropertyName("skip_cfg_above_sigma")]
+        public double? SkipCfgAboveSigma { get; set; }
+
+        [JsonPropertyName("skip_cfg_below_sigma")]
+        public double? SkipCfgBelowSigma { get; set; }
+
+        [JsonPropertyName("lora_unet_weights")]
+        public object LoraUnetWeights { get; set; }
+
+        [JsonPropertyName("lora_clip_weights")]
+        public object LoraClipWeights { get; set; }
+
+        [JsonPropertyName("deliberate_euler_ancestral_bug")]
+        public bool DeliberateEulerAncestralBug { get; set; }
+
+        [JsonPropertyName("prefer_brownian")]
+        public bool PreferBrownian { get; set; }
+
+        [JsonPropertyName("cfg_sched_eligibility")]
+        public string CfgSchedEligibility { get; set; }
+
+        [JsonPropertyName("explike_fine_detail")]
+        public bool ExplikeFineDetail { get; set; }
+
+        [JsonPropertyName("minimize_sigma_inf")]
+        public bool MinimizeSigmaInf { get; set; }
+
+        [JsonPropertyName("uncond_per_vibe")]
+        public bool UncondPerVibe { get; set; }
+
+        [JsonPropertyName("wonky_vibe_correlation")]
+        public bool WonkyVibeCorrelation { get; set; }
+
+        [JsonPropertyName("stream")]
+        public string Stream { get; set; }
+
+        [JsonPropertyName("version")]
+        public int Version { get; set; }
+
+        [JsonPropertyName("uc")]
+        public string Uc { get; set; }
 
         [JsonPropertyName("request_type")]
         public string RequestType { get; set; }
@@ -56,6 +141,7 @@ namespace ImageLoader
         [JsonPropertyName("signed_hash")]
         public string SignedHash { get; set; }
     }
+
     public class ExtraPassthroughTesting
     {
         [JsonPropertyName("prompt")]
@@ -95,11 +181,29 @@ namespace ImageLoader
     {
         [JsonPropertyName("caption")]
         public Caption Caption { get; set; }
+
+        [JsonPropertyName("use_coords")]
+        public bool UseCoords { get; set; }
+
+        [JsonPropertyName("use_order")]
+        public bool UseOrder { get; set; }
+
+        [JsonPropertyName("legacy_uc")]
+        public bool LegacyUc { get; set; }
     }
     public class V4NegativePrompt
     {
         [JsonPropertyName("caption")]
         public Caption Caption { get; set; }
+
+        [JsonPropertyName("use_coords")]
+        public bool UseCoords { get; set; }
+
+        [JsonPropertyName("use_order")]
+        public bool UseOrder { get; set; }
+
+        [JsonPropertyName("legacy_uc")]
+        public bool LegacyUc { get; set; }
     }
     public class Caption
     {
@@ -113,6 +217,9 @@ namespace ImageLoader
     {
         [JsonPropertyName("char_caption")]
         public string CharCaptionText { get; set; }
+
+        [JsonPropertyName("centers")]
+        public List<Center> Centers { get; set; }
     }
     public class Center
     {

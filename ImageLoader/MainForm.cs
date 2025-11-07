@@ -485,77 +485,79 @@ namespace ImageLoader // B-H-N-B
                 var pic = new PictureBox { Dock = DockStyle.Fill, SizeMode = PictureBoxSizeMode.Zoom, Image = img };
 
                 // 버튼 정렬 패널
-                var pnlBot = new FlowLayoutPanel
-                {
-                    Dock = DockStyle.Bottom,
-                    FlowDirection = FlowDirection.LeftToRight,
-                    AutoSize = true,
-                    Padding = new Padding(5)
-                };
+                //var pnlBot = new FlowLayoutPanel
+                //{
+                //    Dock = DockStyle.Bottom,
+                //    FlowDirection = FlowDirection.LeftToRight,
+                //    AutoSize = true,
+                //    Padding = new Padding(5)
+                //};
 
-                // 버튼 생성
-                var btOpen = new Button { Text = "브라우저로 열기", Width = 120 };
-                btOpen.Click += (_, __) => Process.Start(new ProcessStartInfo { FileName = job.Url, UseShellExecute = true });
-                pnlBot.Controls.Add(btOpen);
+                //// 버튼 생성
+                //var btOpen = new Button { Text = "브라우저로 열기", Width = 120 };
+                //btOpen.Click += (_, __) => Process.Start(new ProcessStartInfo { FileName = job.Url, UseShellExecute = true });
+                //pnlBot.Controls.Add(btOpen);
 
-                var btExif = new Button { Text = "EXIF 확인", Width = 100 };
-                // EXIF 존재시
-                if (exifSuccess)
-                {
-                    pnlBot.Controls.Add(btExif);
+                //var btExif = new Button { Text = "EXIF 확인", Width = 100 };
+                //// EXIF 존재시
+                //if (exifSuccess)
+                //{
+                //    pnlBot.Controls.Add(btExif);
 
-                    // EXIF 버튼 지연 로딩
-                    btExif.Click += (_, __) =>
-                    {
-                        if (imgBytes == null) return;
+                //    // EXIF 버튼 지연 로딩
+                //    btExif.Click += (_, __) =>
+                //    {
+                //        if (imgBytes == null) return;
 
-                        using (var tempMs = new MemoryStream(imgBytes))
-                        {
-                            // 본 파싱
-                            Simplified data = ParseExifData(tempMs);
+                //        using (var tempMs = new MemoryStream(imgBytes))
+                //        {
+                //            // 본 파싱
+                //            Simplified data = ParseExifData(tempMs);
 
-                            if (data != null)
-                            {
-                                var exifForm = new Form
-                                {
-                                    Text = "EXIF 상세 정보",
-                                    Width = 600,
-                                    Height = 800,
-                                    Padding = new Padding(10)
-                                };
+                //            if (data != null)
+                //            {
+                //                var exifForm = new Form
+                //                {
+                //                    Text = "EXIF 상세 정보",
+                //                    Width = 600,
+                //                    Height = 800,
+                //                    Padding = new Padding(10)
+                //                };
 
-                                // 2. 텍스트박스 생성
-                                var txtExif = new TextBox
-                                {
-                                    Dock = DockStyle.Fill,
-                                    Multiline = true,
-                                    ReadOnly = true,
-                                    ScrollBars = ScrollBars.Vertical,
-                                    Font = new Font("Consolas", 9.75f),
-                                    Text = FormatExif(data)
-                                };
+                //                // 2. 텍스트박스 생성
+                //                //var txtExif = new TextBox
+                //                //{
+                //                //    Dock = DockStyle.Fill,
+                //                //    Multiline = true,
+                //                //    ReadOnly = true,
+                //                //    ScrollBars = ScrollBars.Vertical,
+                //                //    Font = new Font("Consolas", 9.75f),
+                //                //    Text = "da"//FormatExif(data)
+                //                //};
 
-                                exifForm.Controls.Add(txtExif);
-                                exifForm.Show();
+                //                //exifForm.Controls.Add(txtExif);
+                //                //exifForm.Show();
 
-                                // 개발중 임시로 메세지 박스 (TODO: 추후 판넬-라벨로 수정)
-                                //var exifText = $"Prompt: {data.Prompt}\n\nUC: {data.UndesiredContent}\n\nSeed: {data.Seed}, Steps: {data.Steps}, Scale: {data.PromptGuidance}\nSampler: {data.Sampler}\nSource: {data.Source}";
-                                //MessageBox.Show(exifText, "EXIF 상세 정보");
-                            }
-                            else
-                            {
-                                MessageBox.Show("EXIF 데이터를 파싱할 수 없습니다.", "오류");
-                            }
-                        }
-                    };
-                }
+                //                MessageBox.Show(data.ToString());
 
-                var btSave = new Button { Text = "다운로드", Width = 100 };
-                // btSave.Click += ...
-                pnlBot.Controls.Add(btSave);
+                //                // 개발중 임시로 메세지 박스 (TODO: 추후 판넬-라벨로 수정)
+                //                //var exifText = $"Prompt: {data.Prompt}\n\nUC: {data.UndesiredContent}\n\nSeed: {data.Seed}, Steps: {data.Steps}, Scale: {data.PromptGuidance}\nSampler: {data.Sampler}\nSource: {data.Source}";
+                //                //MessageBox.Show(exifText, "EXIF 상세 정보");
+                //            }
+                //            else
+                //            {
+                //                MessageBox.Show("EXIF 데이터를 파싱할 수 없습니다.", "오류");
+                //            }
+                //        }
+                //    };
+                //}
+
+                //var btSave = new Button { Text = "다운로드", Width = 100 };
+                //// btSave.Click += ...
+                //pnlBot.Controls.Add(btSave);
 
                 viewer.Controls.Add(pic);
-                viewer.Controls.Add(pnlBot);
+                //viewer.Controls.Add(pnlBot);
                 viewer.Show();
             };
 
@@ -861,8 +863,7 @@ namespace ImageLoader // B-H-N-B
             this.SetLabel();
             this.SetInput();
             this.SetBtnID();
-            this.SetSpcCtl();
-            this.SetRunCtl();
+            this.SetNumic();
             this.SetBtFnc();
             this.SetPnCnt();
             this.SetFlPnl();
@@ -938,131 +939,140 @@ namespace ImageLoader // B-H-N-B
             this._lBs.AutoSize = true;
             this._lBs.Location = new Point(12, 15);
             this._lBs.Name = "_lBs";
-            this._lBs.Size = new Size(69, 12);
+            this._lBs.Size = new Size(70, 12);
             this._lBs.Text = "베이스 URL:";
 
             this._lIn.AutoSize = true;
             this._lIn.Location = new Point(12, 37);
             this._lIn.Name = "_lIn";
-            this._lIn.Size = new Size(69, 12);
+            this._lIn.Size = new Size(70, 12);
             this._lIn.Text = "코드 부분  :";
-        }
-        private void SetInput()
-        {
-            this._tBs.Anchor = (AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right);
-            this._tBs.Location = new Point(87, 12);
-            this._tBs.Name = "_tBs";
-            this._tBs.Size = new Size(310, 21);
-            this._tBs.TabIndex = 0;
-            this._tBs.PlaceholderText = "변하지 않는 고정 링크";
 
-
-            this._tIn.Anchor = (AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right);
-            this._tIn.Location = new Point(87, 34);
-            this._tIn.Name = "_tIn";
-            this._tIn.Size = new Size(310, 21);
-            this._tIn.TabIndex = 2;
-            this._tIn.PlaceholderText = "{토큰명}입력 후 파싱, name, num, situation은 특수 토큰";
-        }
-        private void SetBtnID()
-        {
-            this._btSav.Anchor = (AnchorStyles.Top | AnchorStyles.Right);
-            this._btSav.Location = new Point(398, 11);
-            this._btSav.Name = "_btSav";
-            this._btSav.Size = new Size(75, 21);
-            this._btSav.TabIndex = 1;
-            this._btSav.Text = "프리셋";
-            this._btSav.UseVisualStyleBackColor = true;
-
-            this._btPrs.Anchor = (AnchorStyles.Top | AnchorStyles.Right);
-            this._btPrs.Location = new Point(398, 33);
-            this._btPrs.Name = "_btPrs";
-            this._btPrs.Size = new Size(75, 21);
-            this._btPrs.TabIndex = 3;
-            this._btPrs.Text = "토큰 파싱";
-            this._btPrs.UseVisualStyleBackColor = true;
-        }
-        private void SetSpcCtl()
-        {
-            // Row: Name
             this._lblNam.AutoSize = true;
             this._lblNam.Location = new Point(12, 60);
             this._lblNam.Name = "_lblNam";
-            this._lblNam.Size = new Size(69, 12);
-            this._lblNam.Text = "이름 목록:";
+            this._lblNam.Size = new Size(70, 12);
+            this._lblNam.Text = "이름 목록  :";
+
+            this._lblSit.AutoSize = true;
+            this._lblSit.Location = new Point(12, 85);
+            this._lblSit.Name = "_lblSit";
+            this._lblSit.Size = new Size(70, 12);
+            this._lblSit.Text = "상황 목록  :";
+
+            this._lblNum.AutoSize = true;
+            this._lblNum.Location = new Point(12, 110);
+            this._lblNum.Name = "_lblNum";
+            this._lblNum.Size = new Size(70, 12);
+            this._lblNum.Text = "번호 범위  :";
+
+            this._lblPl.AutoSize = true;
+            this._lblPl.Location = new Point(12, 135);
+            this._lblPl.Name = "_lblPl";
+            this._lblPl.Size = new Size(70, 12);
+            this._lblPl.Text = "동시 요청  :";
+        }
+        private void SetInput()
+        {
+            // Row: URL
+            this._tBs.Anchor = (AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right);
+            this._tBs.Location = new Point(84, 12);
+            this._tBs.Name = "_tBs";
+            this._tBs.Size = new Size(336, 21);
+            this._tBs.TabIndex = 0;
+            this._tBs.PlaceholderText = "변하지 않는 고정 링크";
+
+            // Row: Token
+            this._tIn.Anchor = (AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right);
+            this._tIn.Location = new Point(84, 34);
+            this._tIn.Name = "_tIn";
+            this._tIn.Size = new Size(336, 20);
+            this._tIn.TabIndex = 2;
+            this._tIn.PlaceholderText = "{토큰명}입력 후 파싱, name, num, situation은 특수 토큰";
+
+            // Row: Name
             this._tNam.Anchor = (AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right);
-            this._tNam.Location = new Point(87, 57);
+            this._tNam.Location = new Point(84, 57);
             this._tNam.Name = "_tNam";
-            this._tNam.Size = new Size(386, 21);
+            this._tNam.Size = new Size(412, 20);
             this._tNam.TabIndex = 4;
             this._tNam.PlaceholderText = "{name} 토큰 값 (쉼표로 구분)";
 
             // Row: Situation
-            this._lblSit.AutoSize = true;
-            this._lblSit.Location = new Point(12, 85);
-            this._lblSit.Name = "_lblSit";
-            this._lblSit.Size = new Size(69, 12);
-            this._lblSit.Text = "상황 목록:";
             this._tSit.Anchor = (AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right);
-            this._tSit.Location = new Point(87, 82);
+            this._tSit.Location = new Point(84, 82);
             this._tSit.Name = "_tSit";
-            this._tSit.Size = new Size(386, 21);
+            this._tSit.Size = new Size(412, 20);
             this._tSit.TabIndex = 5;
             this._tSit.PlaceholderText = "{situation} 토큰 값 (쉼표로 구분)";
-
-            // Row: Num
-            this._lblNum.AutoSize = true;
-            this._lblNum.Location = new Point(12, 110);
-            this._lblNum.Name = "_lblNum";
-            this._lblNum.Size = new Size(69, 12);
-            this._lblNum.Text = "번호 범위:";
-            this._numSt.Anchor = (AnchorStyles.Top | AnchorStyles.Left);
-            this._numSt.Location = new Point(87, 107);
-            this._numSt.Name = "_numSt";
-            this._numSt.Size = new Size(100, 21);
-            this._numSt.TabIndex = 6;
-            this._numSt.Maximum = 1000000;
-            this._numEn.Anchor = (AnchorStyles.Top | AnchorStyles.Left);
-            this._numEn.Location = new Point(193, 107);
-            this._numEn.Name = "_numEn";
-            this._numEn.Size = new Size(100, 21);
-            this._numEn.TabIndex = 7;
-            this._numEn.Maximum = 1000000;
-            this._numEn.Value = 0;
         }
-        private void SetRunCtl()
+        private void SetBtnID()
         {
-            // Row: Parallel & Start/Stop
-            this._lblPl.AutoSize = true;
-            this._lblPl.Location = new Point(12, 135);
-            this._lblPl.Name = "_lblPl";
-            this._lblPl.Size = new Size(69, 12);
-            this._lblPl.Text = "동시 요청:";
-            this._numPl.Anchor = (AnchorStyles.Top | AnchorStyles.Left);
-            this._numPl.Location = new Point(87, 132);
-            this._numPl.Name = "_numPl";
-            this._numPl.Size = new Size(70, 21);
-            this._numPl.TabIndex = 8;
-            this._numPl.Minimum = 1;
-            this._numPl.Maximum = 64;
-            this._numPl.Value = 1;
+            // Row: Preset
+            this._btSav.Anchor = (AnchorStyles.Top | AnchorStyles.Right);
+            this._btSav.Location = new Point(422, 11);
+            this._btSav.Name = "_btSav";
+            this._btSav.Size = new Size(75, 20);
+            this._btSav.TabIndex = 1;
+            this._btSav.Text = "프리셋";
+            this._btSav.UseVisualStyleBackColor = true;
 
+            // Row: Token
+            this._btPrs.Anchor = (AnchorStyles.Top | AnchorStyles.Right);
+            this._btPrs.Location = new Point(422, 33);
+            this._btPrs.Name = "_btPrs";
+            this._btPrs.Size = new Size(75, 20);
+            this._btPrs.TabIndex = 3;
+            this._btPrs.Text = "토큰 파싱";
+            this._btPrs.UseVisualStyleBackColor = true;
+
+            // Row: Start
             this._btSt.Anchor = (AnchorStyles.Top | AnchorStyles.Right);
-            this._btSt.Location = new Point(317, 131);
+            this._btSt.Location = new Point(342, 132);
             this._btSt.Name = "_btSt";
-            this._btSt.Size = new Size(75, 23);
+            this._btSt.Size = new Size(75, 20);
             this._btSt.TabIndex = 9;
             this._btSt.Text = "시작";
             this._btSt.UseVisualStyleBackColor = true;
 
+            // Row: Stop
             this._btSp.Anchor = (AnchorStyles.Top | AnchorStyles.Right);
-            this._btSp.Location = new Point(398, 131);
+            this._btSp.Location = new Point(422, 132);
             this._btSp.Name = "_btSp";
-            this._btSp.Size = new Size(75, 23);
+            this._btSp.Size = new Size(75, 20);
             this._btSp.TabIndex = 10;
             this._btSp.Text = "중지";
             this._btSp.Enabled = false;
             this._btSp.UseVisualStyleBackColor = true;
+        }
+        private void SetNumic()
+        {
+            // Row: Start Num
+            this._numSt.Anchor = (AnchorStyles.Top | AnchorStyles.Left);
+            this._numSt.Location = new Point(84, 107);
+            this._numSt.Name = "_numSt";
+            this._numSt.Size = new Size(100, 20);
+            this._numSt.TabIndex = 6;
+            this._numSt.Maximum = 1000000;
+
+            // Row: End Num
+            this._numEn.Anchor = (AnchorStyles.Top | AnchorStyles.Left);
+            this._numEn.Location = new Point(194, 107);
+            this._numEn.Name = "_numEn";
+            this._numEn.Size = new Size(100, 20);
+            this._numEn.TabIndex = 7;
+            this._numEn.Maximum = 1000000;
+            this._numEn.Value = 0;
+
+            // Row: Parallel & Start/Stop
+            this._numPl.Anchor = (AnchorStyles.Top | AnchorStyles.Left);
+            this._numPl.Location = new Point(84, 132);
+            this._numPl.Name = "_numPl";
+            this._numPl.Size = new Size(70, 20);
+            this._numPl.TabIndex = 8;
+            this._numPl.Minimum = 1;
+            this._numPl.Maximum = 64;
+            this._numPl.Value = 1;
         }
 
         private void SetBtFnc()
@@ -1079,7 +1089,7 @@ namespace ImageLoader // B-H-N-B
             this._pnlCt.Anchor = (AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right);
             this._pnlCt.Location = new Point(12, 162);
             this._pnlCt.Name = "_pnlCt";
-            this._pnlCt.Size = new Size(460, 87);
+            this._pnlCt.Size = new Size(484, 218);
             this._pnlCt.TabIndex = 11;
             this._pnlCt.BorderStyle = BorderStyle.FixedSingle;
 
@@ -1100,7 +1110,7 @@ namespace ImageLoader // B-H-N-B
         {
             this.AutoScaleDimensions = new SizeF(7F, 12F);
             this.AutoScaleMode = AutoScaleMode.Font;
-            this.ClientSize = new Size(484, 261);
+            this.ClientSize = new Size(480, 260);
 
             this.Controls.Add(this._lBs);
             this.Controls.Add(this._tBs);
@@ -1125,7 +1135,7 @@ namespace ImageLoader // B-H-N-B
             this.Controls.Add(this._btSt);
             this.Controls.Add(this._btSp);
 
-            this.MinimumSize = new Size(500, 300);
+            this.MinimumSize = new Size(524, 428);
 
             this.Name = "MainForm";
             this.Text = "이미지 호스팅 체크 V1.1";

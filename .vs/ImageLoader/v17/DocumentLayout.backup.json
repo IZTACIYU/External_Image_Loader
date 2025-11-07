@@ -7,12 +7,12 @@
       "RelativeMoniker": "D:0:0:{C03833D9-ADEC-466C-B2B6-6E40506DB84D}|ImageLoader\\ImageLoader.csproj|solutionrelative:imageloader\\mainform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{C03833D9-ADEC-466C-B2B6-6E40506DB84D}|ImageLoader\\ImageLoader.csproj|c:\\users\\admin\\desktop\\git\\external_image_loader\\imageloader\\simplified.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{C03833D9-ADEC-466C-B2B6-6E40506DB84D}|ImageLoader\\ImageLoader.csproj|solutionrelative:imageloader\\simplified.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{C03833D9-ADEC-466C-B2B6-6E40506DB84D}|ImageLoader\\ImageLoader.csproj|c:\\users\\admin\\desktop\\git\\external_image_loader\\imageloader\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{C03833D9-ADEC-466C-B2B6-6E40506DB84D}|ImageLoader\\ImageLoader.csproj|solutionrelative:imageloader\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C03833D9-ADEC-466C-B2B6-6E40506DB84D}|ImageLoader\\ImageLoader.csproj|c:\\users\\admin\\desktop\\git\\external_image_loader\\imageloader\\simplified.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C03833D9-ADEC-466C-B2B6-6E40506DB84D}|ImageLoader\\ImageLoader.csproj|solutionrelative:imageloader\\simplified.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -26,13 +26,13 @@
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 2,
               "Title": "Simplified.cs",
               "DocumentMoniker": "C:\\Users\\admin\\Desktop\\Git\\External_Image_Loader\\ImageLoader\\Simplified.cs",
               "RelativeDocumentMoniker": "ImageLoader\\Simplified.cs",
-              "ToolTip": "C:\\Users\\admin\\Desktop\\Git\\External_Image_Loader\\ImageLoader\\Simplified.cs*",
-              "RelativeToolTip": "ImageLoader\\Simplified.cs*",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAB8AAAAMAAAAAAAAAA==",
+              "ToolTip": "C:\\Users\\admin\\Desktop\\Git\\External_Image_Loader\\ImageLoader\\Simplified.cs",
+              "RelativeToolTip": "ImageLoader\\Simplified.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAUAAAAcAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-11-07T14:02:14.01Z",
               "EditorCaption": ""
@@ -45,20 +45,20 @@
               "RelativeDocumentMoniker": "ImageLoader\\MainForm.cs",
               "ToolTip": "C:\\Users\\admin\\Desktop\\Git\\External_Image_Loader\\ImageLoader\\MainForm.cs",
               "RelativeToolTip": "ImageLoader\\MainForm.cs",
-              "ViewState": "AgIAAD0CAAAAAAAAAADwv00DAAAXAAAAAAAAAA==",
+              "ViewState": "AgIAACgEAAAAAAAAAAApwEcEAAAqAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-11-06T03:30:16.788Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 1,
               "Title": "Program.cs",
               "DocumentMoniker": "C:\\Users\\admin\\Desktop\\Git\\External_Image_Loader\\ImageLoader\\Program.cs",
               "RelativeDocumentMoniker": "ImageLoader\\Program.cs",
               "ToolTip": "C:\\Users\\admin\\Desktop\\Git\\External_Image_Loader\\ImageLoader\\Program.cs",
               "RelativeToolTip": "ImageLoader\\Program.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA4AAAAMAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAAIAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-11-06T03:29:32.597Z",
               "EditorCaption": ""
