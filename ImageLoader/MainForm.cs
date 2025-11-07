@@ -484,15 +484,30 @@ namespace ImageLoader
             {
                 var viewer = new Form { Text = $"{title} - {job.Url}", Width = 900, Height = 700 };
                 var pic = new PictureBox { Dock = DockStyle.Fill, SizeMode = PictureBoxSizeMode.Zoom, Image = img };
-                var openBtn = new Button { Text = "브라우저로 열기", Dock = DockStyle.Bottom, Height = 30 };
-                var chkExif = new Button { Text = "EXIF 확인", Dock = DockStyle.Bottom, Height = 30 };
-                var saveOne = new Button { Text = "다운로드", Dock = DockStyle.Bottom, Height = 30 };
-                openBtn.Click += (_, __) => Process.Start(new ProcessStartInfo { FileName = job.Url, UseShellExecute = true });
 
-                viewer.Controls.Add(pic);
+                // 브라우저로 열기
+                var openBtn = new Button { Text = "브라우저로 열기", Dock = DockStyle.Bottom, Height = 30 };
+                openBtn.Click += (_, _) => Process.Start(new ProcessStartInfo { FileName = job.Url, UseShellExecute = true });
                 viewer.Controls.Add(openBtn);
-                viewer.Controls.Add(chkExif); // (중복 추가됨, 원본 코드와 동일하게 유지)
+
+                // EXIF 확인
+                var chkExif = new Button { Text = "EXIF 확인", Dock = DockStyle.Bottom, Height = 30 };
+                chkExif.Click += (_, _) =>
+                {
+                    var t_viewer = new Form { Text = $"{job.Url} EXIF", Width = 500, Height = 840 };
+                    //var
+                    //t_viewer.Controls.Add(saveOne);
+                    t_viewer.Show();
+                };
+                viewer.Controls.Add(chkExif);
+
+                // 다운로드
+                var saveOne = new Button { Text = "다운로드", Dock = DockStyle.Bottom, Height = 30 };
                 viewer.Controls.Add(saveOne);
+                //  chkExif.Click += (_, _) => {};
+                viewer.Controls.Add(pic);
+                
+                
                 viewer.Show();
             };
 
@@ -678,6 +693,7 @@ namespace ImageLoader
             this.PerformLayout();
         }
     }
+
     // --- (MainForm.Designer.cs - Bridge Elements) ---
     public partial class MainForm
     {
@@ -937,4 +953,10 @@ namespace ImageLoader
             this.Text = "이미지 호스팅 체크 V1.1";
         }
     }
+
+    // Body - Head - Note - Bridge
+    // Body : 외부 API
+    // Head : 로직
+    // Note : 데이터, 변수
+    // Bridge : 확장기능, 플러그인
 }
