@@ -6,15 +6,54 @@ using MetadataExtractor; // EXIF 읽기
 
 namespace ImageLoader // B-H-N-B
 {
-    // Body Combined With Head
-    public partial class MainForm : Form
+    // Note
+    public partial class MainForm
     {
+        private System.ComponentModel.IContainer components = null;
+
+        private Label _lBs;
+        private TextBox _tBs;
+        private Button _btSav;
+
+        private Label _lIn;
+        private TextBox _tIn;
+        private Button _btPrs;
+
+        // 특수 토큰 컨트롤
+        private Label _lblNam;
+        private TextBox _tNam;
+
+        private Label _lblSit;
+        private TextBox _tSit;
+
+        private Label _lblNum;
+        private NumericUpDown _numSt;
+        private NumericUpDown _numEn;
+
+        // 실행 컨트롤
+        private Label _lblPl;
+        private NumericUpDown _numPl;
+        private Button _btSt;
+        private Button _btSp;
+
+        private Panel _pnlCt;
+        private FlowLayoutPanel _flp;
+
+        // 헤더 공통 폰트
+        private Font _headerFont;
+
+        // 통신 및 토크나이저용
         private const string Ptn = @"\{([^}]+)\}";
         private readonly HttpClient _http = new()
         {
             Timeout = TimeSpan.FromSeconds(15)
         };
         private CancellationTokenSource? _cts;
+    }
+
+    // Body Combined With Head
+    public partial class MainForm : Form
+    {
 
         public MainForm()
         {
@@ -495,7 +534,7 @@ namespace ImageLoader // B-H-N-B
 
                 // 버튼 생성
                 var btOpen = new Button { Text = "브라우저로 열기", Width = 120 };
-                btOpen.Click += (_, __) => Process.Start(new ProcessStartInfo { FileName = job.Url, UseShellExecute = true });
+                btOpen.Click += (_, _) => Process.Start(new ProcessStartInfo { FileName = job.Url, UseShellExecute = true });
                 pnlBot.Controls.Add(btOpen);
 
                 var btExif = new Button { Text = "EXIF 확인", Width = 100 };
@@ -505,7 +544,7 @@ namespace ImageLoader // B-H-N-B
                     pnlBot.Controls.Add(btExif);
 
                     // EXIF 버튼 지연 로딩
-                    btExif.Click += (_, __) =>
+                    btExif.Click += (_, _) =>
                     {
                         if (imgBytes == null) return;
 
@@ -520,9 +559,9 @@ namespace ImageLoader // B-H-N-B
                                 {
                                     Text = "EXIF 상세 정보",
                                     Width = 600,
-                                    Height = 800,
+                                    Height = 900,
                                     Padding = new Padding(10),
-                                    BackColor = ColorTranslator.FromHtml(COLOR.NAI_DARK),
+                                    BackColor = COLOR.NAI_DARK,
                                 };
 
                                 // 텍스트박스 생성
@@ -532,10 +571,11 @@ namespace ImageLoader // B-H-N-B
                                     Multiline = true,
                                     ReadOnly = true,
                                     TabStop = false,    // NOTE: 캐럿 끄는 플래그
-                                    ScrollBars = RichTextBoxScrollBars.None, // TODO: 이거 끄는법
+                                    ScrollBars = RichTextBoxScrollBars.Vertical, // TODO: 이거 끄는법
                                     Font = new Font("Consolas", 9.75f),
                                     BorderStyle = BorderStyle.None,
-                                    BackColor = ColorTranslator.FromHtml(COLOR.NAI_DARK),
+                                    BackColor = COLOR.NAI_DARK,
+                                    // SelectionCharOffset = 5
                                 };
                                 txtExif.ToExifPanel(data);
 
@@ -551,7 +591,10 @@ namespace ImageLoader // B-H-N-B
                 }
 
                 var btSave = new Button { Text = "다운로드", Width = 100 };
-                // btSave.Click += ...
+                btSave.Click += (_, _) =>
+                {
+                    MessageBox.Show("개발중, 최대한 빨리 만들어올게요");
+                };
                 pnlBot.Controls.Add(btSave);
 
                 viewer.Controls.Add(pic);
@@ -667,8 +710,7 @@ namespace ImageLoader // B-H-N-B
                 return false;
             }
 
-            // 내부 헬퍼: Software 기반 판정
-            static bool CheckBySoftware(string? sw)
+            bool CheckBySoftware(string? sw)
             {
                 if (string.IsNullOrEmpty(sw))
                     return false;
@@ -688,8 +730,7 @@ namespace ImageLoader // B-H-N-B
                 return knownModelHashes.Contains(last, StringComparer.OrdinalIgnoreCase);
             }
 
-            // 내부 헬퍼: Comment(JSON) 기반 판정
-            static bool CheckByComment(string? c)
+            bool CheckByComment(string? c)
             {
                 if (string.IsNullOrEmpty(c))
                     return false;
@@ -838,7 +879,7 @@ namespace ImageLoader // B-H-N-B
         }
     }
 
-    // Bridge
+    // Head
     public partial class MainForm
     {
         protected override void Dispose(bool disposing)
@@ -871,39 +912,8 @@ namespace ImageLoader // B-H-N-B
             this.PerformLayout();
         }
     }
-    // Bridge Elements 
     public partial class MainForm
     {
-        private System.ComponentModel.IContainer components = null;
-
-        private Label _lBs;
-        private TextBox _tBs;
-        private Button _btSav;
-
-        private Label _lIn;
-        private TextBox _tIn;
-        private Button _btPrs;
-
-        // 특수 토큰 컨트롤
-        private Label _lblNam;
-        private TextBox _tNam;
-
-        private Label _lblSit;
-        private TextBox _tSit;
-
-        private Label _lblNum;
-        private NumericUpDown _numSt;
-        private NumericUpDown _numEn;
-
-        // 실행 컨트롤
-        private Label _lblPl;
-        private NumericUpDown _numPl;
-        private Button _btSt;
-        private Button _btSp;
-
-        private Panel _pnlCt;
-        private FlowLayoutPanel _flp;
-
         private void SetInstc()
         {
             this._lBs = new Label();
@@ -931,44 +941,60 @@ namespace ImageLoader // B-H-N-B
             this._numPl = new NumericUpDown();
             this._btSt = new Button();
             this._btSp = new Button();
+
+            this._headerFont = new Font(Control.DefaultFont, FontStyle.Bold);
         }
         private void SetLabel()
         {
             this._lBs.AutoSize = true;
-            this._lBs.Location = new Point(12, 15);
+            this._lBs.Location = new Point(9, 15);
             this._lBs.Name = "_lBs";
             this._lBs.Size = new Size(70, 12);
             this._lBs.Text = "베이스 URL:";
+            this._lBs.Font = _headerFont;
 
             this._lIn.AutoSize = true;
-            this._lIn.Location = new Point(12, 37);
+            this._lIn.Location = new Point(9, 37);
             this._lIn.Name = "_lIn";
             this._lIn.Size = new Size(70, 12);
             this._lIn.Text = "코드 부분  :";
+            this._lIn.Font = _headerFont;
 
             this._lblNam.AutoSize = true;
-            this._lblNam.Location = new Point(12, 60);
+            this._lblNam.Location = new Point(9, 60);
             this._lblNam.Name = "_lblNam";
             this._lblNam.Size = new Size(70, 12);
             this._lblNam.Text = "이름 목록  :";
+            this._lblNam.Font = _headerFont;
 
             this._lblSit.AutoSize = true;
-            this._lblSit.Location = new Point(12, 85);
+            this._lblSit.Location = new Point(9, 85);
             this._lblSit.Name = "_lblSit";
             this._lblSit.Size = new Size(70, 12);
             this._lblSit.Text = "상황 목록  :";
+            this._lblSit.Font = _headerFont;
 
             this._lblNum.AutoSize = true;
-            this._lblNum.Location = new Point(12, 110);
+            this._lblNum.Location = new Point(9, 110);
             this._lblNum.Name = "_lblNum";
             this._lblNum.Size = new Size(70, 12);
             this._lblNum.Text = "번호 범위  :";
+            this._lblNum.Font = _headerFont;
 
             this._lblPl.AutoSize = true;
-            this._lblPl.Location = new Point(12, 135);
+            this._lblPl.Location = new Point(9, 135);
             this._lblPl.Name = "_lblPl";
             this._lblPl.Size = new Size(70, 12);
             this._lblPl.Text = "동시 요청  :";
+            this._lblPl.Font = _headerFont;
+
+
+            //this._lBs.ForeColor = COLOR.HEADER;
+            //this._lIn.ForeColor = COLOR.HEADER;
+            //this._lblNam.ForeColor = COLOR.HEADER;
+            //this._lblSit.ForeColor = COLOR.HEADER;
+            //this._lblNum.ForeColor = COLOR.HEADER;
+            //this._lblPl.ForeColor = COLOR.HEADER;
         }
         private void SetInput()
         {
@@ -1106,6 +1132,9 @@ namespace ImageLoader // B-H-N-B
         }
         private void SetMForm()
         {
+            // 다크모드 용
+            //this.BackColor = COLOR.NAI_DARK;
+
             this.AutoScaleDimensions = new SizeF(7F, 12F);
             this.AutoScaleMode = AutoScaleMode.Font;
             this.ClientSize = new Size(480, 260);
@@ -1136,109 +1165,7 @@ namespace ImageLoader // B-H-N-B
             this.MinimumSize = new Size(524, 428);
 
             this.Name = "MainForm";
-            this.Text = "이미지 호스팅 체크 V1.1";
-        }
-    }
-}
-
-
-// 리치 텍스트 확인
-public partial class MainForm
-{
-    private void AppendRichText(RichTextBox box, string text)
-    {
-        Stack<Color> colorStack = new();
-        Stack<FontStyle> styleStack = new();
-
-        colorStack.Push(box.ForeColor);
-        styleStack.Push(FontStyle.Regular);
-
-        var tagRegex = new Regex(@"<(/?)(color(?:=[^>]*)?|b|i)>", RegexOptions.IgnoreCase);
-        int lastIndex = 0;
-
-        foreach (Match match in tagRegex.Matches(text))
-        {
-            if (match.Index > lastIndex)
-            {
-                string plain = text.Substring(lastIndex, match.Index - lastIndex);
-                ApplyText(box, plain, colorStack.Peek(), styleStack.Peek());
-            }
-
-            string tag = match.Groups[2].Value.ToLower();
-            bool closing = match.Groups[1].Value == "/";
-
-            if (!closing)
-            {
-                if (tag.StartsWith("color"))
-                {
-                    Color color = colorStack.Peek();
-                    var matchColor = Regex.Match(tag, @"color=([#a-zA-Z0-9]+)");
-                    if (matchColor.Success)
-                        color = ParseColor(matchColor.Groups[1].Value);
-                    colorStack.Push(color);
-                }
-                else if (tag == "b")
-                {
-                    styleStack.Push(styleStack.Peek() | FontStyle.Bold);
-                }
-                else if (tag == "i")
-                {
-                    styleStack.Push(styleStack.Peek() | FontStyle.Italic);
-                }
-            }
-            else
-            {
-                string inner = tag;
-                if (inner.StartsWith("color") && colorStack.Count > 1)
-                    colorStack.Pop();
-                else if (inner == "b" && styleStack.Count > 1)
-                    styleStack.Pop();
-                else if (inner == "i" && styleStack.Count > 1)
-                    styleStack.Pop();
-            }
-
-            lastIndex = match.Index + match.Length;
-        }
-
-        if (lastIndex < text.Length)
-        {
-            string remaining = text.Substring(lastIndex);
-            ApplyText(box, remaining, colorStack.Peek(), styleStack.Peek());
-        }
-    }
-
-    /// <summary>
-    /// 지정된 색상과 스타일로 RichTextBox에 텍스트 추가
-    /// </summary>
-    private void ApplyText(RichTextBox box, string text, Color? color, FontStyle style)
-    {
-        box.SelectionStart = box.TextLength;
-        box.SelectionLength = 0;
-        box.SelectionColor = color ?? box.ForeColor;
-        box.SelectionFont = new Font(box.Font, style);
-        box.AppendText(text);
-        box.SelectionColor = box.ForeColor;
-    }
-
-    /// <summary>
-    /// 문자열 색상(#RRGGBB 또는 이름)을 System.Drawing.Color로 변환
-    /// </summary>
-    private Color ParseColor(string colorCode)
-    {
-        try
-        {
-            if (colorCode.StartsWith("#"))
-            {
-                return ColorTranslator.FromHtml(colorCode);
-            }
-            else
-            {
-                return Color.FromName(colorCode);
-            }
-        }
-        catch
-        {
-            return Color.White;
+            this.Text = "이미지 플로우 v1.1";
         }
     }
 }

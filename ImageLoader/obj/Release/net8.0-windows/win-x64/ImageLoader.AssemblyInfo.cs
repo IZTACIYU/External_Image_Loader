@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ImageLoader")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+277ea794fcda83b696250baad5bcc35823106be9")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+6bbfd8cef410e5294ff4c030cc98b070083a1316")]
 [assembly: System.Reflection.AssemblyProductAttribute("ImageLoader")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ImageLoader")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
