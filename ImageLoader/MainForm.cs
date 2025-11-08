@@ -531,7 +531,8 @@ namespace ImageLoader // B-H-N-B
                                     Dock = DockStyle.Fill,
                                     Multiline = true,
                                     ReadOnly = true,
-                                    ScrollBars = RichTextBoxScrollBars.Vertical, // TODO: 이거 끄는법
+                                    TabStop = false,    // NOTE: 캐럿 끄는 플래그
+                                    ScrollBars = RichTextBoxScrollBars.None, // TODO: 이거 끄는법
                                     Font = new Font("Consolas", 9.75f),
                                     BorderStyle = BorderStyle.None,
                                     BackColor = ColorTranslator.FromHtml(COLOR.NAI_DARK),
