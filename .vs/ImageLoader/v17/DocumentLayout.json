@@ -1,18 +1,22 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "C:\\Users\\admin\\Desktop\\Git\\External_Image_Loader\\",
+  "WorkspaceRootPath": "C:\\Users\\Administrator\\Desktop\\\uD638\uC900\\External_Image_Loader\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{C03833D9-ADEC-466C-B2B6-6E40506DB84D}|ImageLoader\\ImageLoader.csproj|c:\\users\\admin\\desktop\\git\\external_image_loader\\imageloader\\mainform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{C03833D9-ADEC-466C-B2B6-6E40506DB84D}|ImageLoader\\ImageLoader.csproj|c:\\users\\administrator\\desktop\\\uD638\uC900\\external_image_loader\\imageloader\\mainform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{C03833D9-ADEC-466C-B2B6-6E40506DB84D}|ImageLoader\\ImageLoader.csproj|solutionrelative:imageloader\\mainform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{C03833D9-ADEC-466C-B2B6-6E40506DB84D}|ImageLoader\\ImageLoader.csproj|c:\\users\\admin\\desktop\\git\\external_image_loader\\imageloader\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{C03833D9-ADEC-466C-B2B6-6E40506DB84D}|ImageLoader\\ImageLoader.csproj|solutionrelative:imageloader\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{C03833D9-ADEC-466C-B2B6-6E40506DB84D}|ImageLoader\\ImageLoader.csproj|c:\\users\\administrator\\desktop\\\uD638\uC900\\external_image_loader\\imageloader\\const.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C03833D9-ADEC-466C-B2B6-6E40506DB84D}|ImageLoader\\ImageLoader.csproj|solutionrelative:imageloader\\const.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{C03833D9-ADEC-466C-B2B6-6E40506DB84D}|ImageLoader\\ImageLoader.csproj|c:\\users\\admin\\desktop\\git\\external_image_loader\\imageloader\\simplified.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{C03833D9-ADEC-466C-B2B6-6E40506DB84D}|ImageLoader\\ImageLoader.csproj|c:\\users\\administrator\\desktop\\\uD638\uC900\\external_image_loader\\imageloader\\simplified.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{C03833D9-ADEC-466C-B2B6-6E40506DB84D}|ImageLoader\\ImageLoader.csproj|solutionrelative:imageloader\\simplified.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C03833D9-ADEC-466C-B2B6-6E40506DB84D}|ImageLoader\\ImageLoader.csproj|c:\\users\\administrator\\desktop\\\uD638\uC900\\external_image_loader\\imageloader\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C03833D9-ADEC-466C-B2B6-6E40506DB84D}|ImageLoader\\ImageLoader.csproj|solutionrelative:imageloader\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -22,43 +26,56 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 1,
+          "SelectedChildIndex": 2,
           "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "Const.cs",
+              "DocumentMoniker": "C:\\Users\\Administrator\\Desktop\\\uD638\uC900\\External_Image_Loader\\ImageLoader\\Const.cs",
+              "RelativeDocumentMoniker": "ImageLoader\\Const.cs",
+              "ToolTip": "C:\\Users\\Administrator\\Desktop\\\uD638\uC900\\External_Image_Loader\\ImageLoader\\Const.cs",
+              "RelativeToolTip": "ImageLoader\\Const.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAQAAAAxAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-08T08:01:11.514Z",
+              "EditorCaption": ""
+            },
             {
               "$type": "Document",
               "DocumentIndex": 2,
               "Title": "Simplified.cs",
-              "DocumentMoniker": "C:\\Users\\admin\\Desktop\\Git\\External_Image_Loader\\ImageLoader\\Simplified.cs",
+              "DocumentMoniker": "C:\\Users\\Administrator\\Desktop\\\uD638\uC900\\External_Image_Loader\\ImageLoader\\Simplified.cs",
               "RelativeDocumentMoniker": "ImageLoader\\Simplified.cs",
-              "ToolTip": "C:\\Users\\admin\\Desktop\\Git\\External_Image_Loader\\ImageLoader\\Simplified.cs",
+              "ToolTip": "C:\\Users\\Administrator\\Desktop\\\uD638\uC900\\External_Image_Loader\\ImageLoader\\Simplified.cs",
               "RelativeToolTip": "ImageLoader\\Simplified.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAUAAAAcAAAAAAAAAA==",
+              "ViewState": "AQIAAA8AAAAAAAAAAAAAAEsAAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-11-07T14:02:14.01Z",
+              "WhenOpened": "2025-11-08T06:40:54.146Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 0,
               "Title": "MainForm.cs",
-              "DocumentMoniker": "C:\\Users\\admin\\Desktop\\Git\\External_Image_Loader\\ImageLoader\\MainForm.cs",
+              "DocumentMoniker": "C:\\Users\\Administrator\\Desktop\\\uD638\uC900\\External_Image_Loader\\ImageLoader\\MainForm.cs",
               "RelativeDocumentMoniker": "ImageLoader\\MainForm.cs",
-              "ToolTip": "C:\\Users\\admin\\Desktop\\Git\\External_Image_Loader\\ImageLoader\\MainForm.cs*",
-              "RelativeToolTip": "ImageLoader\\MainForm.cs*",
-              "ViewState": "AgIAAPgDAAAAAAAAAAApwAYEAAA0AAAAAAAAAA==",
+              "ToolTip": "C:\\Users\\Administrator\\Desktop\\\uD638\uC900\\External_Image_Loader\\ImageLoader\\MainForm.cs",
+              "RelativeToolTip": "ImageLoader\\MainForm.cs",
+              "ViewState": "AQIAAAACAAAAAAAAAAAAABICAAA6AAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-11-06T03:30:16.788Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 3,
               "Title": "Program.cs",
-              "DocumentMoniker": "C:\\Users\\admin\\Desktop\\Git\\External_Image_Loader\\ImageLoader\\Program.cs",
+              "DocumentMoniker": "C:\\Users\\Administrator\\Desktop\\\uD638\uC900\\External_Image_Loader\\ImageLoader\\Program.cs",
               "RelativeDocumentMoniker": "ImageLoader\\Program.cs",
-              "ToolTip": "C:\\Users\\admin\\Desktop\\Git\\External_Image_Loader\\ImageLoader\\Program.cs",
+              "ToolTip": "C:\\Users\\Administrator\\Desktop\\\uD638\uC900\\External_Image_Loader\\ImageLoader\\Program.cs",
               "RelativeToolTip": "ImageLoader\\Program.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAAIAAAAAAAAAA==",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAABkAAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-11-06T03:29:32.597Z",
               "EditorCaption": ""

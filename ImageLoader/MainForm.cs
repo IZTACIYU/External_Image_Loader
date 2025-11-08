@@ -484,80 +484,77 @@ namespace ImageLoader // B-H-N-B
                 var viewer = new Form { Text = $"{title} - {job.Url}", Width = 900, Height = 700 };
                 var pic = new PictureBox { Dock = DockStyle.Fill, SizeMode = PictureBoxSizeMode.Zoom, Image = img };
 
-                // 버튼 정렬 패널
-                //var pnlBot = new FlowLayoutPanel
-                //{
-                //    Dock = DockStyle.Bottom,
-                //    FlowDirection = FlowDirection.LeftToRight,
-                //    AutoSize = true,
-                //    Padding = new Padding(5)
-                //};
+               // 버튼 정렬 패널
+               var pnlBot = new FlowLayoutPanel
+               {
+                   Dock = DockStyle.Bottom,
+                   FlowDirection = FlowDirection.LeftToRight,
+                   AutoSize = true,
+                   Padding = new Padding(5)
+               };
 
-                //// 버튼 생성
-                //var btOpen = new Button { Text = "브라우저로 열기", Width = 120 };
-                //btOpen.Click += (_, __) => Process.Start(new ProcessStartInfo { FileName = job.Url, UseShellExecute = true });
-                //pnlBot.Controls.Add(btOpen);
+                // 버튼 생성
+                var btOpen = new Button { Text = "브라우저로 열기", Width = 120 };
+                btOpen.Click += (_, __) => Process.Start(new ProcessStartInfo { FileName = job.Url, UseShellExecute = true });
+                pnlBot.Controls.Add(btOpen);
 
-                //var btExif = new Button { Text = "EXIF 확인", Width = 100 };
-                //// EXIF 존재시
-                //if (exifSuccess)
-                //{
-                //    pnlBot.Controls.Add(btExif);
+                var btExif = new Button { Text = "EXIF 확인", Width = 100 };
+                // EXIF 존재시
+                if (exifSuccess)
+                {
+                    pnlBot.Controls.Add(btExif);
 
-                //    // EXIF 버튼 지연 로딩
-                //    btExif.Click += (_, __) =>
-                //    {
-                //        if (imgBytes == null) return;
+                    // EXIF 버튼 지연 로딩
+                    btExif.Click += (_, __) =>
+                    {
+                        if (imgBytes == null) return;
 
-                //        using (var tempMs = new MemoryStream(imgBytes))
-                //        {
-                //            // 본 파싱
-                //            Simplified data = ParseExifData(tempMs);
+                        using (var tempMs = new MemoryStream(imgBytes))
+                        {
+                            // 본 파싱
+                            Simplified data = ParseExifData(tempMs);
 
-                //            if (data != null)
-                //            {
-                //                var exifForm = new Form
-                //                {
-                //                    Text = "EXIF 상세 정보",
-                //                    Width = 600,
-                //                    Height = 800,
-                //                    Padding = new Padding(10)
-                //                };
+                            if (data != null)
+                            {
+                                var exifForm = new Form
+                                {
+                                    Text = "EXIF 상세 정보",
+                                    Width = 600,
+                                    Height = 800,
+                                    Padding = new Padding(10),
+                                    BackColor = ColorTranslator.FromHtml(COLOR.NAI_DARK),
+                                };
 
-                //                // 2. 텍스트박스 생성
-                //                //var txtExif = new TextBox
-                //                //{
-                //                //    Dock = DockStyle.Fill,
-                //                //    Multiline = true,
-                //                //    ReadOnly = true,
-                //                //    ScrollBars = ScrollBars.Vertical,
-                //                //    Font = new Font("Consolas", 9.75f),
-                //                //    Text = "da"//FormatExif(data)
-                //                //};
+                                // 텍스트박스 생성
+                                var txtExif = new RichTextBox
+                                {
+                                    Dock = DockStyle.Fill,
+                                    Multiline = true,
+                                    ReadOnly = true,
+                                    ScrollBars = RichTextBoxScrollBars.Vertical, // TODO: 이거 끄는법
+                                    Font = new Font("Consolas", 9.75f),
+                                    BorderStyle = BorderStyle.None,
+                                    BackColor = ColorTranslator.FromHtml(COLOR.NAI_DARK),
+                                };
+                                txtExif.ToExifPanel(data);
 
-                //                //exifForm.Controls.Add(txtExif);
-                //                //exifForm.Show();
+                                exifForm.Controls.Add(txtExif);
+                                exifForm.Show();
+                            }
+                            else
+                            {
+                                MessageBox.Show("EXIF 데이터를 파싱할 수 없습니다.", "오류");
+                            }
+                        }
+                    };
+                }
 
-                //                MessageBox.Show(data.ToString());
-
-                //                // 개발중 임시로 메세지 박스 (TODO: 추후 판넬-라벨로 수정)
-                //                //var exifText = $"Prompt: {data.Prompt}\n\nUC: {data.UndesiredContent}\n\nSeed: {data.Seed}, Steps: {data.Steps}, Scale: {data.PromptGuidance}\nSampler: {data.Sampler}\nSource: {data.Source}";
-                //                //MessageBox.Show(exifText, "EXIF 상세 정보");
-                //            }
-                //            else
-                //            {
-                //                MessageBox.Show("EXIF 데이터를 파싱할 수 없습니다.", "오류");
-                //            }
-                //        }
-                //    };
-                //}
-
-                //var btSave = new Button { Text = "다운로드", Width = 100 };
-                //// btSave.Click += ...
-                //pnlBot.Controls.Add(btSave);
+                var btSave = new Button { Text = "다운로드", Width = 100 };
+                // btSave.Click += ...
+                pnlBot.Controls.Add(btSave);
 
                 viewer.Controls.Add(pic);
-                //viewer.Controls.Add(pnlBot);
+                viewer.Controls.Add(pnlBot);
                 viewer.Show();
             };
 
@@ -1139,6 +1136,108 @@ namespace ImageLoader // B-H-N-B
 
             this.Name = "MainForm";
             this.Text = "이미지 호스팅 체크 V1.1";
+        }
+    }
+}
+
+
+// 리치 텍스트 확인
+public partial class MainForm
+{
+    private void AppendRichText(RichTextBox box, string text)
+    {
+        Stack<Color> colorStack = new();
+        Stack<FontStyle> styleStack = new();
+
+        colorStack.Push(box.ForeColor);
+        styleStack.Push(FontStyle.Regular);
+
+        var tagRegex = new Regex(@"<(/?)(color(?:=[^>]*)?|b|i)>", RegexOptions.IgnoreCase);
+        int lastIndex = 0;
+
+        foreach (Match match in tagRegex.Matches(text))
+        {
+            if (match.Index > lastIndex)
+            {
+                string plain = text.Substring(lastIndex, match.Index - lastIndex);
+                ApplyText(box, plain, colorStack.Peek(), styleStack.Peek());
+            }
+
+            string tag = match.Groups[2].Value.ToLower();
+            bool closing = match.Groups[1].Value == "/";
+
+            if (!closing)
+            {
+                if (tag.StartsWith("color"))
+                {
+                    Color color = colorStack.Peek();
+                    var matchColor = Regex.Match(tag, @"color=([#a-zA-Z0-9]+)");
+                    if (matchColor.Success)
+                        color = ParseColor(matchColor.Groups[1].Value);
+                    colorStack.Push(color);
+                }
+                else if (tag == "b")
+                {
+                    styleStack.Push(styleStack.Peek() | FontStyle.Bold);
+                }
+                else if (tag == "i")
+                {
+                    styleStack.Push(styleStack.Peek() | FontStyle.Italic);
+                }
+            }
+            else
+            {
+                string inner = tag;
+                if (inner.StartsWith("color") && colorStack.Count > 1)
+                    colorStack.Pop();
+                else if (inner == "b" && styleStack.Count > 1)
+                    styleStack.Pop();
+                else if (inner == "i" && styleStack.Count > 1)
+                    styleStack.Pop();
+            }
+
+            lastIndex = match.Index + match.Length;
+        }
+
+        if (lastIndex < text.Length)
+        {
+            string remaining = text.Substring(lastIndex);
+            ApplyText(box, remaining, colorStack.Peek(), styleStack.Peek());
+        }
+    }
+
+    /// <summary>
+    /// 지정된 색상과 스타일로 RichTextBox에 텍스트 추가
+    /// </summary>
+    private void ApplyText(RichTextBox box, string text, Color? color, FontStyle style)
+    {
+        box.SelectionStart = box.TextLength;
+        box.SelectionLength = 0;
+        box.SelectionColor = color ?? box.ForeColor;
+        box.SelectionFont = new Font(box.Font, style);
+        box.AppendText(text);
+        box.SelectionColor = box.ForeColor;
+    }
+
+    /// <summary>
+    /// 문자열 색상(#RRGGBB 또는 이름)을 System.Drawing.Color로 변환
+    /// </summary>
+    private Color ParseColor(string colorCode)
+    {
+        try
+        {
+            if (colorCode.StartsWith("#"))
+            {
+                return ColorTranslator.FromHtml(colorCode);
+            }
+            else
+            {
+                return Color.FromName(colorCode);
+            }
+        }
+        catch
+        {
+            return Color.White;
         }
     }
 }
