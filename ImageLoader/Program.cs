@@ -14,12 +14,5 @@ namespace ImageLoader
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new MainForm());
         }
-    }
-
-    public class Job
-    {
-        public string Url { get; set; }
-        public Dictionary<string, string> Tokens { get; set; }
-    }
-    
+    }    
 }
