@@ -71,12 +71,12 @@
 
                     // 키값 서식 설정 (Bold, Gold)
                     richText.SelectionFont = keyFont;
-                    richText.SelectionColor = COLOR.HEADER;
+                    richText.SelectionColor = COLOR.NAI_HEADER;
                     richText.AppendText(key + ": ");
 
                     // 벨류값 서식 설정 (Italic, LightGray)
                     richText.SelectionFont = valueFont;
-                    richText.SelectionColor = COLOR.VALUE;
+                    richText.SelectionColor = COLOR.NAI_VALUE;
                     richText.AppendText(value);
 
                     richText.AppendText("\n");
