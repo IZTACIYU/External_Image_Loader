@@ -1,6 +1,6 @@
 ﻿namespace ImageLoader
 {
-    public class InputField : IControlMountable
+    public class InputField : IControlMountable<Control.ControlCollection>
     {
         public required Label Header { get; set; }
         public required TextBox InputBox { get; set; }

@@ -13,22 +13,27 @@ namespace ImageLoader // B-H-N-B
         private System.ComponentModel.IContainer components = null;
 
         #region LabelLinear로 교체 대상
-        private Label _lBs;
-        private TextBox _tBs;
-        private Button _btSav;
+        private LabelLinear _baseLiner;
+        private LabelLinear _codeParse;
 
-        private Label _lIn;
-        private TextBox _tIn;
-        private Button _btPrs;
+        private Label _lBs => _baseLiner.InputField.Header;
+        private TextBox _tBs => _baseLiner.InputField.InputBox;
+        private Button _btSav => _baseLiner.Button;
+
+        private Label _lIn => _codeParse.InputField.Header;
+        private TextBox _tIn => _codeParse.InputField.InputBox;
+        private Button _btPrs => _codeParse.Button;
         #endregion
 
-        #region InputField로 교체대상
+        #region InputField
         // 특수 토큰 컨트롤
-        private Label _lblNam;
-        private TextBox _tNam;
+        private InputField _nameField;
+        private InputField _situField;
 
-        private Label _lblSit;
-        private TextBox _tSit;
+        private Label _lblNam => _nameField.Header;
+        private Label _lblSit => _situField.Header;
+        private TextBox _tNam => _nameField.InputBox;
+        private TextBox _tSit => _situField.InputBox;
         #endregion
 
         private Label _lblNum;
@@ -62,6 +67,123 @@ namespace ImageLoader // B-H-N-B
 
     public partial class MainForm
     {
+        private void SetLiner()
+        {
+            this._baseLiner = new()
+            {
+                InputField = new()
+                {
+                    Header = new()
+                    {
+                        AutoSize = true,
+                        Location = new Point(9, 26),
+                        Name = "_lBs",
+                        Size = new Size(70, 14),
+                        Text = "베이스 URL:",
+                        Font = _headerFont,
+                    },
+                    InputBox = new()
+                    {
+                        Anchor = (AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right),
+                        Location = new Point(84, 22),
+                        Name = "_tBs",
+                        Size = new Size(336, 21),
+                        TabIndex = 0,
+                        PlaceholderText = "변하지 않는 고정 링크",
+                    }
+                },
+                Button = new()
+                {
+                    Anchor = (AnchorStyles.Top | AnchorStyles.Right),
+                    Location = new Point(422, 21),
+                    Name = "_btSav",
+                    Size = new Size(75, 20),
+                    TabIndex = 1,
+                    Text = "프리셋",
+                    UseVisualStyleBackColor = true,
+                }
+            };
+            this._codeParse = new()
+            {
+                InputField = new()
+                {
+                    Header = new()
+                    {
+                        AutoSize = true,
+                        Location = new Point(9, 48),
+                        Name = "_lIn",
+                        Size = new Size(70, 14),
+                        Text = "코드 부분   :",
+                        Font = _headerFont,
+                    },
+                    InputBox = new()
+                    {
+                        Anchor = (AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right),
+                        Location = new Point(84, 45),
+                        Name = "_tIn",
+                        Size = new Size(336, 21),
+                        TabIndex = 2,
+                        PlaceholderText = "{토큰명}입력 후 파싱, name, num, situation은 특수 토큰",
+                    }
+                },
+                Button = new()
+                {
+                    Anchor = (AnchorStyles.Top | AnchorStyles.Right),
+                    Location = new Point(422, 44),
+                    Name = "_btPrs",
+                    Size = new Size(75, 20),
+                    TabIndex = 3,
+                    Text = "토큰 파싱",
+                    UseVisualStyleBackColor = true,
+                }
+            };
+        }
+        private void SetIpFld()
+        {
+            this._nameField = new()
+            {
+                Header = new()
+                {
+                    AutoSize = true,
+                    Location = new Point(9, 70),
+                    Name = "_lblNam",
+                    Size = new Size(70, 14),
+                    Text = "이름 목록   :",
+                    Font = _headerFont,
+                },
+                InputBox = new()
+                {
+                    Anchor = (AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right),
+                    Location = new Point(84, 67),
+                    Name = "_tNam",
+                    Size = new Size(412, 21),
+                    TabIndex = 4,
+                    PlaceholderText = "{name} 토큰 값 (쉼표로 구분)",
+                }
+            };
+            this._situField = new()
+            {
+                Header = new()
+                {
+                    AutoSize = true,
+                    Location = new Point(9, 92),
+                    Name = "_lblSit",
+                    Size = new Size(70, 14),
+                    Text = "상황 목록   :",
+                    Font = _headerFont,
+                },
+                InputBox = new()
+                {
+                    Anchor = (AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right),
+                    Location = new Point(84, 89),
+                    Name = "_tSit",
+                    Size = new Size(412, 21),
+                    TabIndex = 5,
+                    PlaceholderText = "{situation} 토큰 값 (쉼표로 구분)",
+                }
+            };
+        }
+
         private void SetTlsBr()
         {
             // 툴바
@@ -70,17 +192,33 @@ namespace ImageLoader // B-H-N-B
             this._tbl.GripStyle = ToolStripGripStyle.Visible;
             this._tbl.RenderMode = ToolStripRenderMode.System;
 
-            this._tbtStn.Name = "_tbtStn";
-            this._tbtStn.Text = "설정";
-            this._tbtStn.DisplayStyle = ToolStripItemDisplayStyle.Text;
-            this._tbtStn.ShowDropDownArrow = false;
-            this._tbtStn.Width = 80;
-            this._tbtStn.Height = 20;
+            var tools = new Tools()
+            {
+                Tool = new()
+                {
+                    Name = Text = "설정",
+                    DisplayStyle = ToolStripItemDisplayStyle.Text,
+                    ShowDropDownArrow = false,
+                    Width = 80,
+                    Height = 20,
+                },
+                Items = new()
+                {
+                    new()
+                    {
+                        Text = "작업 경로 설정",
+                        Padding = new Padding(1, 0, 1, 0),
+                    },
+                    //new()
+                    //{
+
+                    //},
+                },
+            };
+
 
             this._tbtStn.DropDown.Padding = new Padding(0);
             var temp = new ToolStripMenuItem();
-            temp.Text = "작업 경로 설정";
-            temp.Padding = new Padding(1, 0, 1, 0);
 
             this._tbtStn.DropDownItems.Add(temp);
             this._tbtStn.Click += (_, _) =>
@@ -89,71 +227,34 @@ namespace ImageLoader // B-H-N-B
             };
             
 
-            // 3. ToolStrip에 버튼 추가
-            this._tbl.Items.Add(this._tbtStn);
+            tools.MountTo(_tbl);
+            //this._tbl.Items.Add(this._tbtStn);
         }
         private void SetInstc()
         {
-            this._lBs = new ();
-            this._tBs = new ();
-            this._btSav = new ();
-
-            this._lIn = new ();
-            this._tIn = new ();
-            this._btPrs = new ();
-
-            this._pnlCt = new ();
-            this._flp = new ();
+            this._headerFont = new(Control.DefaultFont, FontStyle.Bold);
+            
+            this._pnlCt = new();
+            this._flp = new();
 
             // 특수 토큰
-            this._lblNam = new ();
-            this._tNam = new ();
-            this._lblSit = new ();
-            this._tSit = new ();
-            this._lblNum = new ();
-            this._numSt = new ();
-            this._numEn = new ();
+            this._lblNum = new();
+            this._numSt = new();
+            this._numEn = new();
 
             // 실행
-            this._lblPl = new ();
-            this._numPl = new ();
-            this._btSt = new ();
-            this._btSp = new ();
+            this._lblPl = new();
+            this._numPl = new();
+            this._btSt = new();
+            this._btSp = new();
 
-            this._headerFont = new (Control.DefaultFont, FontStyle.Bold);
 
             this._tbl = new();
             this._tbtStn = new();
         }
         private void SetLabel()
         {
-            this._lBs.AutoSize = true;
-            this._lBs.Location = new Point(9, 26);
-            this._lBs.Name = "_lBs";
-            this._lBs.Size = new Size(70, 14);
-            this._lBs.Text = "베이스 URL:";
-            this._lBs.Font = _headerFont;
 
-            this._lIn.AutoSize = true;
-            this._lIn.Location = new Point(9, 48);
-            this._lIn.Name = "_lIn";
-            this._lIn.Size = new Size(70, 14);
-            this._lIn.Text = "코드 부분   :";
-            this._lIn.Font = _headerFont;
-
-            this._lblNam.AutoSize = true;
-            this._lblNam.Location = new Point(9, 70);
-            this._lblNam.Name = "_lblNam";
-            this._lblNam.Size = new Size(70, 14);
-            this._lblNam.Text = "이름 목록   :";
-            this._lblNam.Font = _headerFont;
-
-            this._lblSit.AutoSize = true;
-            this._lblSit.Location = new Point(9, 92);
-            this._lblSit.Name = "_lblSit";
-            this._lblSit.Size = new Size(70, 14);
-            this._lblSit.Text = "상황 목록   :";
-            this._lblSit.Font = _headerFont;
 
             this._lblNum.AutoSize = true;
             this._lblNum.Location = new Point(9, 120);
@@ -184,70 +285,8 @@ namespace ImageLoader // B-H-N-B
             //this._lblNum.BackColor = COLOR.NAI_HEADER;
             //this._lblPl.BackColor = COLOR.NAI_HEADER;
         }
-        private void SetInput()
-        {
-            // Row: URL
-            this._tBs.Anchor = (AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right);
-            this._tBs.Location = new Point(84, 22);
-            this._tBs.Name = "_tBs";
-            this._tBs.Size = new Size(336, 21);
-            this._tBs.TabIndex = 0;
-            this._tBs.PlaceholderText = "변하지 않는 고정 링크";
-
-            // Row: Token
-            this._tIn.Anchor = (AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right);
-            this._tIn.Location = new Point(84, 45);
-            this._tIn.Name = "_tIn";
-            this._tIn.Size = new Size(336, 21);
-            this._tIn.TabIndex = 2;
-            this._tIn.PlaceholderText = "{토큰명}입력 후 파싱, name, num, situation은 특수 토큰";
-
-            // Row: Name
-            this._tNam.Anchor = (AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right);
-            this._tNam.Location = new Point(84, 67);
-            this._tNam.Name = "_tNam";
-            this._tNam.Size = new Size(412, 21);
-            this._tNam.TabIndex = 4;
-            this._tNam.PlaceholderText = "{name} 토큰 값 (쉼표로 구분)";
-
-            // Row: Situation
-            this._tSit.Anchor = (AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right);
-            this._tSit.Location = new Point(84, 89);
-            this._tSit.Name = "_tSit";
-            this._tSit.Size = new Size(412, 21);
-            this._tSit.TabIndex = 5;
-            this._tSit.PlaceholderText = "{situation} 토큰 값 (쉼표로 구분)";
-
-            //this._tBs.BorderStyle  = BorderStyle.None;
-            //this._tIn.BorderStyle  = BorderStyle.None;
-            //this._tNam.BorderStyle = BorderStyle.None;
-            //this._tSit.BorderStyle = BorderStyle.None;
-
-            //this._tBs.BackColor = COLOR.NAI_HEADER;
-            //this._tIn.BackColor = COLOR.NAI_HEADER;
-            //this._tNam.BackColor = COLOR.NAI_HEADER;
-            //this._tSit.BackColor = COLOR.NAI_HEADER;
-        }
         private void SetBtnID()
         {
-            // Row: Preset
-            this._btSav.Anchor = (AnchorStyles.Top | AnchorStyles.Right);
-            this._btSav.Location = new Point(422, 21);
-            this._btSav.Name = "_btSav";
-            this._btSav.Size = new Size(75, 20);
-            this._btSav.TabIndex = 1;
-            this._btSav.Text = "프리셋";
-            this._btSav.UseVisualStyleBackColor = true;
-
-            // Row: Token
-            this._btPrs.Anchor = (AnchorStyles.Top | AnchorStyles.Right);
-            this._btPrs.Location = new Point(422, 44);
-            this._btPrs.Name = "_btPrs";
-            this._btPrs.Size = new Size(75, 20);
-            this._btPrs.TabIndex = 3;
-            this._btPrs.Text = "토큰 파싱";
-            this._btPrs.UseVisualStyleBackColor = true;
-
             // Row: Start
             this._btSt.Anchor = (AnchorStyles.Top | AnchorStyles.Right);
             this._btSt.Location = new Point(342, 140);
@@ -337,19 +376,14 @@ namespace ImageLoader // B-H-N-B
             this.AutoScaleMode = AutoScaleMode.Font;
             this.ClientSize = new Size(480, 260);
 
-            this.Controls.Add(this._lBs);
-            this.Controls.Add(this._tBs);
-            this.Controls.Add(this._btSav);
 
-            this.Controls.Add(this._lIn);
-            this.Controls.Add(this._tIn);
-            this.Controls.Add(this._btPrs);
+            this._baseLiner.MountTo(this.Controls);
+            this._codeParse.MountTo(this.Controls);
 
             // 특수 토큰 컨트롤
-            this.Controls.Add(this._lblNam);
-            this.Controls.Add(this._tNam);
-            this.Controls.Add(this._lblSit);
-            this.Controls.Add(this._tSit);
+            this._nameField.MountTo(this.Controls);
+            this._situField.MountTo(this.Controls);
+
             this.Controls.Add(this._lblNum);
             this.Controls.Add(this._numSt);
             this.Controls.Add(this._numEn);
@@ -367,8 +401,47 @@ namespace ImageLoader // B-H-N-B
 
             this.Name = "MainForm";
             this.Text = "이미지 플로우 v1.1";
+
+
+
         }
     }
+    // Head
+    public partial class MainForm
+    {
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing && (components != null))
+            {
+                components.Dispose();
+            }
+            base.Dispose(disposing);
+        }
+        private void InitializeComponent()
+        {
+            this.SetInstc();
+            this.SetLiner();
+            this.SetIpFld();
+            this.SuspendLayout();
+
+            this.Controls.Add(this._pnlCt);
+            this._pnlCt.Controls.Add(this._flp);
+
+            this.SetLabel();
+            this.SetTlsBr();
+            this.SetBtnID();
+            this.SetNumic();
+            this.SetBtFnc();
+            this.SetPnCnt();
+            this.SetFlPnl();
+            this.SetMForm();
+
+            this.ResumeLayout(false);
+            this.PerformLayout();
+        }
+    }
+
+
     // Body Combined With Head
     public partial class MainForm : Form
     {
@@ -1193,41 +1266,6 @@ namespace ImageLoader // B-H-N-B
             }
 
             return string.IsNullOrEmpty(nameTag) ? software : nameTag;
-        }
-    }
-    // Head
-    public partial class MainForm
-    {
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing && (components != null))
-            {
-                components.Dispose();
-            }
-            base.Dispose(disposing);
-        }
-        private void InitializeComponent()
-        {
-            this.SetInstc();
-
-            this.SuspendLayout();
-
-            this.Controls.Add(this._pnlCt);
-            this.Controls.Add(this._pnlCt);
-            this._pnlCt.Controls.Add(this._flp);
-
-            this.SetLabel();
-            this.SetTlsBr();
-            this.SetInput();
-            this.SetBtnID();
-            this.SetNumic();
-            this.SetBtFnc();
-            this.SetPnCnt();
-            this.SetFlPnl();
-            this.SetMForm();
-
-            this.ResumeLayout(false);
-            this.PerformLayout();
         }
     }
 }
