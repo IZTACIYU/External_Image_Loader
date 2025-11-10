@@ -1,18 +1,18 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "C:\\Users\\Administrator\\Desktop\\\uC815\uD638\uC900\\External_Image_Loader\\",
+  "WorkspaceRootPath": "C:\\Users\\admin\\Desktop\\Git\\External_Image_Loader\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{C03833D9-ADEC-466C-B2B6-6E40506DB84D}|ImageLoader\\ImageLoader.csproj|c:\\users\\administrator\\desktop\\\uC815\uD638\uC900\\external_image_loader\\imageloader\\mainform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{C03833D9-ADEC-466C-B2B6-6E40506DB84D}|ImageLoader\\ImageLoader.csproj|c:\\users\\admin\\desktop\\git\\external_image_loader\\imageloader\\note\\rawparameters.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C03833D9-ADEC-466C-B2B6-6E40506DB84D}|ImageLoader\\ImageLoader.csproj|solutionrelative:imageloader\\note\\rawparameters.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C03833D9-ADEC-466C-B2B6-6E40506DB84D}|ImageLoader\\ImageLoader.csproj|c:\\users\\admin\\desktop\\git\\external_image_loader\\imageloader\\layout\\exifpanel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C03833D9-ADEC-466C-B2B6-6E40506DB84D}|ImageLoader\\ImageLoader.csproj|solutionrelative:imageloader\\layout\\exifpanel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C03833D9-ADEC-466C-B2B6-6E40506DB84D}|ImageLoader\\ImageLoader.csproj|c:\\users\\admin\\desktop\\git\\external_image_loader\\imageloader\\mainform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{C03833D9-ADEC-466C-B2B6-6E40506DB84D}|ImageLoader\\ImageLoader.csproj|solutionrelative:imageloader\\mainform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{C03833D9-ADEC-466C-B2B6-6E40506DB84D}|ImageLoader\\ImageLoader.csproj|c:\\users\\administrator\\desktop\\\uC815\uD638\uC900\\external_image_loader\\imageloader\\toolbar.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{C03833D9-ADEC-466C-B2B6-6E40506DB84D}|ImageLoader\\ImageLoader.csproj|solutionrelative:imageloader\\toolbar.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{C03833D9-ADEC-466C-B2B6-6E40506DB84D}|ImageLoader\\ImageLoader.csproj|c:\\users\\administrator\\desktop\\\uC815\uD638\uC900\\external_image_loader\\imageloader\\tools.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{C03833D9-ADEC-466C-B2B6-6E40506DB84D}|ImageLoader\\ImageLoader.csproj|solutionrelative:imageloader\\tools.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -21,52 +21,47 @@
       "VerticalTabListWidth": 256,
       "DocumentGroups": [
         {
-          "DockedWidth": 194,
+          "DockedWidth": 221,
           "SelectedChildIndex": 1,
           "Children": [
             {
               "$type": "Document",
               "DocumentIndex": 2,
-              "Title": "Tools.cs",
-              "DocumentMoniker": "C:\\Users\\Administrator\\Desktop\\\uC815\uD638\uC900\\External_Image_Loader\\ImageLoader\\Tools.cs",
-              "RelativeDocumentMoniker": "ImageLoader\\Tools.cs",
-              "ToolTip": "C:\\Users\\Administrator\\Desktop\\\uC815\uD638\uC900\\External_Image_Loader\\ImageLoader\\Tools.cs",
-              "RelativeToolTip": "ImageLoader\\Tools.cs",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAABEAAAAdAAAA",
+              "Title": "MainForm.cs",
+              "DocumentMoniker": "C:\\Users\\admin\\Desktop\\Git\\External_Image_Loader\\ImageLoader\\MainForm.cs",
+              "RelativeDocumentMoniker": "ImageLoader\\MainForm.cs",
+              "ToolTip": "C:\\Users\\admin\\Desktop\\Git\\External_Image_Loader\\ImageLoader\\MainForm.cs",
+              "RelativeToolTip": "ImageLoader\\MainForm.cs",
+              "ViewState": "AgIAAC4AAAAAAAAAAAAAAGYBAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-11-10T00:36:47.386Z",
+              "WhenOpened": "2025-11-06T03:30:16.788Z",
+              "IsPinned": true,
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "RawParameters.cs",
+              "DocumentMoniker": "C:\\Users\\admin\\Desktop\\Git\\External_Image_Loader\\ImageLoader\\Note\\RawParameters.cs",
+              "RelativeDocumentMoniker": "ImageLoader\\Note\\RawParameters.cs",
+              "ToolTip": "C:\\Users\\admin\\Desktop\\Git\\External_Image_Loader\\ImageLoader\\Note\\RawParameters.cs",
+              "RelativeToolTip": "ImageLoader\\Note\\RawParameters.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAADwvxAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-10T14:54:30.385Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 1,
-              "Title": "ToolBar.cs",
-              "DocumentMoniker": "C:\\Users\\Administrator\\Desktop\\\uC815\uD638\uC900\\External_Image_Loader\\ImageLoader\\ToolBar.cs",
-              "RelativeDocumentMoniker": "ImageLoader\\ToolBar.cs",
-              "ToolTip": "C:\\Users\\Administrator\\Desktop\\\uC815\uD638\uC900\\External_Image_Loader\\ImageLoader\\ToolBar.cs",
-              "RelativeToolTip": "ImageLoader\\ToolBar.cs",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAA0AAAAUAAAA",
+              "Title": "ExifPanel.cs",
+              "DocumentMoniker": "C:\\Users\\admin\\Desktop\\Git\\External_Image_Loader\\ImageLoader\\Layout\\ExifPanel.cs",
+              "RelativeDocumentMoniker": "ImageLoader\\Layout\\ExifPanel.cs",
+              "ToolTip": "C:\\Users\\admin\\Desktop\\Git\\External_Image_Loader\\ImageLoader\\Layout\\ExifPanel.cs",
+              "RelativeToolTip": "ImageLoader\\Layout\\ExifPanel.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAIAAAAKAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-11-10T05:47:21.185Z",
-              "EditorCaption": ""
-            }
-          ]
-        },
-        {
-          "DockedWidth": 206,
-          "SelectedChildIndex": 0,
-          "Children": [
-            {
-              "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "MainForm.cs",
-              "DocumentMoniker": "C:\\Users\\Administrator\\Desktop\\\uC815\uD638\uC900\\External_Image_Loader\\ImageLoader\\MainForm.cs",
-              "RelativeDocumentMoniker": "ImageLoader\\MainForm.cs",
-              "ToolTip": "C:\\Users\\Administrator\\Desktop\\\uC815\uD638\uC900\\External_Image_Loader\\ImageLoader\\MainForm.cs",
-              "RelativeToolTip": "ImageLoader\\MainForm.cs",
-              "ViewState": "AQIAALsAAAAAAAAAAAAgwNcAAAAlAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-11-06T03:30:16.788Z",
+              "WhenOpened": "2025-11-10T14:54:07.852Z",
               "EditorCaption": ""
             }
           ]

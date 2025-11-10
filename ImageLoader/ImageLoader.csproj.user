@@ -5,7 +5,7 @@
     <Compile Update="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Update="ToolBar.cs">
+    <Compile Update="Layout\ToolBar.cs">
       <SubType>Component</SubType>
     </Compile>
   </ItemGroup>

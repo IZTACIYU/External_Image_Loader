@@ -6,7 +6,6 @@ using System.Text.RegularExpressions;
 
 namespace ImageLoader // B-H-N-B
 {
-
     // Note
     public partial class MainForm
     {
@@ -190,7 +189,7 @@ namespace ImageLoader // B-H-N-B
                         new Tools()
                         {
                             Tool = new ToolStripDropDownButton()
-                            {
+                            { 
                                 Name = "설정",
                                 Text = "설정",
                                 DisplayStyle = ToolStripItemDisplayStyle.Text,

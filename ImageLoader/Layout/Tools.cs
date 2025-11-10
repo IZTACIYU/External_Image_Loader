@@ -1,6 +1,6 @@
 ﻿namespace ImageLoader
 {
-    public class Tools : IControlMountable<ToolStrip>
+    public class Tools : IControlMountable<ToolStrip>, IItemProvider<ToolStripMenuItem>
     {
         public required ToolStripDropDownButton Tool {  get; set; }
         public required List<ToolStripMenuItem> Items { get; set; }
@@ -15,13 +15,11 @@
             control.Items.Add(Tool);
         }
 
-        public void DupliCate(string name)
+        public  ToolStripMenuItem DupliCate(string name)
         {
             if (Items.Count == 0) throw new InvalidOperationException("복사 할 객체 없음");
 
-            var item = Copy(name);
-
-            Items.Add(item);
+            return Copy(name);
         }
         private ToolStripMenuItem Copy(string name) => new ToolStripMenuItem
         {
@@ -39,5 +37,22 @@
             //ShortcutKeys = Items[0].ShortcutKeys,
             //ShowShortcutKeys = Items[0].ShowShortcutKeys,
         };
+
+        public ToolStripMenuItem GetItem(string name)
+        {
+            ToolStripMenuItem value;
+
+            try
+            {
+                value = Items.First(item => item.Name == name);
+            }
+            catch
+            {
+                MessageBox.Show("NAME TAG DOES NOT EXISTS");
+                return new();
+            }
+
+            return value;
+        }
     }
 }
