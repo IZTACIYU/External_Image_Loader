@@ -25,16 +25,8 @@ namespace ImageLoader // B-H-N-B
         private Button _btPrs => _codeParse.Button;
         #endregion
 
-        #region InputField
-        // 특수 토큰 컨트롤
         private InputField _nameField;
         private InputField _situField;
-
-        private Label _lblNam => _nameField.Header;
-        private Label _lblSit => _situField.Header;
-        private TextBox _tNam => _nameField.InputBox;
-        private TextBox _tSit => _situField.InputBox;
-        #endregion
 
         private Label _lblNum;
         private NumericUpDown _numSt;
@@ -53,8 +45,7 @@ namespace ImageLoader // B-H-N-B
         private Font _headerFont;
 
         // 툴바
-        private ToolStrip _tbl;
-        private ToolStripDropDownButton _tbtStn;
+        private ToolBar _toolBar;
 
         // 통신 및 토크나이저용
         private const string Ptn = @"\{([^}]+)\}";
@@ -186,49 +177,83 @@ namespace ImageLoader // B-H-N-B
 
         private void SetTlsBr()
         {
-            // 툴바
-            this._tbl.Name = "_tbl";
-            this._tbl.Dock = DockStyle.Top;
-            this._tbl.GripStyle = ToolStripGripStyle.Visible;
-            this._tbl.RenderMode = ToolStripRenderMode.System;
-
-            var tools = new Tools()
+            this._toolBar = new()
             {
-                Tool = new()
+                Name = "_tbl",
+                Dock = DockStyle.Top,
+                GripStyle = ToolStripGripStyle.Visible,
+                RenderMode = ToolStripRenderMode.System,
+
+                Tools = new List<Tools>()
                 {
-                    Name = Text = "설정",
-                    DisplayStyle = ToolStripItemDisplayStyle.Text,
-                    ShowDropDownArrow = false,
-                    Width = 80,
-                    Height = 20,
-                },
-                Items = new()
-                {
-                    new()
                     {
-                        Text = "작업 경로 설정",
-                        Padding = new Padding(1, 0, 1, 0),
+                        new Tools()
+                        {
+                            Tool = new ToolStripDropDownButton()
+                            {
+                                Name = "설정",
+                                Text = "설정",
+                                DisplayStyle = ToolStripItemDisplayStyle.Text,
+                                AutoToolTip = false,
+                                ShowDropDownArrow = false,
+                                Width = 80,
+                                Height = 20,
+                            },
+                            Items = new()
+                            {
+                                new()
+                                {
+                                    Name = "테마 변경",
+                                    Text = "테마 변경",
+                                    Padding = new Padding(1, 0, 1, 0),
+                                },
+                                new()
+                                {
+                                    Name = "테마 커스텀",
+                                    Text = "테마 커스텀",
+                                    Padding = new Padding(1, 0, 1, 0),
+                                },
+                                new()
+                                {
+                                    Name = "작업 경로 설정",
+                                    Text = "작업 경로 설정",
+                                    Padding = new Padding(1, 0, 1, 0),
+                                },
+                                new()
+                                {
+                                    Name = "프리셋 설정",
+                                    Text = "프리셋 설정",
+                                    Padding = new Padding(1, 0, 1, 0),
+                                },
+                            },
+                        }
                     },
-                    //new()
-                    //{
-
-                    //},
-                },
+                    {
+                        new Tools()
+                        {
+                            Tool = new ToolStripDropDownButton()
+                            {
+                                Name = "나가기",
+                                Text = "나가기",
+                                DisplayStyle = ToolStripItemDisplayStyle.Text,
+                                AutoToolTip = false,
+                                ShowDropDownArrow = false,
+                                Width = 80,
+                                Height = 20,
+                            },
+                            Items = new()
+                            {
+                                new()   
+                                {
+                                    Name = "종료",
+                                    Text = "종료",
+                                    Padding = new Padding(1, 0, 1, 0),
+                                },
+                            },
+                        }
+                    },
+                }
             };
-
-
-            this._tbtStn.DropDown.Padding = new Padding(0);
-            var temp = new ToolStripMenuItem();
-
-            this._tbtStn.DropDownItems.Add(temp);
-            this._tbtStn.Click += (_, _) =>
-            {
-                //MessageBox.Show("개발중");
-            };
-            
-
-            tools.MountTo(_tbl);
-            //this._tbl.Items.Add(this._tbtStn);
         }
         private void SetInstc()
         {
@@ -247,10 +272,6 @@ namespace ImageLoader // B-H-N-B
             this._numPl = new();
             this._btSt = new();
             this._btSp = new();
-
-
-            this._tbl = new();
-            this._tbtStn = new();
         }
         private void SetLabel()
         {
@@ -379,6 +400,7 @@ namespace ImageLoader // B-H-N-B
 
             this._baseLiner.MountTo(this.Controls);
             this._codeParse.MountTo(this.Controls);
+            this._toolBar.MountTo(this.Controls);
 
             // 특수 토큰 컨트롤
             this._nameField.MountTo(this.Controls);
@@ -394,16 +416,10 @@ namespace ImageLoader // B-H-N-B
             this.Controls.Add(this._btSt);
             this.Controls.Add(this._btSp);
             
-            // 툴바 컨트롤
-            this.Controls.Add(this._tbl);
-
             this.MinimumSize = new Size(524, 428);
 
             this.Name = "MainForm";
             this.Text = "이미지 플로우 v1.1";
-
-
-
         }
     }
     // Head
@@ -516,8 +532,8 @@ namespace ImageLoader // B-H-N-B
             {
                 BaseURL = _tBs.Text,
                 Code = _tIn.Text,
-                NameToken = _tNam.Text,
-                SituationToken = _tSit.Text,
+                NameToken = _nameField.InputBox.Text,
+                SituationToken = _situField.InputBox.Text,
                 St_Num = (int)_numSt.Value,
                 En_Num = (int)_numEn.Value,
                 Multi_Call_Num = (int)_numPl.Value
@@ -555,8 +571,8 @@ namespace ImageLoader // B-H-N-B
                 {
                     _tBs.Text = dat.BaseURL;
                     _tIn.Text = dat.Code;
-                    _tNam.Text = dat.NameToken;
-                    _tSit.Text = dat.SituationToken;
+                    _nameField.InputBox.Text = dat.NameToken;
+                    _situField.InputBox.Text = dat.SituationToken;
                     _numSt.Value = dat.St_Num;
                     _numEn.Value = dat.En_Num;
                     _numPl.Value = dat.Multi_Call_Num;
@@ -566,8 +582,8 @@ namespace ImageLoader // B-H-N-B
                 {
                     _tBs.Text = string.Empty;
                     _tIn.Text = string.Empty;
-                    _tNam.Text = string.Empty;
-                    _tSit.Text = string.Empty;
+                    _nameField.InputBox.Text = string.Empty;
+                    _situField.InputBox.Text = string.Empty;
 
                     _numSt.Value = 0;
                     _numEn.Value = 0;
@@ -645,8 +661,8 @@ namespace ImageLoader // B-H-N-B
             _tIn.Enabled = !running;
 
             // 특수/동적 컨트롤 활성화/비활성화
-            _tNam.Enabled = !running;
-            _tSit.Enabled = !running; // situation 텍스트박스
+            _nameField.InputBox.Enabled = !running;
+            _situField.InputBox.Enabled = !running; // situation 텍스트박스
             _numSt.Enabled = !running;
             _numEn.Enabled = !running;
             _numPl.Enabled = !running;
@@ -669,12 +685,12 @@ namespace ImageLoader // B-H-N-B
             var nameList = new List<string>();
             if (hasName)
             {
-                if (string.IsNullOrWhiteSpace(_tNam.Text))
+                if (string.IsNullOrWhiteSpace(_nameField.InputBox.Text))
                 {
                     MessageBox.Show("'{name}' 토큰이 있지만 이름 목록이 비어있습니다.", "입력 오류");
                     return jobs;
                 }
-                nameList.AddRange(_tNam.Text.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries));
+                nameList.AddRange(_nameField.InputBox.Text.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries));
             }
             else
             {
@@ -684,12 +700,12 @@ namespace ImageLoader // B-H-N-B
             var sitList = new List<string>();
             if (hasSit)
             {
-                if (string.IsNullOrWhiteSpace(_tSit.Text))
+                if (string.IsNullOrWhiteSpace(_situField.InputBox.Text))
                 {
                     MessageBox.Show("'{situation}' 토큰이 있지만 값이 비어있습니다.", "입력 오류");
                     return jobs;
                 }
-                sitList.AddRange(_tSit.Text.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries));
+                sitList.AddRange(_situField.InputBox.Text.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries));
             }
             else
             {

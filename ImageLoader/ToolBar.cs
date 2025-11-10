@@ -1,10 +1,17 @@
 ﻿namespace ImageLoader
 {
-    internal class ToolBar : ToolStrip, IControlMountable<ToolBar>
+    public class ToolBar : ToolStrip, IControlMountable<Control.ControlCollection>
     {
-        public void MountTo(ToolBar control)
+        public required List<Tools> Tools { get; set; }
+
+        public void MountTo(Control.ControlCollection control)
         {
-            
+            foreach (var tool in Tools)
+            {
+                tool.MountTo(this);
+            }
+
+            control.Add(this);
         }
     }
 }
