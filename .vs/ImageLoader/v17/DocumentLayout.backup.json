@@ -1,22 +1,14 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "C:\\Users\\admin\\Desktop\\Git\\External_Image_Loader\\",
+  "WorkspaceRootPath": "C:\\Users\\joey0\\OneDrive\\\uBC14\uD0D5 \uD654\uBA74\\\uCF54\uB529\\C#\\External_Image_Loader\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{C03833D9-ADEC-466C-B2B6-6E40506DB84D}|ImageLoader\\ImageLoader.csproj|c:\\users\\admin\\desktop\\git\\external_image_loader\\imageloader\\customlayout\\switchtools.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{C03833D9-ADEC-466C-B2B6-6E40506DB84D}|ImageLoader\\ImageLoader.csproj|solutionrelative:imageloader\\customlayout\\switchtools.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{C03833D9-ADEC-466C-B2B6-6E40506DB84D}|ImageLoader\\ImageLoader.csproj|c:\\users\\admin\\desktop\\git\\external_image_loader\\imageloader\\mainform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{C03833D9-ADEC-466C-B2B6-6E40506DB84D}|ImageLoader\\ImageLoader.csproj|c:\\users\\joey0\\onedrive\\\uBC14\uD0D5 \uD654\uBA74\\\uCF54\uB529\\c#\\external_image_loader\\imageloader\\mainform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{C03833D9-ADEC-466C-B2B6-6E40506DB84D}|ImageLoader\\ImageLoader.csproj|solutionrelative:imageloader\\mainform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{C03833D9-ADEC-466C-B2B6-6E40506DB84D}|ImageLoader\\ImageLoader.csproj|c:\\users\\admin\\desktop\\git\\external_image_loader\\imageloader\\customlayout\\tools.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{C03833D9-ADEC-466C-B2B6-6E40506DB84D}|ImageLoader\\ImageLoader.csproj|solutionrelative:imageloader\\customlayout\\tools.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{C03833D9-ADEC-466C-B2B6-6E40506DB84D}|ImageLoader\\ImageLoader.csproj|c:\\users\\admin\\desktop\\git\\external_image_loader\\imageloader\\customlayout\\toolbar.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{C03833D9-ADEC-466C-B2B6-6E40506DB84D}|ImageLoader\\ImageLoader.csproj|solutionrelative:imageloader\\customlayout\\toolbar.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{C03833D9-ADEC-466C-B2B6-6E40506DB84D}|ImageLoader\\ImageLoader.csproj|c:\\users\\joey0\\onedrive\\\uBC14\uD0D5 \uD654\uBA74\\\uCF54\uB529\\c#\\external_image_loader\\imageloader\\layout\\exifpanel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C03833D9-ADEC-466C-B2B6-6E40506DB84D}|ImageLoader\\ImageLoader.csproj|solutionrelative:imageloader\\layout\\exifpanel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -26,58 +18,33 @@
       "DocumentGroups": [
         {
           "DockedWidth": 221,
-          "SelectedChildIndex": 2,
+          "SelectedChildIndex": 0,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "ToolBar.cs",
-              "DocumentMoniker": "C:\\Users\\admin\\Desktop\\Git\\External_Image_Loader\\ImageLoader\\CustomLayout\\ToolBar.cs",
-              "RelativeDocumentMoniker": "ImageLoader\\CustomLayout\\ToolBar.cs",
-              "ToolTip": "C:\\Users\\admin\\Desktop\\Git\\External_Image_Loader\\ImageLoader\\CustomLayout\\ToolBar.cs",
-              "RelativeToolTip": "ImageLoader\\CustomLayout\\ToolBar.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAADwvwAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-11-10T14:30:31.474Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "Tools.cs",
-              "DocumentMoniker": "C:\\Users\\admin\\Desktop\\Git\\External_Image_Loader\\ImageLoader\\CustomLayout\\Tools.cs",
-              "RelativeDocumentMoniker": "ImageLoader\\CustomLayout\\Tools.cs",
-              "ToolTip": "C:\\Users\\admin\\Desktop\\Git\\External_Image_Loader\\ImageLoader\\CustomLayout\\Tools.cs",
-              "RelativeToolTip": "ImageLoader\\CustomLayout\\Tools.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAACcAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-11-10T14:26:34.676Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
               "DocumentIndex": 0,
-              "Title": "SwitchTools.cs",
-              "DocumentMoniker": "C:\\Users\\admin\\Desktop\\Git\\External_Image_Loader\\ImageLoader\\CustomLayout\\SwitchTools.cs",
-              "RelativeDocumentMoniker": "ImageLoader\\CustomLayout\\SwitchTools.cs",
-              "ToolTip": "C:\\Users\\admin\\Desktop\\Git\\External_Image_Loader\\ImageLoader\\CustomLayout\\SwitchTools.cs",
-              "RelativeToolTip": "ImageLoader\\CustomLayout\\SwitchTools.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAB0AAAABAAAAAAAAAA==",
+              "Title": "MainForm.cs",
+              "DocumentMoniker": "C:\\Users\\joey0\\OneDrive\\\uBC14\uD0D5 \uD654\uBA74\\\uCF54\uB529\\C#\\External_Image_Loader\\ImageLoader\\MainForm.cs",
+              "RelativeDocumentMoniker": "ImageLoader\\MainForm.cs",
+              "ToolTip": "C:\\Users\\joey0\\OneDrive\\\uBC14\uD0D5 \uD654\uBA74\\\uCF54\uB529\\C#\\External_Image_Loader\\ImageLoader\\MainForm.cs*",
+              "RelativeToolTip": "ImageLoader\\MainForm.cs*",
+              "ViewState": "AgIAANADAAAAAAAAAAAiwOwDAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-11-10T13:54:12.807Z",
+              "WhenOpened": "2025-11-06T03:30:16.788Z",
+              "IsPinned": true,
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 1,
-              "Title": "MainForm.cs",
-              "DocumentMoniker": "C:\\Users\\admin\\Desktop\\Git\\External_Image_Loader\\ImageLoader\\MainForm.cs",
-              "RelativeDocumentMoniker": "ImageLoader\\MainForm.cs",
-              "ToolTip": "C:\\Users\\admin\\Desktop\\Git\\External_Image_Loader\\ImageLoader\\MainForm.cs",
-              "RelativeToolTip": "ImageLoader\\MainForm.cs",
-              "ViewState": "AgIAAC4AAAAAAAAAAAAAAGYBAAAAAAAAAAAAAA==",
+              "Title": "ExifPanel.cs",
+              "DocumentMoniker": "C:\\Users\\joey0\\OneDrive\\\uBC14\uD0D5 \uD654\uBA74\\\uCF54\uB529\\C#\\External_Image_Loader\\ImageLoader\\Layout\\ExifPanel.cs",
+              "RelativeDocumentMoniker": "ImageLoader\\Layout\\ExifPanel.cs",
+              "ToolTip": "C:\\Users\\joey0\\OneDrive\\\uBC14\uD0D5 \uD654\uBA74\\\uCF54\uB529\\C#\\External_Image_Loader\\ImageLoader\\Layout\\ExifPanel.cs",
+              "RelativeToolTip": "ImageLoader\\Layout\\ExifPanel.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAIAAAAqAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-11-06T03:30:16.788Z",
+              "WhenOpened": "2025-11-10T14:54:07.852Z",
               "EditorCaption": ""
             }
           ]

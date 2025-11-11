@@ -967,9 +967,38 @@ namespace ImageLoader // B-H-N-B
                                     Text = "EXIF 상세 정보",
                                     Width = 600,
                                     Height = 900,
-                                    Padding = new Padding(10),
                                     BackColor = COLOR.NAI_DARK,
 
+                                    ToolBars = new SwitchTools
+                                    {
+                                        Name = "_exifPanelToolBar",
+                                        Dock = DockStyle.Top,
+                                        GripStyle = ToolStripGripStyle.Visible,
+                                        RenderMode = ToolStripRenderMode.System,
+
+                                        Buttons = new List<ToolStripButton>
+                                        {
+                                            { new ToolStripButton("Simplified")
+                                                {
+                                                    AutoToolTip = false
+                                                }
+                                            },
+                                            { new ToolStripButton("Raw Parameters")
+                                                {
+                                                    AutoToolTip = false
+                                                }
+                                            },
+                                        }
+                                    },
+                                    BackGround = new Form
+                                    {
+                                        Padding = new Padding(10, 10, 10, 10),
+                                        Dock = DockStyle.Fill,
+                                        TabStop = false,    // NOTE: 캐럿 끄는 플래그
+                                        Font = new Font("Consolas", 9.75f),
+                                        //Location = new Point(0, 20),
+                                        BackColor = COLOR.NAI_DARK,
+                                    },
                                     Prompts = new RichTextBox
                                     {
                                         Dock = DockStyle.Fill,
@@ -983,14 +1012,6 @@ namespace ImageLoader // B-H-N-B
                                         BackColor = COLOR.NAI_DARK,
                                     },
 
-                                    ToolBars = new SwitchTools
-                                    {
-                                        Buttons = new List<ToolStripButton>
-                                        {
-                                            { new ToolStripButton("Simplified") },
-                                            { new ToolStripButton("Raw Parameters") },
-                                        }
-                                    }
                                 };
 
                                 exifPanel.Prompts.ToExifPanel(data);

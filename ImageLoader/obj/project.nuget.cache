@@ -1,16 +1,16 @@
 {
   "version": 2,
-  "dgSpecHash": "ALbPHNYHw4o=",
+  "dgSpecHash": "LWFDxUfWCwc=",
   "success": true,
-  "projectFilePath": "C:\\Users\\Administrator\\Desktop\\정호준\\External_Image_Loader\\ImageLoader\\ImageLoader.csproj",
+  "projectFilePath": "C:\\Users\\joey0\\OneDrive\\바탕 화면\\코딩\\C#\\External_Image_Loader\\ImageLoader\\ImageLoader.csproj",
   "expectedPackageFiles": [
-    "C:\\Users\\Administrator\\.nuget\\packages\\magick.net-q8-anycpu\\14.9.1\\magick.net-q8-anycpu.14.9.1.nupkg.sha512",
-    "C:\\Users\\Administrator\\.nuget\\packages\\magick.net.core\\14.9.1\\magick.net.core.14.9.1.nupkg.sha512",
-    "C:\\Users\\Administrator\\.nuget\\packages\\magick.net.systemdrawing\\8.0.12\\magick.net.systemdrawing.8.0.12.nupkg.sha512",
-    "C:\\Users\\Administrator\\.nuget\\packages\\metadataextractor\\2.9.0\\metadataextractor.2.9.0.nupkg.sha512",
-    "C:\\Users\\Administrator\\.nuget\\packages\\microsoft.win32.systemevents\\8.0.0\\microsoft.win32.systemevents.8.0.0.nupkg.sha512",
-    "C:\\Users\\Administrator\\.nuget\\packages\\system.drawing.common\\8.0.20\\system.drawing.common.8.0.20.nupkg.sha512",
-    "C:\\Users\\Administrator\\.nuget\\packages\\xmpcore\\6.1.10.1\\xmpcore.6.1.10.1.nupkg.sha512"
+    "C:\\Users\\joey0\\.nuget\\packages\\magick.net-q8-anycpu\\14.9.1\\magick.net-q8-anycpu.14.9.1.nupkg.sha512",
+    "C:\\Users\\joey0\\.nuget\\packages\\magick.net.core\\14.9.1\\magick.net.core.14.9.1.nupkg.sha512",
+    "C:\\Users\\joey0\\.nuget\\packages\\magick.net.systemdrawing\\8.0.12\\magick.net.systemdrawing.8.0.12.nupkg.sha512",
+    "C:\\Users\\joey0\\.nuget\\packages\\metadataextractor\\2.9.0\\metadataextractor.2.9.0.nupkg.sha512",
+    "C:\\Users\\joey0\\.nuget\\packages\\microsoft.win32.systemevents\\8.0.0\\microsoft.win32.systemevents.8.0.0.nupkg.sha512",
+    "C:\\Users\\joey0\\.nuget\\packages\\system.drawing.common\\8.0.20\\system.drawing.common.8.0.20.nupkg.sha512",
+    "C:\\Users\\joey0\\.nuget\\packages\\xmpcore\\6.1.10.1\\xmpcore.6.1.10.1.nupkg.sha512"
   ],
   "logs": []
 }
