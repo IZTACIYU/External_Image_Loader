@@ -961,32 +961,41 @@ namespace ImageLoader // B-H-N-B
 
                             if (data != null)
                             {
-                                var exifForm = new Form
+
+                                var exifPanel = new ExifPanel
                                 {
                                     Text = "EXIF 상세 정보",
                                     Width = 600,
                                     Height = 900,
                                     Padding = new Padding(10),
                                     BackColor = COLOR.NAI_DARK,
+
+                                    Prompts = new RichTextBox
+                                    {
+                                        Dock = DockStyle.Fill,
+                                        Multiline = true,
+                                        ReadOnly = true,
+                                        TabStop = false,    // NOTE: 캐럿 끄는 플래그
+                                        ScrollBars = RichTextBoxScrollBars.Vertical, // TODO: 이거 끄는법
+                                        Font = new Font("Consolas", 9.75f),
+                                        BorderStyle = BorderStyle.None,
+                                        //Location = new Point(0, 20),
+                                        BackColor = COLOR.NAI_DARK,
+                                    },
+
+                                    ToolBars = new SwitchTools
+                                    {
+                                        Buttons = new List<ToolStripButton>
+                                        {
+                                            { new ToolStripButton("Simplified") },
+                                            { new ToolStripButton("Raw Parameters") },
+                                        }
+                                    }
                                 };
 
-                                // 텍스트박스 생성
-                                var txtExif = new RichTextBox
-                                {
-                                    Dock = DockStyle.Fill,
-                                    Multiline = true,
-                                    ReadOnly = true,
-                                    TabStop = false,    // NOTE: 캐럿 끄는 플래그
-                                    ScrollBars = RichTextBoxScrollBars.Vertical, // TODO: 이거 끄는법
-                                    Font = new Font("Consolas", 9.75f),
-                                    BorderStyle = BorderStyle.None,
-                                    BackColor = COLOR.NAI_DARK,
-                                    // SelectionCharOffset = 5
-                                };
-                                txtExif.ToExifPanel(data);
-
-                                exifForm.Controls.Add(txtExif);
-                                exifForm.Show();
+                                exifPanel.Prompts.ToExifPanel(data);
+                                exifPanel.Commit();
+                                exifPanel.Show();
                             }
                             else
                             {

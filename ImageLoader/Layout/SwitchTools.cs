@@ -1,13 +1,14 @@
 ﻿namespace ImageLoader
 {
-    public class SwitchTools : IControlMountable<ToolStrip>, IItemProvider<ToolStripButton>
+    public class SwitchTools : ToolStrip, IControlMountable<Control.ControlCollection>, IItemProvider<ToolStripButton>
     {
         public required List<ToolStripButton> Buttons { get; set; }
 
-        public void MountTo(ToolStrip control)
+        public void MountTo(Control.ControlCollection control)
         {
             foreach (var button in Buttons)
-                control.Items.Add(button);
+                this.Items.Add(button);
+            control.Add(this);
         }
 
         public ToolStripButton GetItem(string name)
