@@ -3,7 +3,6 @@ using MetadataExtractor; // EXIF 읽기
 using System.Diagnostics;
 using System.Text.Json;
 using System.Text.RegularExpressions;
-
 namespace ImageLoader // B-H-N-B
 {
     // Note
@@ -962,7 +961,7 @@ namespace ImageLoader // B-H-N-B
                             if (data != null)
                             {
 
-                                var exifPanel = new ExifPanel
+                                var exifPanel = new ExifWindow
                                 {
                                     Text = "EXIF 상세 정보",
                                     Width = 600,
@@ -973,26 +972,37 @@ namespace ImageLoader // B-H-N-B
                                     {
                                         Name = "_exifPanelToolBar",
                                         Dock = DockStyle.Top,
-                                        GripStyle = ToolStripGripStyle.Visible,
-                                        RenderMode = ToolStripRenderMode.System,
+                                        GripStyle = ToolStripGripStyle.Hidden,
+                                        BackColor = COLOR.NAI_DARK,
+                                        //RenderMode = ToolStripRenderMode.System,
 
-                                        Buttons = new List<ToolStripButton>
+                                        Buttons = new List<Switch>
                                         {
-                                            { new ToolStripButton("Simplified")
+                                            { new Switch()
                                                 {
-                                                    AutoToolTip = false
+                                                    Code = "Simplified",
+                                                    Name = "Simplified",
+                                                    Text = "Simplified",
+                                                    AutoToolTip = false,
+                                                    BackColor=COLOR.NAI_BUTTON,
+                                                    ForeColor = COLOR.NAI_VALUE,
                                                 }
                                             },
-                                            { new ToolStripButton("Raw Parameters")
+                                            { new Switch()
                                                 {
-                                                    AutoToolTip = false
+                                                    Code = "Raw Parameters",
+                                                    Name = "Raw Parameters",
+                                                    Text = "Raw Parameters",
+                                                    AutoToolTip = false,
+                                                    BackColor=COLOR.NAI_BUTTON,
+                                                    ForeColor = COLOR.NAI_VALUE,
                                                 }
                                             },
                                         }
                                     },
-                                    BackGround = new Form
+                                    BackGround = new Panel
                                     {
-                                        Padding = new Padding(10, 10, 10, 10),
+                                        Padding = new Padding(10, 30, 10, 10),
                                         Dock = DockStyle.Fill,
                                         TabStop = false,    // NOTE: 캐럿 끄는 플래그
                                         Font = new Font("Consolas", 9.75f),
@@ -1011,7 +1021,6 @@ namespace ImageLoader // B-H-N-B
                                         //Location = new Point(0, 20),
                                         BackColor = COLOR.NAI_DARK,
                                     },
-
                                 };
 
                                 exifPanel.Prompts.ToExifPanel(data);

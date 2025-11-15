@@ -1,8 +1,8 @@
 ﻿namespace ImageLoader
 {
-    public class SwitchTools : ToolStrip, IControlMountable<Control.ControlCollection>, IItemProvider<ToolStripButton>
+    public class SwitchTools : ToolStrip, IControlMountable<Control.ControlCollection>, IItemProvider<Switch>
     {
-        public required List<ToolStripButton> Buttons { get; set; }
+        public required List<Switch> Buttons { get; set; }
 
         public void MountTo(Control.ControlCollection control)
         {
@@ -11,9 +11,9 @@
             control.Add(this);
         }
 
-        public ToolStripButton GetItem(string name)
+        public Switch GetItem(string name)
         {
-            ToolStripButton value;
+            Switch value;
 
             try
             {
@@ -22,7 +22,7 @@
             catch
             {
                 MessageBox.Show("NAME TAG DOES NOT EXISTS");
-                return new();
+                return new() { Code = "ERROR" };
             }
 
             return value;
