@@ -44,7 +44,7 @@
 
             try
             {
-                value = Items.First(item => item.Name == name);
+                value = Items.FirstOrDefault(item => item.Name == name);
             }
             catch
             {

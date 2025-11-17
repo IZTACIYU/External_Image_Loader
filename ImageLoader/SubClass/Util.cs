@@ -96,5 +96,7 @@
                 richText.Select(0, 0);
             }
         }
+
+        static public void Debug(string? context = "확인") => MessageBox.Show(context);
     }
 }

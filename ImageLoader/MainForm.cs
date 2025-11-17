@@ -3,424 +3,58 @@ using MetadataExtractor; // EXIF 읽기
 using System.Diagnostics;
 using System.Text.Json;
 using System.Text.RegularExpressions;
-namespace ImageLoader // B-H-N-B
+// 혅재 코드에 선언되었지만 파일에 존재 하지 않는 클래스는 전부 동일 네임스페이스에 속하는 다른 cs문서에 작성되어있음
+namespace ImageLoader   // 거의 완료되어 더이상 건들지 않는 부분을 모은 것
 {
-    // Note
     public partial class MainForm
     {
-        private System.ComponentModel.IContainer components = null;
-
-        #region LabelLinear로 교체 대상
-        private LabelLinear _baseLiner;
-        private LabelLinear _codeParse;
-
-        private Label _lBs => _baseLiner.InputField.Header;
-        private TextBox _tBs => _baseLiner.InputField.InputBox;
-        private Button _btSav => _baseLiner.Button;
-
-        private Label _lIn => _codeParse.InputField.Header;
-        private TextBox _tIn => _codeParse.InputField.InputBox;
-        private Button _btPrs => _codeParse.Button;
-        #endregion
-
-        private InputField _nameField;
-        private InputField _situField;
-
-        private Label _lblNum;
-        private NumericUpDown _numSt;
-        private NumericUpDown _numEn;
-
-        // 실행 컨트롤
-        private Label _lblPl;
-        private NumericUpDown _numPl;
-        private Button _btSt;
-        private Button _btSp;
-
-        private Panel _pnlCt;
-        private FlowLayoutPanel _flp;
-
-        // 헤더 공통 폰트
-        private Font _headerFont;
-
-        // 툴바
-        private ToolBar _toolBar;
-
-        // 통신 및 토크나이저용
-        private const string Ptn = @"\{([^}]+)\}";
-        private readonly HttpClient _http = new()
+        public string IdentifyModel(string software, string prompt)
         {
-            Timeout = TimeSpan.FromSeconds(15)
-        };
-        private CancellationTokenSource? _cts;
-    }
+            string nameTag = "";
+            if (string.IsNullOrEmpty(software) || string.IsNullOrEmpty(prompt))
+                return software;
 
-    public partial class MainForm
-    {
-        private void SetLiner()
-        {
-            this._baseLiner = new()
+            var sf = software.Split(' ');
+            var pr = prompt.Split(',');
+
+            if (sf.Length == 0 || pr.Length == 0) return software;
+
+            if (sf.Last() == "37C2B166")
+                nameTag = software + "(NAI Diffusion Furry V3)";
+            else if (sf.Last() == "7BCCAA2C")
+                nameTag = software + "(NAI Diffusion Anime V3)";
+            else if (sf.Last() == "7ABFFA2A")
             {
-                InputField = new()
-                {
-                    Header = new()
-                    {
-                        AutoSize = true,
-                        Location = new Point(9, 26),
-                        Name = "_lBs",
-                        Size = new Size(70, 14),
-                        Text = "베이스 URL:",
-                        Font = _headerFont,
-                    },
-                    InputBox = new()
-                    {
-                        Anchor = (AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right),
-                        Location = new Point(84, 22),
-                        Name = "_tBs",
-                        Size = new Size(336, 21),
-                        TabIndex = 0,
-                        PlaceholderText = "변하지 않는 고정 링크",
-                    }
-                },
-                Button = new()
-                {
-                    Anchor = (AnchorStyles.Top | AnchorStyles.Right),
-                    Location = new Point(422, 21),
-                    Name = "_btSav",
-                    Size = new Size(75, 20),
-                    TabIndex = 1,
-                    Text = "프리셋",
-                    UseVisualStyleBackColor = true,
-                }
-            };
-            this._codeParse = new()
+                if (pr[0] == "fur dataset")
+                    nameTag = software + "(NAI Diffusion V4 Curated + Furry)";
+                else
+                    nameTag = software + "(NAI Diffusion V4 Curated)";
+            }
+            else if (sf.Last() == "37442FCA")
             {
-                InputField = new()
-                {
-                    Header = new()
-                    {
-                        AutoSize = true,
-                        Location = new Point(9, 48),
-                        Name = "_lIn",
-                        Size = new Size(70, 14),
-                        Text = "코드 부분   :",
-                        Font = _headerFont,
-                    },
-                    InputBox = new()
-                    {
-                        Anchor = (AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right),
-                        Location = new Point(84, 45),
-                        Name = "_tIn",
-                        Size = new Size(336, 21),
-                        TabIndex = 2,
-                        PlaceholderText = "{토큰명}입력 후 파싱, name, num, situation은 특수 토큰",
-                    }
-                },
-                Button = new()
-                {
-                    Anchor = (AnchorStyles.Top | AnchorStyles.Right),
-                    Location = new Point(422, 44),
-                    Name = "_btPrs",
-                    Size = new Size(75, 20),
-                    TabIndex = 3,
-                    Text = "토큰 파싱",
-                    UseVisualStyleBackColor = true,
-                }
-            };
-        }
-        private void SetIpFld()
-        {
-            this._nameField = new()
+                if (pr[0] == "fur dataset")
+                    nameTag = software + "(NAI Diffusion V4 Full + Furry)";
+                else
+                    nameTag = software + "(NAI Diffusion V4 Full)";
+            }
+            else if (sf.Last() == "C02D4F98")
             {
-                Header = new()
-                {
-                    AutoSize = true,
-                    Location = new Point(9, 70),
-                    Name = "_lblNam",
-                    Size = new Size(70, 14),
-                    Text = "이름 목록   :",
-                    Font = _headerFont,
-                },
-                InputBox = new()
-                {
-                    Anchor = (AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right),
-                    Location = new Point(84, 67),
-                    Name = "_tNam",
-                    Size = new Size(412, 21),
-                    TabIndex = 4,
-                    PlaceholderText = "{name} 토큰 값 (쉼표로 구분)",
-                }
-            };
-            this._situField = new()
+                if (pr[0] == "fur dataset")
+                    nameTag = software + "(NAI Diffusion V4.5 Curated + Furry)";
+                else
+                    nameTag = software + "(NAI Diffusion V4.5 Curated)";
+            }
+            else if (sf.Last() == "4BDE2A90")
             {
-                Header = new()
-                {
-                    AutoSize = true,
-                    Location = new Point(9, 92),
-                    Name = "_lblSit",
-                    Size = new Size(70, 14),
-                    Text = "상황 목록   :",
-                    Font = _headerFont,
-                },
-                InputBox = new()
-                {
-                    Anchor = (AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right),
-                    Location = new Point(84, 89),
-                    Name = "_tSit",
-                    Size = new Size(412, 21),
-                    TabIndex = 5,
-                    PlaceholderText = "{situation} 토큰 값 (쉼표로 구분)",
-                }
-            };
-        }
+                if (pr[0] == "fur dataset")
+                    nameTag = software + "(NAI Diffusion V4.5 Full + Furry)";
+                else
+                    nameTag = software + "(NAI Diffusion V4.5 Full)";
+            }
 
-        private void SetTlsBr()
-        {
-            this._toolBar = new()
-            {
-                Name = "_tbl",
-                Dock = DockStyle.Top,
-                GripStyle = ToolStripGripStyle.Visible,
-                RenderMode = ToolStripRenderMode.System,
-
-                Tools = new List<Tools>()
-                {
-                    {
-                        new Tools()
-                        {
-                            Tool = new ToolStripDropDownButton()
-                            { 
-                                Name = "설정",
-                                Text = "설정",
-                                DisplayStyle = ToolStripItemDisplayStyle.Text,
-                                AutoToolTip = false,
-                                ShowDropDownArrow = false,
-                                Width = 80,
-                                Height = 20,
-                            },
-                            Items = new()
-                            {
-                                new()
-                                {
-                                    Name = "테마 변경",
-                                    Text = "테마 변경",
-                                    Padding = new Padding(1, 0, 1, 0),
-                                },
-                                new()
-                                {
-                                    Name = "테마 커스텀",
-                                    Text = "테마 커스텀",
-                                    Padding = new Padding(1, 0, 1, 0),
-                                },
-                                new()
-                                {
-                                    Name = "작업 경로 설정",
-                                    Text = "작업 경로 설정",
-                                    Padding = new Padding(1, 0, 1, 0),
-                                },
-                                new()
-                                {
-                                    Name = "프리셋 설정",
-                                    Text = "프리셋 설정",
-                                    Padding = new Padding(1, 0, 1, 0),
-                                },
-                            },
-                        }
-                    },
-                    {
-                        new Tools()
-                        {
-                            Tool = new ToolStripDropDownButton()
-                            {
-                                Name = "나가기",
-                                Text = "나가기",
-                                DisplayStyle = ToolStripItemDisplayStyle.Text,
-                                AutoToolTip = false,
-                                ShowDropDownArrow = false,
-                                Width = 80,
-                                Height = 20,
-                            },
-                            Items = new()
-                            {
-                                new()   
-                                {
-                                    Name = "종료",
-                                    Text = "종료",
-                                    Padding = new Padding(1, 0, 1, 0),
-                                },
-                            },
-                        }
-                    },
-                }
-            };
-        }
-        private void SetInstc()
-        {
-            this._headerFont = new(Control.DefaultFont, FontStyle.Bold);
-            
-            this._pnlCt = new();
-            this._flp = new();
-
-            // 특수 토큰
-            this._lblNum = new();
-            this._numSt = new();
-            this._numEn = new();
-
-            // 실행
-            this._lblPl = new();
-            this._numPl = new();
-            this._btSt = new();
-            this._btSp = new();
-        }
-        private void SetLabel()
-        {
-
-
-            this._lblNum.AutoSize = true;
-            this._lblNum.Location = new Point(9, 120);
-            this._lblNum.Name = "_lblNum";
-            this._lblNum.Size = new Size(70, 14);
-            this._lblNum.Text = "번호 범위   :";
-            this._lblNum.Font = _headerFont;
-
-            this._lblPl.AutoSize = true;
-            this._lblPl.Location = new Point(9, 145);
-            this._lblPl.Name = "_lblPl";
-            this._lblPl.Size = new Size(70, 14);
-            this._lblPl.Text = "동시 요청   :";
-            this._lblPl.Font = _headerFont;
-
-
-            //this._lBs.ForeColor = COLOR.NAI_HEADER;
-            //this._lIn.ForeColor = COLOR.NAI_HEADER;
-            //this._lblNam.ForeColor = COLOR.NAI_HEADER;
-            //this._lblSit.ForeColor = COLOR.NAI_HEADER;
-            //this._lblNum.ForeColor = COLOR.NAI_HEADER;
-            //this._lblPl.ForeColor = COLOR.NAI_HEADER;
-
-            //this._lBs.BackColor = COLOR.NAI_HEADER;
-            //this._lIn.BackColor = COLOR.NAI_HEADER;
-            //this._lblNam.BackColor = COLOR.NAI_HEADER;
-            //this._lblSit.BackColor = COLOR.NAI_HEADER;
-            //this._lblNum.BackColor = COLOR.NAI_HEADER;
-            //this._lblPl.BackColor = COLOR.NAI_HEADER;
-        }
-        private void SetBtnID()
-        {
-            // Row: Start
-            this._btSt.Anchor = (AnchorStyles.Top | AnchorStyles.Right);
-            this._btSt.Location = new Point(342, 140);
-            this._btSt.Name = "_btSt";
-            this._btSt.Size = new Size(75, 20);
-            this._btSt.TabIndex = 9;
-            this._btSt.Text = "시작";
-            this._btSt.UseVisualStyleBackColor = true;
-
-            // Row: Stop
-            this._btSp.Anchor = (AnchorStyles.Top | AnchorStyles.Right);
-            this._btSp.Location = new Point(422, 140);
-            this._btSp.Name = "_btSp";
-            this._btSp.Size = new Size(75, 20);
-            this._btSp.TabIndex = 10;
-            this._btSp.Text = "중지";
-            this._btSp.Enabled = false;
-            this._btSp.UseVisualStyleBackColor = true;
-        }
-        private void SetNumic()
-        {
-            // Row: Start Num
-            this._numSt.Anchor = (AnchorStyles.Top | AnchorStyles.Left);
-            this._numSt.Location = new Point(84, 117);
-            this._numSt.Name = "_numSt";
-            this._numSt.Size = new Size(100, 20);
-            this._numSt.TabIndex = 6;
-            this._numSt.Maximum = 1000000;
-
-            // Row: End Num
-            this._numEn.Anchor = (AnchorStyles.Top | AnchorStyles.Left);
-            this._numEn.Location = new Point(194, 117);
-            this._numEn.Name = "_numEn";
-            this._numEn.Size = new Size(100, 20);
-            this._numEn.TabIndex = 7;
-            this._numEn.Maximum = 1000000;
-            this._numEn.Value = 0;
-
-            // Row: Parallel & Start/Stop
-            this._numPl.Anchor = (AnchorStyles.Top | AnchorStyles.Left);
-            this._numPl.Location = new Point(84, 141);
-            this._numPl.Name = "_numPl";
-            this._numPl.Size = new Size(70, 20);
-            this._numPl.TabIndex = 8;
-            this._numPl.Minimum = 1;
-            this._numPl.Maximum = 64;
-            this._numPl.Value = 1;
-        }
-
-        private void SetBtFnc()
-        {
-            this._btSav.Click += new EventHandler((_, _) => this.SaveConfig());
-            this._btPrs.Click += new EventHandler((_, _) => this.RunParsing());
-
-            // 시작/중지 버튼 함수
-            this._btSt.Click += new EventHandler((_, _) => this.StartFetching());
-            this._btSp.Click += new EventHandler((_, _) => this.StopFetching());
-        }
-        private void SetPnCnt()
-        {
-            this._pnlCt.Anchor = (AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right);
-            this._pnlCt.Location = new Point(12, 162);
-            this._pnlCt.Name = "_pnlCt";
-            this._pnlCt.Size = new Size(484, 218);
-            this._pnlCt.TabIndex = 11;
-            this._pnlCt.BorderStyle = BorderStyle.FixedSingle;
-
-            this._pnlCt.AutoScroll = true;
-        }
-        private void SetFlPnl()
-        {
-            this._flp.Dock = DockStyle.Top;
-            this._flp.AutoScroll = false;
-            this._flp.WrapContents = true;
-            this._flp.AutoSize = true;
-            this._flp.FlowDirection = FlowDirection.LeftToRight;
-            this._flp.Location = new Point(0, 0);
-            this._flp.Name = "_flp";
-            this._flp.Size = new Size(458, 0);
-        }
-        private void SetMForm()
-        {
-            // 다크모드 용
-            //this.BackColor = COLOR.NAI_DARK;
-
-            this.AutoScaleDimensions = new SizeF(7F, 12F);
-            this.AutoScaleMode = AutoScaleMode.Font;
-            this.ClientSize = new Size(480, 260);
-
-
-            this._baseLiner.MountTo(this.Controls);
-            this._codeParse.MountTo(this.Controls);
-            this._toolBar.MountTo(this.Controls);
-
-            // 특수 토큰 컨트롤
-            this._nameField.MountTo(this.Controls);
-            this._situField.MountTo(this.Controls);
-
-            this.Controls.Add(this._lblNum);
-            this.Controls.Add(this._numSt);
-            this.Controls.Add(this._numEn);
-
-            // 실행 컨트롤
-            this.Controls.Add(this._lblPl);
-            this.Controls.Add(this._numPl);
-            this.Controls.Add(this._btSt);
-            this.Controls.Add(this._btSp);
-            
-            this.MinimumSize = new Size(524, 428);
-
-            this.Name = "MainForm";
-            this.Text = "이미지 플로우 v1.1";
+            return string.IsNullOrEmpty(nameTag) ? software : nameTag;
         }
     }
-    // Head
     public partial class MainForm
     {
         protected override void Dispose(bool disposing)
@@ -431,7 +65,7 @@ namespace ImageLoader // B-H-N-B
             }
             base.Dispose(disposing);
         }
-        private void InitializeComponent()
+        private void Initialize()
         {
             this.SetInstc();
             this.SetLiner();
@@ -454,16 +88,14 @@ namespace ImageLoader // B-H-N-B
             this.PerformLayout();
         }
     }
-
-
     // Body Combined With Head
     public partial class MainForm : Form
     {
-
         public MainForm()
         {
-            this.InitializeComponent();
-            this.LoadConfig();
+            this.Initialize();
+            this.LoadLoaderConfig();
+            this.LoadPathConfig(this.config);
         }
 
         private void RunParsing()
@@ -524,77 +156,6 @@ namespace ImageLoader // B-H-N-B
                 lbl.Width = maxW;
             }
         }
-        private void SaveConfig()
-        {
-            var dat = new SimpleSaveForm
-            {
-                BaseURL = _tBs.Text,
-                Code = _tIn.Text,
-                NameToken = _nameField.InputBox.Text,
-                SituationToken = _situField.InputBox.Text,
-                St_Num = (int)_numSt.Value,
-                En_Num = (int)_numEn.Value,
-                Multi_Call_Num = (int)_numPl.Value
-            };
-
-            var opt = new JsonSerializerOptions { WriteIndented = true };
-            var json = JsonSerializer.Serialize(dat, opt);
-
-            try
-            {
-                var exeDir = Path.GetDirectoryName(Application.ExecutablePath);
-                var fPath = Path.Combine(exeDir, "lnkConfig.json");
-
-                File.WriteAllText(fPath, json);
-                MessageBox.Show($"설정이 저장되었습니다.\n{fPath}", "저장 완료");
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"저장 중 오류가 발생했습니다.\n{ex.Message}", "오류");
-            }
-        }
-        private void LoadConfig()
-        {
-            var exeDir = Path.GetDirectoryName(Application.ExecutablePath);
-            var fPath = Path.Combine(exeDir, "lnkConfig.json");
-
-            if (!File.Exists(fPath)) return;
-
-            try
-            {
-                var json = File.ReadAllText(fPath);
-                var dat = JsonSerializer.Deserialize<SimpleSaveForm>(json);
-
-                if (dat != null)
-                {
-                    _tBs.Text = dat.BaseURL;
-                    _tIn.Text = dat.Code;
-                    _nameField.InputBox.Text = dat.NameToken;
-                    _situField.InputBox.Text = dat.SituationToken;
-                    _numSt.Value = dat.St_Num;
-                    _numEn.Value = dat.En_Num;
-                    _numPl.Value = dat.Multi_Call_Num;
-
-                }
-                else
-                {
-                    _tBs.Text = string.Empty;
-                    _tIn.Text = string.Empty;
-                    _nameField.InputBox.Text = string.Empty;
-                    _situField.InputBox.Text = string.Empty;
-
-                    _numSt.Value = 0;
-                    _numEn.Value = 0;
-                    _numPl.Value = 1;
-
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"설정 파일 로드 실패:\n{ex.Message}", "로드 오류");
-            }
-        }
-
 
         private async void StartFetching()
         {
@@ -928,14 +489,14 @@ namespace ImageLoader // B-H-N-B
                 var viewer = new Form { Text = $"{title} - {job.Url}", Width = 900, Height = 700 };
                 var pic = new PictureBox { Dock = DockStyle.Fill, SizeMode = PictureBoxSizeMode.Zoom, Image = img };
 
-               // 버튼 정렬 패널
-               var pnlBot = new FlowLayoutPanel
-               {
-                   Dock = DockStyle.Bottom,
-                   FlowDirection = FlowDirection.LeftToRight,
-                   AutoSize = true,
-                   Padding = new Padding(5)
-               };
+                // 버튼 정렬 패널
+                var pnlBot = new FlowLayoutPanel
+                {
+                    Dock = DockStyle.Bottom,
+                    FlowDirection = FlowDirection.LeftToRight,
+                    AutoSize = true,
+                    Padding = new Padding(5)
+                };
 
                 // 버튼 생성
                 var btOpen = new Button { Text = "브라우저로 열기", Width = 120 };
@@ -1038,7 +599,10 @@ namespace ImageLoader // B-H-N-B
                 var btSave = new Button { Text = "다운로드", Width = 100 };
                 btSave.Click += (_, _) =>
                 {
-                    MessageBox.Show("개발중, 최대한 빨리 만들어올게요");
+                    string fileName = job.Tokens.GetValueOrDefault("name", "unknown_image");
+                    string imgName = job.Tokens.GetValueOrDefault("num", "unknown_image") + Path.GetExtension(job.Url);
+                    string savePath = config.OutputPath;
+                    SaveImage(imgBytes, savePath, fileName, imgName);
                 };
                 pnlBot.Controls.Add(btSave);
 
@@ -1272,54 +836,697 @@ namespace ImageLoader // B-H-N-B
             }
         }
     }
-    // Head Helper
+    // Note
     public partial class MainForm
     {
-        public string IdentifyModel(string software, string prompt)
+        private System.ComponentModel.IContainer components = null;
+
+        private Configurence config;
+
+        #region LabelLinear로 교체 대상
+        private LabelLinear _baseLiner;
+        private LabelLinear _codeParse;
+
+        private Label _lBs => _baseLiner.InputField.Header;
+        private TextBox _tBs => _baseLiner.InputField.InputBox;
+        private Button _btSav => _baseLiner.Button;
+
+        private Label _lIn => _codeParse.InputField.Header;
+        private TextBox _tIn => _codeParse.InputField.InputBox;
+        private Button _btPrs => _codeParse.Button;
+        #endregion
+
+        private InputField _nameField;
+        private InputField _situField;
+
+        private Label _lblNum;
+        private NumericUpDown _numSt;
+        private NumericUpDown _numEn;
+
+        // 실행 컨트롤
+        private Label _lblPl;
+        private NumericUpDown _numPl;
+        private Button _btSt;
+        private Button _btSp;
+
+        private Panel _pnlCt;
+        private FlowLayoutPanel _flp;
+
+        // 헤더 공통 폰트
+        private Font _headerFont;
+
+        // 툴바
+        private ToolBar _toolBar;
+
+        // 통신 및 토크나이저용
+        private const string Ptn = @"\{([^}]+)\}";
+        private readonly HttpClient _http = new()
         {
-            string nameTag = "";
-            if (string.IsNullOrEmpty(software) || string.IsNullOrEmpty(prompt))
-                return software;
+            Timeout = TimeSpan.FromSeconds(15)
+        };
+        private CancellationTokenSource? _cts;
+    }
 
-            var sf = software.Split(' ');
-            var pr = prompt.Split(',');
+}
+namespace ImageLoader // 본격적인 UI배치등의 작업이 이뤄지는곳
+{
+    public partial class MainForm
+    {
+        private void SetLiner()
+        {
+            this._baseLiner = new()
+            {
+                InputField = new()
+                {
+                    Header = new()
+                    {
+                        AutoSize = true,
+                        Location = new Point(9, 26),
+                        Name = "_lBs",
+                        Size = new Size(70, 14),
+                        Text = "베이스 URL:",
+                        Font = _headerFont,
+                    },
+                    InputBox = new()
+                    {
+                        Anchor = (AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right),
+                        Location = new Point(84, 22),
+                        Name = "_tBs",
+                        Size = new Size(336, 21),
+                        TabIndex = 0,
+                        PlaceholderText = "변하지 않는 고정 링크",
+                    }
+                },
+                Button = new()
+                {
+                    Anchor = (AnchorStyles.Top | AnchorStyles.Right),
+                    Location = new Point(422, 21),
+                    Name = "_btSav",
+                    Size = new Size(75, 20),
+                    TabIndex = 1,
+                    Text = "프리셋",
+                    UseVisualStyleBackColor = true,
+                }
+            };
+            this._codeParse = new()
+            {
+                InputField = new()
+                {
+                    Header = new()
+                    {
+                        AutoSize = true,
+                        Location = new Point(9, 48),
+                        Name = "_lIn",
+                        Size = new Size(70, 14),
+                        Text = "코드 부분   :",
+                        Font = _headerFont,
+                    },
+                    InputBox = new()
+                    {
+                        Anchor = (AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right),
+                        Location = new Point(84, 45),
+                        Name = "_tIn",
+                        Size = new Size(336, 21),
+                        TabIndex = 2,
+                        PlaceholderText = "{토큰명}입력 후 파싱, name, num, situation은 특수 토큰",
+                    }
+                },
+                Button = new()
+                {
+                    Anchor = (AnchorStyles.Top | AnchorStyles.Right),
+                    Location = new Point(422, 44),
+                    Name = "_btPrs",
+                    Size = new Size(75, 20),
+                    TabIndex = 3,
+                    Text = "토큰 파싱",
+                    UseVisualStyleBackColor = true,
+                }
+            };
+        }
+        private void SetIpFld()
+        {
+            this._nameField = new()
+            {
+                Header = new()
+                {
+                    AutoSize = true,
+                    Location = new Point(9, 70),
+                    Name = "_lblNam",
+                    Size = new Size(70, 14),
+                    Text = "이름 목록   :",
+                    Font = _headerFont,
+                },
+                InputBox = new()
+                {
+                    Anchor = (AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right),
+                    Location = new Point(84, 67),
+                    Name = "_tNam",
+                    Size = new Size(412, 21),
+                    TabIndex = 4,
+                    PlaceholderText = "{name} 토큰 값 (쉼표로 구분)",
+                }
+            };
+            this._situField = new()
+            {
+                Header = new()
+                {
+                    AutoSize = true,
+                    Location = new Point(9, 92),
+                    Name = "_lblSit",
+                    Size = new Size(70, 14),
+                    Text = "상황 목록   :",
+                    Font = _headerFont,
+                },
+                InputBox = new()
+                {
+                    Anchor = (AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right),
+                    Location = new Point(84, 89),
+                    Name = "_tSit",
+                    Size = new Size(412, 21),
+                    TabIndex = 5,
+                    PlaceholderText = "{situation} 토큰 값 (쉼표로 구분)",
+                }
+            };
+        }
 
-            if (sf.Length == 0 || pr.Length == 0) return software;
+        private void SetTlsBr()
+        {
+            this._toolBar = new()
+            {
+                Name = "_tbl",
+                Dock = DockStyle.Top,
+                GripStyle = ToolStripGripStyle.Visible,
+                RenderMode = ToolStripRenderMode.System,
 
-            if (sf.Last() == "37C2B166")
-                nameTag = software + "(NAI Diffusion Furry V3)";
-            else if (sf.Last() == "7BCCAA2C")
-                nameTag = software + "(NAI Diffusion Anime V3)";
-            else if (sf.Last() == "7ABFFA2A")
+                Tools = new List<Tools>()
+                {
+                    {
+                        new Tools()
+                        {
+                            Tool = new ToolStripDropDownButton()
+                            { 
+                                Name = "설정",
+                                Text = "설정",
+                                DisplayStyle = ToolStripItemDisplayStyle.Text,
+                                AutoToolTip = false,
+                                ShowDropDownArrow = false,
+                                Width = 80,
+                                Height = 20,
+                            },
+                            Items = new()
+                            {
+                                //new()
+                                //{
+                                //    Name = "테마 변경",
+                                //    Text = "테마 변경",
+                                //    Padding = new Padding(1, 0, 1, 0),
+                                //},
+                                //new()
+                                //{
+                                //    Name = "테마 커스텀",
+                                //    Text = "테마 커스텀",
+                                //    Padding = new Padding(1, 0, 1, 0),
+                                //},
+                                new()
+                                {
+                                    Name = "작업 경로 설정",
+                                    Text = "작업 경로 설정",
+                                    Padding = new Padding(1, 0, 1, 0),
+                                },
+                                //new()
+                                //{
+                                //    Name = "프리셋 설정",
+                                //    Text = "프리셋 설정",
+                                //    Padding = new Padding(1, 0, 1, 0),
+                                //},
+                            },
+                        }
+                    },
+                }
+            };
+            SetTBFun();
+        }
+        private void SetTBFun()
+        {
+            var at = this._toolBar.Tools[0].GetItem("작업 경로 설정");
+            at.Click += (_, _) =>
             {
-                if (pr[0] == "fur dataset")
-                    nameTag = software + "(NAI Diffusion V4 Curated + Furry)";
-                else
-                    nameTag = software + "(NAI Diffusion V4 Curated)";
+
+                var window = new Form()
+                {
+                    Size = new Size(420, 136),
+                    MinimumSize = new Size(420, 136),
+                    Text = "작업 경로 지정",
+                };
+
+                var input = new InputField()
+                {
+                    Header = new()
+                    {
+                        Name = "Input",
+                        Text = "Input",
+                        Location = new Point(10, 10),
+                        Size = new Size(60, 20),
+                        Font = _headerFont,
+                    },
+                    InputBox = new()
+                    {
+                        Location = new Point(70, 9),
+                        Size = new Size(320, 40),
+                        PlaceholderText = "원본 이미지가 있는 폴더 경로 (예: C:\\Users\\내사진)",
+                        Anchor = (AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right),
+                    }
+                };
+                var tvider = new Label()
+                {
+                    Name = ":",
+                    Text = ":",
+                    Location = new Point(60, 10),
+                    Size = new Size(10, 20),
+                    Font = _headerFont,
+                };
+                var output = new InputField()
+                {
+                    Header = new()
+                    {
+                        Name = "Output",
+                        Text = "Output",
+                        Location = new Point(10, 37),
+                        Size = new Size(60, 20),
+                        Font = _headerFont,
+                    },
+                    InputBox = new()
+                    {
+                        Location = new Point(70, 35),
+                        Size = new Size(320, 40),
+                        PlaceholderText = "다운로드 및 저장할 폴더 경로 (예: C:\\바탕화면\\결과물)",
+                        Anchor = (AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right),
+                    }
+                };
+                var bvider = new Label()
+                {
+                    Name = ":",
+                    Text = ":",
+                    Location = new Point(60, 37),
+                    Size = new Size(10, 20),
+                    Font = _headerFont,
+                };
+                var save = new Button
+                {
+                    Name = "저장",
+                    Text = "저장",
+                    Location = new Point(315, 64),
+                    Size = new Size(75, 26),
+                    Anchor = AnchorStyles.Right | AnchorStyles.Bottom,
+                };
+                var apply = new Button
+                {
+                    Name = "적용",
+                    Text = "적용",
+                    Location = new Point(238, 64),
+                    Size = new Size(75, 26),
+                    Anchor = AnchorStyles.Right | AnchorStyles.Bottom,
+                };
+                 
+                apply.Click += (_, _) => SetPathConfig(this.config, input, output);
+                save.Click += (_, _) => SavePathConfig(this.config);
+
+                GetPathConfig(this.config, input, output);
+                window.Controls.Add(tvider);
+                window.Controls.Add(bvider);
+                window.Controls.Add(save);
+                window.Controls.Add(apply);
+                input.MountTo(window.Controls);
+                output.MountTo(window.Controls);
+                window.Show();
+            };
+        }
+
+        private void SetInstc()
+        {
+            this.config = new();
+            this._headerFont = new(Control.DefaultFont, FontStyle.Bold);
+            
+            this._pnlCt = new();
+            this._flp = new();
+
+            // 특수 토큰
+            this._lblNum = new();
+            this._numSt = new();
+            this._numEn = new();
+
+            // 실행
+            this._lblPl = new();
+            this._numPl = new();
+            this._btSt = new();
+            this._btSp = new();
+        }
+        private void SetLabel()
+        {
+
+
+            this._lblNum.AutoSize = true;
+            this._lblNum.Location = new Point(9, 120);
+            this._lblNum.Name = "_lblNum";
+            this._lblNum.Size = new Size(70, 14);
+            this._lblNum.Text = "번호 범위   :";
+            this._lblNum.Font = _headerFont;
+
+            this._lblPl.AutoSize = true;
+            this._lblPl.Location = new Point(9, 145);
+            this._lblPl.Name = "_lblPl";
+            this._lblPl.Size = new Size(70, 14);
+            this._lblPl.Text = "동시 요청   :";
+            this._lblPl.Font = _headerFont;
+
+
+            //this._lBs.ForeColor = COLOR.NAI_HEADER;
+            //this._lIn.ForeColor = COLOR.NAI_HEADER;
+            //this._lblNam.ForeColor = COLOR.NAI_HEADER;
+            //this._lblSit.ForeColor = COLOR.NAI_HEADER;
+            //this._lblNum.ForeColor = COLOR.NAI_HEADER;
+            //this._lblPl.ForeColor = COLOR.NAI_HEADER;
+
+            //this._lBs.BackColor = COLOR.NAI_HEADER;
+            //this._lIn.BackColor = COLOR.NAI_HEADER;
+            //this._lblNam.BackColor = COLOR.NAI_HEADER;
+            //this._lblSit.BackColor = COLOR.NAI_HEADER;
+            //this._lblNum.BackColor = COLOR.NAI_HEADER;
+            //this._lblPl.BackColor = COLOR.NAI_HEADER;
+        }
+        private void SetBtnID()
+        {
+            // Row: Start
+            this._btSt.Anchor = (AnchorStyles.Top | AnchorStyles.Right);
+            this._btSt.Location = new Point(342, 140);
+            this._btSt.Name = "_btSt";
+            this._btSt.Size = new Size(75, 20);
+            this._btSt.TabIndex = 9;
+            this._btSt.Text = "시작";
+            this._btSt.UseVisualStyleBackColor = true;
+
+            // Row: Stop
+            this._btSp.Anchor = (AnchorStyles.Top | AnchorStyles.Right);
+            this._btSp.Location = new Point(422, 140);
+            this._btSp.Name = "_btSp";
+            this._btSp.Size = new Size(75, 20);
+            this._btSp.TabIndex = 10;
+            this._btSp.Text = "중지";
+            this._btSp.Enabled = false;
+            this._btSp.UseVisualStyleBackColor = true;
+        }
+        private void SetNumic()
+        {
+            // Row: Start Num
+            this._numSt.Anchor = (AnchorStyles.Top | AnchorStyles.Left);
+            this._numSt.Location = new Point(84, 117);
+            this._numSt.Name = "_numSt";
+            this._numSt.Size = new Size(100, 20);
+            this._numSt.TabIndex = 6;
+            this._numSt.Maximum = 1000000;
+
+            // Row: End Num
+            this._numEn.Anchor = (AnchorStyles.Top | AnchorStyles.Left);
+            this._numEn.Location = new Point(194, 117);
+            this._numEn.Name = "_numEn";
+            this._numEn.Size = new Size(100, 20);
+            this._numEn.TabIndex = 7;
+            this._numEn.Maximum = 1000000;
+            this._numEn.Value = 0;
+
+            // Row: Parallel & Start/Stop
+            this._numPl.Anchor = (AnchorStyles.Top | AnchorStyles.Left);
+            this._numPl.Location = new Point(84, 141);
+            this._numPl.Name = "_numPl";
+            this._numPl.Size = new Size(70, 20);
+            this._numPl.TabIndex = 8;
+            this._numPl.Minimum = 1;
+            this._numPl.Maximum = 64;
+            this._numPl.Value = 1;
+        }
+
+        private void SetBtFnc()
+        {
+            this._btSav.Click += new EventHandler((_, _) => this.SaveLoaderConfig());
+            this._btPrs.Click += new EventHandler((_, _) => this.RunParsing());
+
+            // 시작/중지 버튼 함수
+            this._btSt.Click += new EventHandler((_, _) => this.StartFetching());
+            this._btSp.Click += new EventHandler((_, _) => this.StopFetching());
+        }
+        private void SetPnCnt()
+        {
+            this._pnlCt.Anchor = (AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right);
+            this._pnlCt.Location = new Point(12, 162);
+            this._pnlCt.Name = "_pnlCt";
+            this._pnlCt.Size = new Size(484, 218);
+            this._pnlCt.TabIndex = 11;
+            this._pnlCt.BorderStyle = BorderStyle.FixedSingle;
+
+            this._pnlCt.AutoScroll = true;
+        }
+        private void SetFlPnl()
+        {
+            this._flp.Dock = DockStyle.Top;
+            this._flp.AutoScroll = false;
+            this._flp.WrapContents = true;
+            this._flp.AutoSize = true;
+            this._flp.FlowDirection = FlowDirection.LeftToRight;
+            this._flp.Location = new Point(0, 0);
+            this._flp.Name = "_flp";
+            this._flp.Size = new Size(458, 0);
+        }
+        private void SetMForm()
+        {
+            // 다크모드 용
+            //this.BackColor = COLOR.NAI_DARK;
+
+            this.AutoScaleDimensions = new SizeF(7F, 12F);
+            this.AutoScaleMode = AutoScaleMode.Font;
+            this.ClientSize = new Size(480, 260);
+
+
+            this._baseLiner.MountTo(this.Controls);
+            this._codeParse.MountTo(this.Controls);
+            this._toolBar.MountTo(this.Controls);
+
+            // 특수 토큰 컨트롤
+            this._nameField.MountTo(this.Controls);
+            this._situField.MountTo(this.Controls);
+
+            this.Controls.Add(this._lblNum);
+            this.Controls.Add(this._numSt);
+            this.Controls.Add(this._numEn);
+
+            // 실행 컨트롤
+            this.Controls.Add(this._lblPl);
+            this.Controls.Add(this._numPl);
+            this.Controls.Add(this._btSt);
+            this.Controls.Add(this._btSp);
+            
+            this.MinimumSize = new Size(524, 428);
+
+            this.Name = "MainForm";
+            this.Text = "이미지 플로우 v1.1";
+        }
+    }
+
+    public partial class MainForm
+    {
+
+        private void SaveLoaderConfig(string fileName = "ImgLdConfig.json")
+        {
+            var dat = new LoaderConfig
+            {
+                BaseURL = _tBs.Text,
+                Code = _tIn.Text,
+                NameToken = _nameField.InputBox.Text,
+                SituationToken = _situField.InputBox.Text,
+                St_Num = (int)_numSt.Value,
+                En_Num = (int)_numEn.Value,
+                Multi_Call_Num = (int)_numPl.Value
+            };
+
+            var opt = new JsonSerializerOptions { WriteIndented = true };
+            var json = JsonSerializer.Serialize(dat, opt);
+
+            try
+            {
+                var exeDir = Path.GetDirectoryName(Application.ExecutablePath);
+                var fPath = Path.Combine(exeDir, fileName);
+
+                File.WriteAllText(fPath, json);
+                MessageBox.Show($"설정이 저장되었습니다.\n{fPath}", "저장 완료");
             }
-            else if (sf.Last() == "37442FCA")
+            catch (Exception ex)
             {
-                if (pr[0] == "fur dataset")
-                    nameTag = software + "(NAI Diffusion V4 Full + Furry)";
-                else
-                    nameTag = software + "(NAI Diffusion V4 Full)";
+                MessageBox.Show($"저장 중 오류가 발생했습니다.\n{ex.Message}", "오류");
             }
-            else if (sf.Last() == "C02D4F98")
+        }
+        private void LoadLoaderConfig(string fileName = "ImgLdConfig.json")
+        {
+            var exeDir = Path.GetDirectoryName(Application.ExecutablePath);
+            var fPath = Path.Combine(exeDir, fileName);
+
+            if (!File.Exists(fPath)) return;
+
+            try
             {
-                if (pr[0] == "fur dataset")
-                    nameTag = software + "(NAI Diffusion V4.5 Curated + Furry)";
+                var json = File.ReadAllText(fPath);
+                var dat = JsonSerializer.Deserialize<LoaderConfig>(json);
+
+                if (dat != null)
+                {
+                    _tBs.Text = dat.BaseURL;
+                    _tIn.Text = dat.Code;
+                    _nameField.InputBox.Text = dat.NameToken;
+                    _situField.InputBox.Text = dat.SituationToken;
+                    _numSt.Value = dat.St_Num;
+                    _numEn.Value = dat.En_Num;
+                    _numPl.Value = dat.Multi_Call_Num;
+
+                }
                 else
-                    nameTag = software + "(NAI Diffusion V4.5 Curated)";
+                {
+                    _tBs.Text = string.Empty;
+                    _tIn.Text = string.Empty;
+                    _nameField.InputBox.Text = string.Empty;
+                    _situField.InputBox.Text = string.Empty;
+
+                    _numSt.Value = 0;
+                    _numEn.Value = 0;
+                    _numPl.Value = 1;
+
+                }
             }
-            else if (sf.Last() == "4BDE2A90")
+            catch (Exception ex)
             {
-                if (pr[0] == "fur dataset")
-                    nameTag = software + "(NAI Diffusion V4.5 Full + Furry)";
-                else
-                    nameTag = software + "(NAI Diffusion V4.5 Full)";
+                MessageBox.Show($"설정 파일 로드 실패:\n{ex.Message}", "로드 오류");
+            }
+        }
+
+        private void SavePathConfig(Configurence config, string fileName = "DrConfig.json")
+        {
+            var dat = new DirectoryConfig
+            {
+                InputDirectory = config.InputPath,
+                OutputDirectory = config.OutputPath,
+            };
+
+            var opt = new JsonSerializerOptions { WriteIndented = true };
+            var json = JsonSerializer.Serialize(dat, opt);
+
+            try
+            {
+                var exeDir = Path.GetDirectoryName(Application.ExecutablePath);
+                var fPath = Path.Combine(exeDir, fileName);
+
+                File.WriteAllText(fPath, json);
+                MessageBox.Show($"설정이 저장되었습니다.\n{fPath}", "저장 완료");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"저장 중 오류가 발생했습니다.\n{ex.Message}", "오류");
             }
 
-            return string.IsNullOrEmpty(nameTag) ? software : nameTag;
+        }    // PathConfig 저장
+        private void LoadPathConfig(Configurence config, string fileName = "DrConfig.json")
+        {
+            var exeDir = Path.GetDirectoryName(Application.ExecutablePath);
+            var fPath = Path.Combine(exeDir, fileName);
+
+            if (!File.Exists(fPath)) return;
+
+            try
+            {
+                var json = File.ReadAllText(fPath);
+                var dat = JsonSerializer.Deserialize<DirectoryConfig>(json);
+
+                if (dat != null)
+                {
+                    config.InputPath = dat.InputDirectory;
+                    config.OutputPath = dat.OutputDirectory;
+                }
+                else
+                {
+                    config.InputPath = string.Empty;
+                    config.OutputPath = string.Empty;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"설정 파일 로드 실패:\n{ex.Message}", "로드 오류");
+            }
+
+        }    // PathConfig 로드
+        private void GetPathConfig(Configurence config, InputField input, InputField output)
+        {
+            input.InputBox.Text = config.InputPath;
+            output.InputBox.Text= config.OutputPath;
+        }   // PathConfig를 InputField에 임시적용
+        private void SetPathConfig(Configurence config, InputField input, InputField output)
+        {
+            config.InputPath = input.InputBox.Text;
+            config.OutputPath = output.InputBox.Text;
+            MessageBox.Show("적용되었습니다.");
+        }   // PathConfig를 임시 적용
+    }
+
+    public partial class MainForm
+    {
+        private void SaveImage(byte[] imgBytes, string outputPath, string folderName, string imgName)
+        {
+            if (imgBytes == null || imgBytes.Length == 0)
+            {
+                MessageBox.Show("SaveImage: imgBytes가 null이거나 비어있습니다.");
+                return;
+            }
+            if (string.IsNullOrWhiteSpace(outputPath))
+            {
+                MessageBox.Show("출력(저장) 경로가 설정되지 않았습니다.", "경로 오류");
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(folderName))
+            {
+                folderName = "ETC.";
+            }
+            if (string.IsNullOrWhiteSpace(imgName))
+            {
+                imgName = Path.GetRandomFileName() + ".png";
+            }
+
+            string cleanFolderName = Path.GetInvalidFileNameChars().Aggregate(folderName, (current, c) => current.Replace(c.ToString(), "_"));
+            string cleanFileName = Path.GetInvalidFileNameChars().Aggregate(imgName, (current, c) => current.Replace(c.ToString(), "_"));
+
+            try
+            {
+                string targetDirectory = Path.Combine(outputPath, cleanFolderName);
+
+                if(System.IO.Directory.Exists(targetDirectory) == false)
+                {
+                    MessageBox.Show("비정상적인 경로입니다. 폴더가 제대로 존재하는지 확인해 주세요.");
+                    return;
+                }
+
+                string finalPath = Path.Combine(targetDirectory, cleanFileName);
+
+                string baseNameOnly = Path.GetFileNameWithoutExtension(cleanFileName);
+                string ext = Path.GetExtension(cleanFileName);
+                int count = 1;
+                while (File.Exists(finalPath))
+                {
+                    finalPath = Path.Combine(targetDirectory, $"{baseNameOnly} ({count}){ext}");
+                    count++;
+                }
+
+                File.WriteAllBytes(finalPath, imgBytes);
+                MessageBox.Show("이미지 저장 성공");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"이미지 저장 중 오류 발생:\n{ex.Message}", "저장 오류");
+            }
         }
     }
 }

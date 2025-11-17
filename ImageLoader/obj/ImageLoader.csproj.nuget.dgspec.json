@@ -1,23 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\joey0\\OneDrive\\바탕 화면\\코딩\\C#\\External_Image_Loader\\ImageLoader\\ImageLoader.csproj": {}
+    "C:\\Users\\admin\\Desktop\\Git\\External_Image_Loader\\ImageLoader\\ImageLoader.csproj": {}
   },
   "projects": {
-    "C:\\Users\\joey0\\OneDrive\\바탕 화면\\코딩\\C#\\External_Image_Loader\\ImageLoader\\ImageLoader.csproj": {
+    "C:\\Users\\admin\\Desktop\\Git\\External_Image_Loader\\ImageLoader\\ImageLoader.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\joey0\\OneDrive\\바탕 화면\\코딩\\C#\\External_Image_Loader\\ImageLoader\\ImageLoader.csproj",
+        "projectUniqueName": "C:\\Users\\admin\\Desktop\\Git\\External_Image_Loader\\ImageLoader\\ImageLoader.csproj",
         "projectName": "ImageLoader",
-        "projectPath": "C:\\Users\\joey0\\OneDrive\\바탕 화면\\코딩\\C#\\External_Image_Loader\\ImageLoader\\ImageLoader.csproj",
-        "packagesPath": "C:\\Users\\joey0\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\joey0\\OneDrive\\바탕 화면\\코딩\\C#\\External_Image_Loader\\ImageLoader\\obj\\",
+        "projectPath": "C:\\Users\\admin\\Desktop\\Git\\External_Image_Loader\\ImageLoader\\ImageLoader.csproj",
+        "packagesPath": "C:\\Users\\admin\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\admin\\Desktop\\Git\\External_Image_Loader\\ImageLoader\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\joey0\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\admin\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -44,7 +44,7 @@
           "auditLevel": "low",
           "auditMode": "direct"
         },
-        "SdkAnalysisLevel": "9.0.100"
+        "SdkAnalysisLevel": "9.0.300"
       },
       "frameworks": {
         "net8.0-windows7.0": {
@@ -86,7 +86,7 @@
               "privateAssets": "none"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.102/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.302/PortableRuntimeIdentifierGraph.json"
         }
       }
     }
