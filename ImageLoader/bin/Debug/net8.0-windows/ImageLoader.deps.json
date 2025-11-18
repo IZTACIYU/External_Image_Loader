@@ -6,7 +6,7 @@
   "compilationOptions": {},
   "targets": {
     ".NETCoreApp,Version=v8.0": {
-      "ImageLoader/1.1.1": {
+      "ImageLoader/1.2": {
         "dependencies": {
           "Magick.NET-Q8-AnyCPU": "14.9.1",
           "Magick.NET.Core": "14.9.1",
@@ -124,7 +124,7 @@
     }
   },
   "libraries": {
-    "ImageLoader/1.1.1": {
+    "ImageLoader/1.2": {
       "type": "project",
       "serviceable": false,
       "sha512": ""

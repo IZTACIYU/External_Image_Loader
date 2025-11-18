@@ -13,11 +13,11 @@ using System.Reflection;
 
 [assembly: System.Reflection.AssemblyCompanyAttribute("ImageLoader")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
-[assembly: System.Reflection.AssemblyFileVersionAttribute("1.1.1")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.1.1+9680333010089ade78fdd06bff28f9fe6b12b651")]
+[assembly: System.Reflection.AssemblyFileVersionAttribute("1.2")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.2+ac3cef723a616f8cfb2a7ece7150746f6c69ae8f")]
 [assembly: System.Reflection.AssemblyProductAttribute("ImageLoader")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ImageLoader")]
-[assembly: System.Reflection.AssemblyVersionAttribute("1.1.1")]
+[assembly: System.Reflection.AssemblyVersionAttribute("1.2")]
 [assembly: System.Runtime.Versioning.TargetPlatformAttribute("Windows7.0")]
 [assembly: System.Runtime.Versioning.SupportedOSPlatformAttribute("Windows7.0")]
 

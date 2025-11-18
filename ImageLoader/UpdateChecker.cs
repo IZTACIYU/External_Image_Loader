@@ -11,7 +11,7 @@ namespace ImageLoader
 {
     public class UpdateChecker
     {
-        private const string RELEASES_JSON_URL = "https://raw.githubusercontent.com/IZTACIYU/External_Image_Loader/main/version.txt";
+        private const string RELEASES_JSON_URL = "https://raw.githubusercontent.com/IZTACIYU/External_Image_Loader/refs/heads/main/version.json";
         private const string DOWNLOAD_PAGE_URL = "https://github.com/IZTACIYU/External_Image_Loader/releases/latest";
 
         public async Task CheckAsync()
@@ -60,7 +60,6 @@ namespace ImageLoader
 
                 sb.AppendLine("다운로드 페이지로 이동하시겠습니까?");
 
-                // 5. 알림 표시
                 var res = MessageBox.Show(
                     sb.ToString(),
                     "업데이트 알림",

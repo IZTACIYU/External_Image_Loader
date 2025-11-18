@@ -1570,7 +1570,7 @@ namespace ImageLoader
             this.MinimumSize = new Size(524, 428);
 
             this.Name = "MainForm";
-            this.Text = "이미지 플로우 v1.1";
+            this.Text = "이미지 플로우 v1.2";
         }
     }
 
