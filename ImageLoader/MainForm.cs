@@ -3,8 +3,8 @@ using MetadataExtractor; // EXIF 읽기
 using System.Diagnostics;
 using System.Text.Json;
 using System.Text.RegularExpressions;
-// 혅재 코드에 선언되었지만 파일에 존재 하지 않는 클래스는 전부 동일 네임스페이스에 속하는 다른 cs문서에 작성되어있음
-namespace ImageLoader   // 거의 완료되어 더이상 건들지 않는 부분을 모은 것
+
+namespace ImageLoader
 {
     public partial class MainForm
     {
@@ -63,6 +63,11 @@ namespace ImageLoader   // 거의 완료되어 더이상 건들지 않는 부분
             {
                 components.Dispose();
             }
+            if (disposing)
+            {
+                _headerFont?.Dispose();
+                _cts?.Dispose();
+            }
             base.Dispose(disposing);
         }
         private void Initialize()
@@ -88,6 +93,7 @@ namespace ImageLoader   // 거의 완료되어 더이상 건들지 않는 부분
             this.PerformLayout();
         }
     }
+
     // Body Combined With Head
     public partial class MainForm : Form
     {
@@ -96,11 +102,13 @@ namespace ImageLoader   // 거의 완료되어 더이상 건들지 않는 부분
             this.Initialize();
             this.LoadLoaderConfig();
             this.LoadPathConfig(this.config);
+
+            _ = new UpdateChecker().CheckAsync();
         }
 
         private void RunParsing()
         {
-            _flp.Controls.Clear();
+            CleanUpFlowPanel();
 
             var txt = _tIn.Text;
             if (string.IsNullOrEmpty(txt)) return;
@@ -126,7 +134,7 @@ namespace ImageLoader   // 거의 완료되어 더이상 건들지 않는 부분
                 };
                 var header = new Label
                 {
-                    Text = $"{token}:", // 토큰 이름
+                    Text = $"{token}:",
                     AutoSize = true,
                     Margin = new Padding(3, 6, 3, 3),
                     Anchor = AnchorStyles.Left,
@@ -175,8 +183,16 @@ namespace ImageLoader   // 거의 완료되어 더이상 건들지 않는 부분
                 return;
             }
 
-            // UI 정리 && 상태 변경
-            _flp.Controls.Clear();
+            CleanUpFlowPanel();
+
+            // 전체 저장 버튼 제거 (재시작 시)
+            //if (_btSaveAll != null)
+            //{
+            //    this.Controls.Remove(_btSaveAll);
+            //    _btSaveAll.Dispose();
+            //    _btSaveAll = null;
+            //}
+
             _cts = new CancellationTokenSource();
             SetButtons(running: true);
 
@@ -184,6 +200,12 @@ namespace ImageLoader   // 거의 완료되어 더이상 건들지 않는 부분
             {
                 // 동시 실행 수(_numPl) FetchAllAsync에 전달
                 await FetchAllAsync(jobs, (int)_numPl.Value, _cts.Token);
+
+                // 완료 후 전체 저장 버튼 생성
+                if (!_cts.IsCancellationRequested)
+                {
+                    _btSaveAll.Enabled = true;
+                }
             }
             catch (OperationCanceledException)
             {
@@ -221,7 +243,7 @@ namespace ImageLoader   // 거의 완료되어 더이상 건들지 않는 부분
 
             // 특수/동적 컨트롤 활성화/비활성화
             _nameField.InputBox.Enabled = !running;
-            _situField.InputBox.Enabled = !running; // situation 텍스트박스
+            _situField.InputBox.Enabled = !running;
             _numSt.Enabled = !running;
             _numEn.Enabled = !running;
             _numPl.Enabled = !running;
@@ -375,9 +397,9 @@ namespace ImageLoader   // 거의 완료되어 더이상 건들지 않는 부분
         private async Task FetchOneAsync(Job job, CancellationToken ct)
         {
             HttpResponseMessage? resp = null;
-            bool exifSuccess = false; // EXIF 파싱 성공 여부
+            bool exifSuccess = false;
             Image img = null;
-            byte[] imgBytes = null; // 원본 바이트 (지연 로딩용)
+            byte[] imgBytes = null;
 
             try
             {
@@ -400,7 +422,7 @@ namespace ImageLoader   // 거의 완료되어 더이상 건들지 않는 부분
                 await using var stream = await resp.Content.ReadAsStreamAsync(ct);
                 using var ms = new MemoryStream();
                 await stream.CopyToAsync(ms, ct);
-                imgBytes = ms.ToArray(); // 원본 바이트 저장
+                imgBytes = ms.ToArray();
 
                 // EXIF 검사
                 ms.Position = 0;
@@ -421,7 +443,7 @@ namespace ImageLoader   // 거의 완료되어 더이상 건들지 않는 부분
                     return;
                 }
 
-                // 타일 추가, EXIF 정보 + 원본 바이트 전달
+                // 타일 추가
                 AddTile(job, img, $"{img.Width}x{img.Height}", ok: true, exifSuccess, imgBytes);
             }
             catch (TaskCanceledException)
@@ -446,13 +468,22 @@ namespace ImageLoader   // 거의 완료되어 더이상 건들지 않는 부분
                 return;
             }
 
+            var tileData = new TileData
+            {
+                Job = job,
+                Image = img,
+                ImgBytes = imgBytes,
+                ExifSuccess = exifSuccess
+            };
+
             var panel = new Panel
             {
                 Width = 220,
                 Height = 260,
                 Margin = new Padding(6),
                 Padding = new Padding(6),
-                BackColor = Color.White
+                BackColor = Color.White,
+                Tag = tileData
             };
 
             var borderColor = ok ? Color.SeaGreen : Color.IndianRed;
@@ -635,7 +666,6 @@ namespace ImageLoader   // 거의 완료되어 더이상 건들지 않는 부분
                     Process.Start(new ProcessStartInfo { FileName = u, UseShellExecute = true });
             };
 
-            // EXIF 라벨
             var exifLbl = new Label
             {
                 Text = "EXIF",
@@ -658,6 +688,27 @@ namespace ImageLoader   // 거의 완료되어 더이상 건들지 않는 부분
             panel.Controls.Add(exifLbl);
 
             _flp.Controls.Add(panel);
+        }
+
+        private void CleanUpFlowPanel()
+        {
+            for (int i = _flp.Controls.Count - 1; i >= 0; i--)
+            {
+                Control ctrl = _flp.Controls[i];
+                if (ctrl is Panel panel && panel.Tag is TileData data)
+                {
+                    if (data.Image != null)
+                    {
+                        data.Image.Dispose();
+                        data.Image = null;
+                    }
+                    data.ImgBytes = null;
+                }
+                ctrl.Dispose();
+            }
+            _btSaveAll.Enabled = false;
+            _flp.Controls.Clear();
+            GC.Collect();
         }
 
         private bool CheckExif(MemoryStream ms)
@@ -789,15 +840,14 @@ namespace ImageLoader   // 거의 완료되어 더이상 건들지 않는 부분
                 }
                 else
                 {
-                    return null; // Comment 태그 없음
+                    return null;
                 }
             }
             catch (Exception)
             {
-                return null; // 메타데이터 읽기 또는 JSON 파싱 실패
+                return null;
             }
 
-            // 파싱 성공, Simplified 객체로 변환
             try
             {
                 var simplified = new Simplified
@@ -832,8 +882,88 @@ namespace ImageLoader   // 거의 완료되어 더이상 건들지 않는 부분
             }
             catch (Exception)
             {
-                return null; // Simplified 객체 변환 실패
+                return null;
             }
+        }
+
+        private Dictionary<string, string> GetInfoKVP(Simplified data)
+        {
+            return new Dictionary<string, string>
+            {
+                { "Title", data.Title },
+                { "Description", data.Description },
+                { "Software", data.Software },
+                { "Source", data.Source },
+                { "Request Type", data.RequestType }
+            };
+        }
+        private Dictionary<string, string> GetContextKVP(Simplified data)
+        {
+            var dict = new Dictionary<string, string>
+            {
+                { "Prompt", data.Prompt },
+                { "Undesired Content", data.UndesiredContent }
+            };
+
+            if (!string.IsNullOrEmpty(data.Character1Prompt))
+                dict.Add("Character 1 Prompt", data.Character1Prompt);
+            if (!string.IsNullOrEmpty(data.Character1UC))
+                dict.Add("Character 1 UC", data.Character1UC);
+            if (!string.IsNullOrEmpty(data.Character2Prompt))
+                dict.Add("Character 2 Prompt", data.Character2Prompt);
+            if (!string.IsNullOrEmpty(data.Character2UC))
+                dict.Add("Character 2 UC", data.Character2UC);
+            if (!string.IsNullOrEmpty(data.Character3Prompt))
+                dict.Add("Character 3 Prompt", data.Character3Prompt);
+            if (!string.IsNullOrEmpty(data.Character3UC))
+                dict.Add("Character 3 UC", data.Character3UC);
+            if (!string.IsNullOrEmpty(data.Character4Prompt))
+                dict.Add("Character 4 Prompt", data.Character4Prompt);
+            if (!string.IsNullOrEmpty(data.Character4UC))
+                dict.Add("Character 4 UC", data.Character4UC);
+            if (!string.IsNullOrEmpty(data.Character5Prompt))
+                dict.Add("Character 5 Prompt", data.Character5Prompt);
+            if (!string.IsNullOrEmpty(data.Character5UC))
+                dict.Add("Character 5 UC", data.Character5UC);
+
+            dict.Add("Resolution", data.Resolution);
+            dict.Add("Seed", data.Seed);
+            dict.Add("Steps", data.Steps);
+            dict.Add("Sampler", data.Sampler);
+            dict.Add("Prompt Guidance", data.PromptGuidance);
+            dict.Add("Prompt Guidance Rescale", data.PromptGuidanceRescale);
+            dict.Add("Undesired Content Strength", data.UndesiredContentStrength);
+
+            return dict;
+        }
+        private string GetRawCommentJson(MemoryStream ms)
+        {
+            try
+            {
+                ms.Position = 0;
+                var directories = ImageMetadataReader.ReadMetadata(ms);
+
+                foreach (var directory in directories)
+                {
+                    foreach (var tag in directory.Tags)
+                    {
+                        if (tag.Name == "Comment")
+                        {
+                            return tag.Description;
+                        }
+                        if (tag.Name == "Textual Data")
+                        {
+                            var parts = tag.Description.Split(new[] { ':' }, 2);
+                            if (parts.Length == 2 && parts[0].Trim().Equals("Comment", StringComparison.OrdinalIgnoreCase))
+                            {
+                                return parts[1].Trim().Trim('"');
+                            }
+                        }
+                    }
+                }
+            }
+            catch { }
+            return null;
         }
     }
     // Note
@@ -843,7 +973,6 @@ namespace ImageLoader   // 거의 완료되어 더이상 건들지 않는 부분
 
         private Configurence config;
 
-        #region LabelLinear로 교체 대상
         private LabelLinear _baseLiner;
         private LabelLinear _codeParse;
 
@@ -854,7 +983,6 @@ namespace ImageLoader   // 거의 완료되어 더이상 건들지 않는 부분
         private Label _lIn => _codeParse.InputField.Header;
         private TextBox _tIn => _codeParse.InputField.InputBox;
         private Button _btPrs => _codeParse.Button;
-        #endregion
 
         private InputField _nameField;
         private InputField _situField;
@@ -868,6 +996,7 @@ namespace ImageLoader   // 거의 완료되어 더이상 건들지 않는 부분
         private NumericUpDown _numPl;
         private Button _btSt;
         private Button _btSp;
+        private Button _btSaveAll; // 동적 생성
 
         private Panel _pnlCt;
         private FlowLayoutPanel _flp;
@@ -886,9 +1015,147 @@ namespace ImageLoader   // 거의 완료되어 더이상 건들지 않는 부분
         };
         private CancellationTokenSource? _cts;
     }
+    public partial class MainForm
+    {
+        private void SaveLoaderConfig(string fileName = "ImgLdConfig.json")
+        {
+            var dat = new LoaderConfig
+            {
+                BaseURL = _tBs.Text,
+                Code = _tIn.Text,
+                NameToken = _nameField.InputBox.Text,
+                SituationToken = _situField.InputBox.Text,
+                St_Num = (int)_numSt.Value,
+                En_Num = (int)_numEn.Value,
+                Multi_Call_Num = (int)_numPl.Value
+            };
 
+            var opt = new JsonSerializerOptions { WriteIndented = true };
+            var json = JsonSerializer.Serialize(dat, opt);
+
+            try
+            {
+                var exeDir = Path.GetDirectoryName(Application.ExecutablePath);
+                var fPath = Path.Combine(exeDir, fileName);
+
+                File.WriteAllText(fPath, json);
+                MessageBox.Show($"설정이 저장되었습니다.\n{fPath}", "저장 완료");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"저장 중 오류가 발생했습니다.\n{ex.Message}", "오류");
+            }
+        }
+        private void LoadLoaderConfig(string fileName = "ImgLdConfig.json")
+        {
+            var exeDir = Path.GetDirectoryName(Application.ExecutablePath);
+            var fPath = Path.Combine(exeDir, fileName);
+
+            if (!File.Exists(fPath)) return;
+
+            try
+            {
+                var json = File.ReadAllText(fPath);
+                var dat = JsonSerializer.Deserialize<LoaderConfig>(json);
+
+                if (dat != null)
+                {
+                    _tBs.Text = dat.BaseURL;
+                    _tIn.Text = dat.Code;
+                    _nameField.InputBox.Text = dat.NameToken;
+                    _situField.InputBox.Text = dat.SituationToken;
+                    _numSt.Value = dat.St_Num;
+                    _numEn.Value = dat.En_Num;
+                    _numPl.Value = dat.Multi_Call_Num;
+
+                }
+                else
+                {
+                    _tBs.Text = string.Empty;
+                    _tIn.Text = string.Empty;
+                    _nameField.InputBox.Text = string.Empty;
+                    _situField.InputBox.Text = string.Empty;
+
+                    _numSt.Value = 0;
+                    _numEn.Value = 0;
+                    _numPl.Value = 1;
+
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"설정 파일 로드 실패:\n{ex.Message}", "로드 오류");
+            }
+        }
+
+        private void SavePathConfig(Configurence config, string fileName = "PathConfig.json")
+        {
+            var dat = new DirectoryConfig
+            {
+                InputDirectory = config.InputPath,
+                OutputDirectory = config.OutputPath,
+            };
+
+            var opt = new JsonSerializerOptions { WriteIndented = true };
+            var json = JsonSerializer.Serialize(dat, opt);
+
+            try
+            {
+                var exeDir = Path.GetDirectoryName(Application.ExecutablePath);
+                var fPath = Path.Combine(exeDir, fileName);
+
+                File.WriteAllText(fPath, json);
+                MessageBox.Show($"설정이 저장되었습니다.\n{fPath}", "저장 완료");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"저장 중 오류가 발생했습니다.\n{ex.Message}", "오류");
+            }
+
+        }    // PathConfig 저장
+        private void LoadPathConfig(Configurence config, string fileName = "PathConfig.json")
+        {
+            var exeDir = Path.GetDirectoryName(Application.ExecutablePath);
+            var fPath = Path.Combine(exeDir, fileName);
+
+            if (!File.Exists(fPath)) return;
+
+            try
+            {
+                var json = File.ReadAllText(fPath);
+                var dat = JsonSerializer.Deserialize<DirectoryConfig>(json);
+
+                if (dat != null)
+                {
+                    config.InputPath = dat.InputDirectory;
+                    config.OutputPath = dat.OutputDirectory;
+                }
+                else
+                {
+                    config.InputPath = string.Empty;
+                    config.OutputPath = string.Empty;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"설정 파일 로드 실패:\n{ex.Message}", "로드 오류");
+            }
+
+        }    // PathConfig 로드
+        private void GetPathConfig(Configurence config, InputField input, InputField output)
+        {
+            input.InputBox.Text = config.InputPath;
+            output.InputBox.Text = config.OutputPath;
+        }   // PathConfig를 InputField에 임시적용
+        private void SetPathConfig(Configurence config, InputField input, InputField output)
+        {
+            config.InputPath = input.InputBox.Text;
+            config.OutputPath = output.InputBox.Text;
+            MessageBox.Show("적용되었습니다.");
+        }   // PathConfig를 임시 적용
+    }
 }
-namespace ImageLoader // 본격적인 UI배치등의 작업이 이뤄지는곳
+namespace ImageLoader
 {
     public partial class MainForm
     {
@@ -1024,7 +1291,7 @@ namespace ImageLoader // 본격적인 UI배치등의 작업이 이뤄지는곳
                         new Tools()
                         {
                             Tool = new ToolStripDropDownButton()
-                            { 
+                            {
                                 Name = "설정",
                                 Text = "설정",
                                 DisplayStyle = ToolStripItemDisplayStyle.Text,
@@ -1035,30 +1302,12 @@ namespace ImageLoader // 본격적인 UI배치등의 작업이 이뤄지는곳
                             },
                             Items = new()
                             {
-                                //new()
-                                //{
-                                //    Name = "테마 변경",
-                                //    Text = "테마 변경",
-                                //    Padding = new Padding(1, 0, 1, 0),
-                                //},
-                                //new()
-                                //{
-                                //    Name = "테마 커스텀",
-                                //    Text = "테마 커스텀",
-                                //    Padding = new Padding(1, 0, 1, 0),
-                                //},
                                 new()
                                 {
                                     Name = "작업 경로 설정",
                                     Text = "작업 경로 설정",
                                     Padding = new Padding(1, 0, 1, 0),
                                 },
-                                //new()
-                                //{
-                                //    Name = "프리셋 설정",
-                                //    Text = "프리셋 설정",
-                                //    Padding = new Padding(1, 0, 1, 0),
-                                //},
                             },
                         }
                     },
@@ -1147,7 +1396,7 @@ namespace ImageLoader // 본격적인 UI배치등의 작업이 이뤄지는곳
                     Size = new Size(75, 26),
                     Anchor = AnchorStyles.Right | AnchorStyles.Bottom,
                 };
-                 
+
                 apply.Click += (_, _) => SetPathConfig(this.config, input, output);
                 save.Click += (_, _) => SavePathConfig(this.config);
 
@@ -1166,7 +1415,7 @@ namespace ImageLoader // 본격적인 UI배치등의 작업이 이뤄지는곳
         {
             this.config = new();
             this._headerFont = new(Control.DefaultFont, FontStyle.Bold);
-            
+
             this._pnlCt = new();
             this._flp = new();
 
@@ -1180,6 +1429,7 @@ namespace ImageLoader // 본격적인 UI배치등의 작업이 이뤄지는곳
             this._numPl = new();
             this._btSt = new();
             this._btSp = new();
+            this._btSaveAll = new();
         }
         private void SetLabel()
         {
@@ -1198,42 +1448,34 @@ namespace ImageLoader // 본격적인 UI배치등의 작업이 이뤄지는곳
             this._lblPl.Size = new Size(70, 14);
             this._lblPl.Text = "동시 요청   :";
             this._lblPl.Font = _headerFont;
-
-
-            //this._lBs.ForeColor = COLOR.NAI_HEADER;
-            //this._lIn.ForeColor = COLOR.NAI_HEADER;
-            //this._lblNam.ForeColor = COLOR.NAI_HEADER;
-            //this._lblSit.ForeColor = COLOR.NAI_HEADER;
-            //this._lblNum.ForeColor = COLOR.NAI_HEADER;
-            //this._lblPl.ForeColor = COLOR.NAI_HEADER;
-
-            //this._lBs.BackColor = COLOR.NAI_HEADER;
-            //this._lIn.BackColor = COLOR.NAI_HEADER;
-            //this._lblNam.BackColor = COLOR.NAI_HEADER;
-            //this._lblSit.BackColor = COLOR.NAI_HEADER;
-            //this._lblNum.BackColor = COLOR.NAI_HEADER;
-            //this._lblPl.BackColor = COLOR.NAI_HEADER;
         }
         private void SetBtnID()
         {
             // Row: Start
             this._btSt.Anchor = (AnchorStyles.Top | AnchorStyles.Right);
-            this._btSt.Location = new Point(342, 140);
             this._btSt.Name = "_btSt";
-            this._btSt.Size = new Size(75, 20);
-            this._btSt.TabIndex = 9;
             this._btSt.Text = "시작";
+            this._btSt.Location = new Point(422, 140);
+            this._btSt.Size = new Size(75, 20);
             this._btSt.UseVisualStyleBackColor = true;
 
             // Row: Stop
             this._btSp.Anchor = (AnchorStyles.Top | AnchorStyles.Right);
-            this._btSp.Location = new Point(422, 140);
             this._btSp.Name = "_btSp";
-            this._btSp.Size = new Size(75, 20);
-            this._btSp.TabIndex = 10;
             this._btSp.Text = "중지";
+            this._btSp.Location = new Point(_btSt.Left - _btSt.Width - 4, _btSt.Top);
+            this._btSp.Size = _btSt.Size;
             this._btSp.Enabled = false;
             this._btSp.UseVisualStyleBackColor = true;
+
+            // Row: Save All Images
+            this._btSaveAll.Anchor = _btSt.Anchor;
+            this._btSaveAll.Name = "_btSaveAll";
+            this._btSaveAll.Text = "전체 저장";
+            this._btSaveAll.Location = new Point(_btSp.Left - _btSp.Width - 4, _btSp.Top);
+            this._btSaveAll.Size = _btSp.Size;
+            this._btSaveAll.Enabled = false;
+            this._btSaveAll.UseVisualStyleBackColor = _btSp.UseVisualStyleBackColor;
         }
         private void SetNumic()
         {
@@ -1273,6 +1515,9 @@ namespace ImageLoader // 본격적인 UI배치등의 작업이 이뤄지는곳
             // 시작/중지 버튼 함수
             this._btSt.Click += new EventHandler((_, _) => this.StartFetching());
             this._btSp.Click += new EventHandler((_, _) => this.StopFetching());
+
+            // 이미지 전체 저장
+            this._btSaveAll.Click += (_, _) => SaveAllImages();
         }
         private void SetPnCnt()
         {
@@ -1298,9 +1543,6 @@ namespace ImageLoader // 본격적인 UI배치등의 작업이 이뤄지는곳
         }
         private void SetMForm()
         {
-            // 다크모드 용
-            //this.BackColor = COLOR.NAI_DARK;
-
             this.AutoScaleDimensions = new SizeF(7F, 12F);
             this.AutoScaleMode = AutoScaleMode.Font;
             this.ClientSize = new Size(480, 260);
@@ -1323,153 +1565,13 @@ namespace ImageLoader // 본격적인 UI배치등의 작업이 이뤄지는곳
             this.Controls.Add(this._numPl);
             this.Controls.Add(this._btSt);
             this.Controls.Add(this._btSp);
-            
+            this.Controls.Add(_btSaveAll);
+
             this.MinimumSize = new Size(524, 428);
 
             this.Name = "MainForm";
             this.Text = "이미지 플로우 v1.1";
         }
-    }
-
-    public partial class MainForm
-    {
-
-        private void SaveLoaderConfig(string fileName = "ImgLdConfig.json")
-        {
-            var dat = new LoaderConfig
-            {
-                BaseURL = _tBs.Text,
-                Code = _tIn.Text,
-                NameToken = _nameField.InputBox.Text,
-                SituationToken = _situField.InputBox.Text,
-                St_Num = (int)_numSt.Value,
-                En_Num = (int)_numEn.Value,
-                Multi_Call_Num = (int)_numPl.Value
-            };
-
-            var opt = new JsonSerializerOptions { WriteIndented = true };
-            var json = JsonSerializer.Serialize(dat, opt);
-
-            try
-            {
-                var exeDir = Path.GetDirectoryName(Application.ExecutablePath);
-                var fPath = Path.Combine(exeDir, fileName);
-
-                File.WriteAllText(fPath, json);
-                MessageBox.Show($"설정이 저장되었습니다.\n{fPath}", "저장 완료");
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"저장 중 오류가 발생했습니다.\n{ex.Message}", "오류");
-            }
-        }
-        private void LoadLoaderConfig(string fileName = "ImgLdConfig.json")
-        {
-            var exeDir = Path.GetDirectoryName(Application.ExecutablePath);
-            var fPath = Path.Combine(exeDir, fileName);
-
-            if (!File.Exists(fPath)) return;
-
-            try
-            {
-                var json = File.ReadAllText(fPath);
-                var dat = JsonSerializer.Deserialize<LoaderConfig>(json);
-
-                if (dat != null)
-                {
-                    _tBs.Text = dat.BaseURL;
-                    _tIn.Text = dat.Code;
-                    _nameField.InputBox.Text = dat.NameToken;
-                    _situField.InputBox.Text = dat.SituationToken;
-                    _numSt.Value = dat.St_Num;
-                    _numEn.Value = dat.En_Num;
-                    _numPl.Value = dat.Multi_Call_Num;
-
-                }
-                else
-                {
-                    _tBs.Text = string.Empty;
-                    _tIn.Text = string.Empty;
-                    _nameField.InputBox.Text = string.Empty;
-                    _situField.InputBox.Text = string.Empty;
-
-                    _numSt.Value = 0;
-                    _numEn.Value = 0;
-                    _numPl.Value = 1;
-
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"설정 파일 로드 실패:\n{ex.Message}", "로드 오류");
-            }
-        }
-
-        private void SavePathConfig(Configurence config, string fileName = "DrConfig.json")
-        {
-            var dat = new DirectoryConfig
-            {
-                InputDirectory = config.InputPath,
-                OutputDirectory = config.OutputPath,
-            };
-
-            var opt = new JsonSerializerOptions { WriteIndented = true };
-            var json = JsonSerializer.Serialize(dat, opt);
-
-            try
-            {
-                var exeDir = Path.GetDirectoryName(Application.ExecutablePath);
-                var fPath = Path.Combine(exeDir, fileName);
-
-                File.WriteAllText(fPath, json);
-                MessageBox.Show($"설정이 저장되었습니다.\n{fPath}", "저장 완료");
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"저장 중 오류가 발생했습니다.\n{ex.Message}", "오류");
-            }
-
-        }    // PathConfig 저장
-        private void LoadPathConfig(Configurence config, string fileName = "DrConfig.json")
-        {
-            var exeDir = Path.GetDirectoryName(Application.ExecutablePath);
-            var fPath = Path.Combine(exeDir, fileName);
-
-            if (!File.Exists(fPath)) return;
-
-            try
-            {
-                var json = File.ReadAllText(fPath);
-                var dat = JsonSerializer.Deserialize<DirectoryConfig>(json);
-
-                if (dat != null)
-                {
-                    config.InputPath = dat.InputDirectory;
-                    config.OutputPath = dat.OutputDirectory;
-                }
-                else
-                {
-                    config.InputPath = string.Empty;
-                    config.OutputPath = string.Empty;
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"설정 파일 로드 실패:\n{ex.Message}", "로드 오류");
-            }
-
-        }    // PathConfig 로드
-        private void GetPathConfig(Configurence config, InputField input, InputField output)
-        {
-            input.InputBox.Text = config.InputPath;
-            output.InputBox.Text= config.OutputPath;
-        }   // PathConfig를 InputField에 임시적용
-        private void SetPathConfig(Configurence config, InputField input, InputField output)
-        {
-            config.InputPath = input.InputBox.Text;
-            config.OutputPath = output.InputBox.Text;
-            MessageBox.Show("적용되었습니다.");
-        }   // PathConfig를 임시 적용
     }
 
     public partial class MainForm
@@ -1503,10 +1605,9 @@ namespace ImageLoader // 본격적인 UI배치등의 작업이 이뤄지는곳
             {
                 string targetDirectory = Path.Combine(outputPath, cleanFolderName);
 
-                if(System.IO.Directory.Exists(targetDirectory) == false)
+                if (System.IO.Directory.Exists(targetDirectory) == false)
                 {
-                    MessageBox.Show("비정상적인 경로입니다. 폴더가 제대로 존재하는지 확인해 주세요.");
-                    return;
+                    System.IO.Directory.CreateDirectory(targetDirectory);
                 }
 
                 string finalPath = Path.Combine(targetDirectory, cleanFileName);
@@ -1521,12 +1622,46 @@ namespace ImageLoader // 본격적인 UI배치등의 작업이 이뤄지는곳
                 }
 
                 File.WriteAllBytes(finalPath, imgBytes);
-                MessageBox.Show("이미지 저장 성공");
+                // MessageBox.Show("이미지 저장 성공"); // 다중 저장 시 너무 많이 뜸
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"이미지 저장 중 오류 발생:\n{ex.Message}", "저장 오류");
             }
+        }
+        private void SaveAllImages()
+        {
+            string outputDirectory = config.OutputPath;
+
+            if (string.IsNullOrWhiteSpace(outputDirectory))
+            {
+                MessageBox.Show("출력(저장) 경로가 설정되지 않았습니다.\n'설정' -> '작업 경로 설정'에서 경로를 지정하세요.", "경로 오류");
+                return;
+            }
+
+            int successCount = 0;
+            int skippedCount = 0;
+
+            foreach (Control control in _flp.Controls)
+            {
+                if (control is Panel panel && panel.Tag is TileData data)
+                {
+                    if (data.Image != null && data.ImgBytes != null)
+                    {
+                        string folderName = data.Job.Tokens.GetValueOrDefault("name", "Unsorted");
+                        string imgName = data.Job.Tokens.GetValueOrDefault("num", "unknown_image") + Path.GetExtension(data.Job.Url);
+
+                        SaveImage(data.ImgBytes, outputDirectory, folderName, imgName);
+                        successCount++;
+                    }
+                    else
+                    {
+                        skippedCount++;
+                    }
+                }
+            }
+
+            MessageBox.Show($"저장 완료: {successCount}개 저장, {skippedCount}개 (로드 실패) 건너뜀.", "전체 저장");
         }
     }
 }
