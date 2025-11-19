@@ -11,12 +11,7 @@
         public int Multi_Call_Num { get; set; } = 0;
     }
 
-    public class DirectoryConfig
-    {
-        public string InputDirectory { get; set; } = string.Empty;
-        public string OutputDirectory { get; set; } = string.Empty;
-    }
-    public class Configurence
+    public class PathConfig
     {
         public string InputPath { get; set; } = string.Empty;
         public string OutputPath{ get; set; } = string.Empty;

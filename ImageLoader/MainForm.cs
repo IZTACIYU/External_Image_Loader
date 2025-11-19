@@ -974,7 +974,7 @@ namespace ImageLoader
     {
         private System.ComponentModel.IContainer components = null;
 
-        private Configurence config;
+        private PathConfig config;
 
         private LabelLinear _baseLiner;
         private LabelLinear _codeParse;
@@ -1091,13 +1091,15 @@ namespace ImageLoader
             }
         }
 
-        private void SavePathConfig(Configurence config, string fileName = "PathConfig.json")
+        private void SavePathConfig(PathConfig config, InputField input, InputField output, string fileName = "PathConfig.json")
         {
-            var dat = new DirectoryConfig
+            var dat = new PathConfig
             {
-                InputDirectory = config.InputPath,
-                OutputDirectory = config.OutputPath,
+                InputPath = input.InputBox.Text,
+                OutputPath = output.InputBox.Text,
             };
+            config.InputPath = input.InputBox.Text;
+            config.OutputPath = output.InputBox.Text;
 
             var opt = new JsonSerializerOptions { WriteIndented = true };
             var json = JsonSerializer.Serialize(dat, opt);
@@ -1116,7 +1118,7 @@ namespace ImageLoader
             }
 
         }    // PathConfig 저장
-        private void LoadPathConfig(Configurence config, string fileName = "PathConfig.json")
+        private void LoadPathConfig(PathConfig config, string fileName = "PathConfig.json")
         {
             var exeDir = Path.GetDirectoryName(Application.ExecutablePath);
             var fPath = Path.Combine(exeDir, fileName);
@@ -1126,12 +1128,12 @@ namespace ImageLoader
             try
             {
                 var json = File.ReadAllText(fPath);
-                var dat = JsonSerializer.Deserialize<DirectoryConfig>(json);
+                var dat = JsonSerializer.Deserialize<PathConfig>(json);
 
                 if (dat != null)
                 {
-                    config.InputPath = dat.InputDirectory;
-                    config.OutputPath = dat.OutputDirectory;
+                    config.InputPath = dat.InputPath;
+                    config.OutputPath = dat.OutputPath;
                 }
                 else
                 {
@@ -1145,12 +1147,12 @@ namespace ImageLoader
             }
 
         }    // PathConfig 로드
-        private void GetPathConfig(Configurence config, InputField input, InputField output)
+        private void GetPathConfig(PathConfig config, InputField input, InputField output)
         {
             input.InputBox.Text = config.InputPath;
             output.InputBox.Text = config.OutputPath;
         }   // PathConfig를 InputField에 임시적용
-        private void SetPathConfig(Configurence config, InputField input, InputField output)
+        private void SetPathConfig(PathConfig config, InputField input, InputField output)
         {
             config.InputPath = input.InputBox.Text;
             config.OutputPath = output.InputBox.Text;
@@ -1401,7 +1403,7 @@ namespace ImageLoader
                 };
 
                 apply.Click += (_, _) => SetPathConfig(this.config, input, output);
-                save.Click += (_, _) => SavePathConfig(this.config);
+                save.Click += (_, _) => SavePathConfig(this.config, input, output);
 
                 GetPathConfig(this.config, input, output);
                 window.Controls.Add(tvider);
