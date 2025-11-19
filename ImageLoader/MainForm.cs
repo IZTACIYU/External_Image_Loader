@@ -633,7 +633,10 @@ namespace ImageLoader
                     string fileName = job.Tokens.GetValueOrDefault("name", "unknown_image");
                     string imgName = job.Tokens.GetValueOrDefault("num", "unknown_image") + Path.GetExtension(job.Url);
                     string savePath = config.OutputPath;
-                    SaveImage(imgBytes, savePath, fileName, imgName);
+                    bool trigger = SaveImage(imgBytes, savePath, fileName, imgName);
+
+                    if(trigger == true)
+                        MessageBox.Show("이미지 저장 성공");
                 };
                 pnlBot.Controls.Add(btSave);
 
@@ -1576,17 +1579,17 @@ namespace ImageLoader
 
     public partial class MainForm
     {
-        private void SaveImage(byte[] imgBytes, string outputPath, string folderName, string imgName)
+        private bool SaveImage(byte[] imgBytes, string outputPath, string folderName, string imgName)
         {
             if (imgBytes == null || imgBytes.Length == 0)
             {
                 MessageBox.Show("SaveImage: imgBytes가 null이거나 비어있습니다.");
-                return;
+                return false;
             }
             if (string.IsNullOrWhiteSpace(outputPath))
             {
                 MessageBox.Show("출력(저장) 경로가 설정되지 않았습니다.", "경로 오류");
-                return;
+                return false;
             }
 
             if (string.IsNullOrWhiteSpace(folderName))
@@ -1623,10 +1626,12 @@ namespace ImageLoader
 
                 File.WriteAllBytes(finalPath, imgBytes);
                 // MessageBox.Show("이미지 저장 성공"); // 다중 저장 시 너무 많이 뜸
+                return true;
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"이미지 저장 중 오류 발생:\n{ex.Message}", "저장 오류");
+                return false;
             }
         }
         private void SaveAllImages()

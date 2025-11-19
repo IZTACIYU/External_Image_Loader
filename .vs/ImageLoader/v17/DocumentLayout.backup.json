@@ -37,7 +37,7 @@
       "VerticalTabListWidth": 256,
       "DocumentGroups": [
         {
-          "DockedWidth": 654,
+          "DockedWidth": 1195,
           "SelectedChildIndex": 0,
           "Children": [
             {
@@ -46,9 +46,9 @@
               "Title": "MainForm.cs",
               "DocumentMoniker": "C:\\Users\\admin\\Desktop\\Git\\External_Image_Loader\\ImageLoader\\MainForm.cs",
               "RelativeDocumentMoniker": "ImageLoader\\MainForm.cs",
-              "ToolTip": "C:\\Users\\admin\\Desktop\\Git\\External_Image_Loader\\ImageLoader\\MainForm.cs*",
-              "RelativeToolTip": "ImageLoader\\MainForm.cs*",
-              "ViewState": "AgIAABYGAAAAAAAAAAAvwIIGAAABAAAAAAAAAA==",
+              "ToolTip": "C:\\Users\\admin\\Desktop\\Git\\External_Image_Loader\\ImageLoader\\MainForm.cs",
+              "RelativeToolTip": "ImageLoader\\MainForm.cs",
+              "ViewState": "AgIAAGUCAAAAAAAAAAAAAH4CAAA1AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-11-06T03:30:16.788Z",
               "IsPinned": true,
@@ -62,7 +62,7 @@
               "RelativeDocumentMoniker": "ImageLoader\\UpdateChecker.cs",
               "ToolTip": "C:\\Users\\admin\\Desktop\\Git\\External_Image_Loader\\ImageLoader\\UpdateChecker.cs",
               "RelativeToolTip": "ImageLoader\\UpdateChecker.cs",
-              "ViewState": "AgIAADkAAAAAAAAAAAAAAFQAAAAQAAAAAAAAAA==",
+              "ViewState": "AgIAAB4AAAAAAAAAAAAxwD8AAAAiAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-11-18T15:36:44.457Z",
               "EditorCaption": ""
@@ -77,8 +77,7 @@
               "RelativeToolTip": "ImageLoader\\SubClass\\TileData.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAVAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-11-18T14:40:26.239Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-11-18T14:40:26.239Z"
             },
             {
               "$type": "Document",
@@ -90,8 +89,7 @@
               "RelativeToolTip": "ImageLoader\\Note\\Configure.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABUAAAAgAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-11-17T11:13:59.83Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-11-17T11:13:59.83Z"
             },
             {
               "$type": "Document",
@@ -103,24 +101,23 @@
               "RelativeToolTip": "ImageLoader\\Layout\\Switch.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-11-12T10:42:42.784Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-11-12T10:42:42.784Z"
             }
           ]
         },
         {
-          "DockedWidth": 564,
+          "DockedWidth": 23,
           "SelectedChildIndex": 0,
           "Children": [
             {
               "$type": "Document",
               "DocumentIndex": 2,
-              "Title": "ImageLoader",
+              "Title": "ImageLoader.csproj",
               "DocumentMoniker": "C:\\Users\\admin\\Desktop\\Git\\External_Image_Loader\\ImageLoader\\ImageLoader.csproj",
               "RelativeDocumentMoniker": "ImageLoader\\ImageLoader.csproj",
               "ToolTip": "C:\\Users\\admin\\Desktop\\Git\\External_Image_Loader\\ImageLoader\\ImageLoader.csproj",
               "RelativeToolTip": "ImageLoader\\ImageLoader.csproj",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAARAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAUAAAAQAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
               "WhenOpened": "2025-11-18T15:53:10.147Z",
               "IsPinned": true,
@@ -136,8 +133,7 @@
               "RelativeToolTip": "version.json",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABQAAAAXAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2025-11-18T16:08:05.422Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-11-18T16:08:05.422Z"
             }
           ]
         }
