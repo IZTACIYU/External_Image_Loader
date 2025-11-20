@@ -7,6 +7,5 @@
         public required SwitchTools Buttons { get; set; }   // Simplified, Raw Params
         public required Panel Contents { get; set; }        // 현재 지정된 모드(버튼)에 따른 내용을 띄울 텍스트를 담기 위한 페널, 내용크기에 따라 매널 크기도 변함
         public required RichTextBox Context { get; set; }   // 텍스트 박스
-
     }
 }

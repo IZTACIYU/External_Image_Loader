@@ -8,5 +8,9 @@
         static public Color NAI_BUTTON = ColorTranslator.FromHtml("#22253F");
         static public Color NAI_HEADER = Color.Gold;//ColorTranslator.FromHtml("#F5F3C2");
         static public Color NAI_VALUE = Color.LightGray;//ColorTranslator.FromHtml("#878790");
+
+
+        static public Color EXIF_EXIST_TRUE = Color.SeaGreen;
+        static public Color EXIF_EXIST_FALSE = Color.IndianRed;
     }
 }

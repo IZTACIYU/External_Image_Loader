@@ -5,6 +5,12 @@
     <Compile Update="Layout\ExifWindow.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Update="Layout\ImageTile.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Update="Layout\ImageWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Update="Layout\Switch.cs">
       <SubType>Component</SubType>
     </Compile>

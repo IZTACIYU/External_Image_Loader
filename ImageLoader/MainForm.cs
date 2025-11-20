@@ -55,8 +55,17 @@ namespace ImageLoader
             return string.IsNullOrEmpty(nameTag) ? software : nameTag;
         }
     }
-    public partial class MainForm
+    public partial class MainForm : Form
     {
+        public MainForm()
+        {
+            this.Initialize();
+            this.LoadLoaderConfig();
+            this.LoadPathConfig(this.config);
+            this.BackColor = COLOR.NAI_DARK;
+
+            _ = new UpdateChecker().CheckAsync();
+        }
         protected override void Dispose(bool disposing)
         {
             if (disposing && (components != null))
@@ -95,16 +104,8 @@ namespace ImageLoader
     }
 
     // Body Combined With Head
-    public partial class MainForm : Form
+    public partial class MainForm
     {
-        public MainForm()
-        {
-            this.Initialize();
-            this.LoadLoaderConfig();
-            this.LoadPathConfig(this.config);
-
-            _ = new UpdateChecker().CheckAsync();
-        }
 
         private void RunParsing()
         {
@@ -184,14 +185,6 @@ namespace ImageLoader
             }
 
             CleanUpFlowPanel();
-
-            // 전체 저장 버튼 제거 (재시작 시)
-            //if (_btSaveAll != null)
-            //{
-            //    this.Controls.Remove(_btSaveAll);
-            //    _btSaveAll.Dispose();
-            //    _btSaveAll = null;
-            //}
 
             _cts = new CancellationTokenSource();
             SetButtons(running: true);
@@ -468,42 +461,7 @@ namespace ImageLoader
                 return;
             }
 
-            var tileData = new TileData
-            {
-                Job = job,
-                Image = img,
-                ImgBytes = imgBytes,
-                ExifSuccess = exifSuccess
-            };
-
-            var panel = new Panel
-            {
-                Width = 220,
-                Height = 260,
-                Margin = new Padding(6),
-                Padding = new Padding(6),
-                BackColor = Color.White,
-                Tag = tileData
-            };
-
-            var borderColor = ok ? Color.SeaGreen : Color.IndianRed;
-
-            panel.Paint += (s, e) =>
-            {
-                using var pen = new Pen(borderColor, 2);
-                e.Graphics.DrawRectangle(pen, 1, 1, panel.Width - 3, panel.Height - 3);
-            };
-
-            var pb = new PictureBox
-            {
-                SizeMode = PictureBoxSizeMode.Zoom,
-                Width = 200,
-                Height = 160,
-                Image = img,
-                BackColor = Color.Gainsboro,
-                Cursor = Cursors.Hand
-            };
-
+            #region 토큰 관리 부분
             var titleParts = new List<string>();
             if (job.Tokens.ContainsKey("name")) titleParts.Add(job.Tokens["name"]);
             if (job.Tokens.ContainsKey("situation")) titleParts.Add(job.Tokens["situation"]);
@@ -514,9 +472,75 @@ namespace ImageLoader
             }
             var title = string.Join(" / ", titleParts);
             if (string.IsNullOrEmpty(title)) title = "[단일 요청]";
+            #endregion
 
-            pb.Click += (s, e) =>
+            // 각 이미지 타일생성 부분
+            var imgTile = new ImageTile()
             {
+                Width = 220,
+                Height = 260,
+                Margin = new Padding(6),
+                Padding = new Padding(6),
+                BackColor = Color.White,
+                Tag = new TileData
+                {
+                    Job = job,
+                    Image = img,
+                    ImgBytes = imgBytes,
+                    ExifSuccess = exifSuccess
+                },
+            };
+            imgTile.Image = new PictureBox()
+            {
+                SizeMode = PictureBoxSizeMode.Zoom,
+                Width = 200,
+                Height = 160,
+                Image = img,
+                BackColor = Color.Gainsboro,
+                Cursor = Cursors.Hand
+            };
+            imgTile.Title = new Label
+            {
+                AutoSize = false,
+                Width = 200,
+                Height = 20,
+                Text = title,
+                Font = new Font(Font, FontStyle.Bold)
+            };
+            imgTile.Meta = new LinkLabel
+            {
+                AutoSize = false,
+                Width = 200,
+                Height = 18,
+                Text = note,
+                LinkBehavior = LinkBehavior.HoverUnderline
+            };
+            imgTile.ExifLabel = new Label
+            {
+                Text = "EXIF",
+                ForeColor = Color.White,
+                BackColor = exifSuccess ? Color.SeaGreen : Color.IndianRed,
+                Font = new Font(Font, FontStyle.Bold),
+                Size = new Size(40, 18),
+                TextAlign = ContentAlignment.MiddleCenter
+            };
+
+            imgTile.Meta.Links.Add(0, note.Length, job.Url);
+            imgTile.Meta.LinkClicked += (s, e) =>
+            {
+                if (e.Link.LinkData is string u)
+                    Process.Start(new ProcessStartInfo { FileName = u, UseShellExecute = true });
+            };
+            imgTile.SetBorder(ok);
+
+            imgTile.Image.Top = 6; imgTile.Image.Left = 10;
+            imgTile.Title.Top = imgTile.Image.Bottom + 6; imgTile.Title.Left = 10;
+            imgTile.Meta.Top = imgTile.Title.Bottom + 2; imgTile.Meta.Left = 10;
+            imgTile.ExifLabel.Top = imgTile.Meta.Bottom + 4; imgTile.ExifLabel.Left = 10;
+
+            imgTile.Image.Click += (s, e) =>
+            {
+                if(imgTile.Image == null) return;
                 var viewer = new Form { Text = $"{title} - {job.Url}", Width = 900, Height = 700 };
                 var pic = new PictureBox { Dock = DockStyle.Fill, SizeMode = PictureBoxSizeMode.Zoom, Image = img };
 
@@ -576,7 +600,7 @@ namespace ImageLoader
                                                     Name = "Simplified",
                                                     Text = "Simplified",
                                                     AutoToolTip = false,
-                                                    BackColor=COLOR.NAI_BUTTON,
+                                                    BackColor = COLOR.NAI_BUTTON,
                                                     ForeColor = COLOR.NAI_VALUE,
                                                 }
                                             },
@@ -586,7 +610,7 @@ namespace ImageLoader
                                                     Name = "Raw Parameters",
                                                     Text = "Raw Parameters",
                                                     AutoToolTip = false,
-                                                    BackColor=COLOR.NAI_BUTTON,
+                                                    BackColor = COLOR.NAI_BUTTON,
                                                     ForeColor = COLOR.NAI_VALUE,
                                                 }
                                             },
@@ -644,53 +668,7 @@ namespace ImageLoader
                 viewer.Controls.Add(pnlBot);
                 viewer.Show();
             };
-
-            var titleLbl = new Label
-            {
-                AutoSize = false,
-                Width = 200,
-                Height = 20,
-                Text = title,
-                Font = new Font(Font, FontStyle.Bold)
-            };
-
-            var meta = new LinkLabel
-            {
-                AutoSize = false,
-                Width = 200,
-                Height = 18,
-                Text = note,
-                LinkBehavior = LinkBehavior.HoverUnderline
-            };
-            meta.Links.Add(0, note.Length, job.Url);
-            meta.LinkClicked += (s, e) =>
-            {
-                if (e.Link.LinkData is string u)
-                    Process.Start(new ProcessStartInfo { FileName = u, UseShellExecute = true });
-            };
-
-            var exifLbl = new Label
-            {
-                Text = "EXIF",
-                ForeColor = Color.White,
-                BackColor = exifSuccess ? Color.SeaGreen : Color.IndianRed,
-                Font = new Font(Font, FontStyle.Bold),
-                Size = new Size(40, 18),
-                TextAlign = ContentAlignment.MiddleCenter
-            };
-
-
-            pb.Top = 6; pb.Left = 6;
-            titleLbl.Top = pb.Bottom + 6; titleLbl.Left = 6;
-            meta.Top = titleLbl.Bottom + 2; meta.Left = 6;
-            exifLbl.Top = meta.Bottom + 4; exifLbl.Left = 6;
-
-            panel.Controls.Add(pb);
-            panel.Controls.Add(titleLbl);
-            panel.Controls.Add(meta);
-            panel.Controls.Add(exifLbl);
-
-            _flp.Controls.Add(panel);
+            imgTile.MountTo(this._flp.Controls);
         }
 
         private void CleanUpFlowPanel()
@@ -714,6 +692,64 @@ namespace ImageLoader
             GC.Collect();
         }
 
+    }
+
+
+
+
+    // Note
+    public partial class MainForm
+    {
+        private System.ComponentModel.IContainer components = null;
+
+        private PathConfig config;
+
+        private LabelLinear _baseLiner;
+        private LabelLinear _codeParse;
+
+        private Label _lBs => _baseLiner.InputField.Header;
+        private TextBox _tBs => _baseLiner.InputField.InputBox;
+        private Button _btSav => _baseLiner.Button;
+
+        private Label _lIn => _codeParse.InputField.Header;
+        private TextBox _tIn => _codeParse.InputField.InputBox;
+        private Button _btPrs => _codeParse.Button;
+
+        private InputField _nameField;
+        private InputField _situField;
+
+        private Label _lblNum;
+        private NumericUpDown _numSt;
+        private NumericUpDown _numEn;
+
+        // 실행 컨트롤
+        private Label _lblPl;
+        private NumericUpDown _numPl;
+        private Button _btSt;
+        private Button _btSp;
+        private Button _btSaveAll; // 동적 생성
+
+        private Panel _pnlCt;
+        private FlowLayoutPanel _flp;
+
+        // 헤더 공통 폰트
+        private Font _headerFont;
+
+        // 툴바
+        private ToolBar _toolBar;
+
+        // 통신 및 토크나이저용
+        private const string Ptn = @"\{([^}]+)\}";
+        private readonly HttpClient _http = new()
+        {
+            Timeout = TimeSpan.FromSeconds(15)
+        };
+        private CancellationTokenSource? _cts;
+    }
+
+    // EXIF 관리
+    public partial class MainForm
+    {
         private bool CheckExif(MemoryStream ms)
         {
             try
@@ -969,55 +1005,8 @@ namespace ImageLoader
             return null;
         }
     }
-    // Note
-    public partial class MainForm
-    {
-        private System.ComponentModel.IContainer components = null;
 
-        private PathConfig config;
-
-        private LabelLinear _baseLiner;
-        private LabelLinear _codeParse;
-
-        private Label _lBs => _baseLiner.InputField.Header;
-        private TextBox _tBs => _baseLiner.InputField.InputBox;
-        private Button _btSav => _baseLiner.Button;
-
-        private Label _lIn => _codeParse.InputField.Header;
-        private TextBox _tIn => _codeParse.InputField.InputBox;
-        private Button _btPrs => _codeParse.Button;
-
-        private InputField _nameField;
-        private InputField _situField;
-
-        private Label _lblNum;
-        private NumericUpDown _numSt;
-        private NumericUpDown _numEn;
-
-        // 실행 컨트롤
-        private Label _lblPl;
-        private NumericUpDown _numPl;
-        private Button _btSt;
-        private Button _btSp;
-        private Button _btSaveAll; // 동적 생성
-
-        private Panel _pnlCt;
-        private FlowLayoutPanel _flp;
-
-        // 헤더 공통 폰트
-        private Font _headerFont;
-
-        // 툴바
-        private ToolBar _toolBar;
-
-        // 통신 및 토크나이저용
-        private const string Ptn = @"\{([^}]+)\}";
-        private readonly HttpClient _http = new()
-        {
-            Timeout = TimeSpan.FromSeconds(15)
-        };
-        private CancellationTokenSource? _cts;
-    }
+    // Config 저장
     public partial class MainForm
     {
         private void SaveLoaderConfig(string fileName = "ImgLdConfig.json")
@@ -1158,6 +1147,100 @@ namespace ImageLoader
             config.OutputPath = output.InputBox.Text;
             MessageBox.Show("적용되었습니다.");
         }   // PathConfig를 임시 적용
+    }
+
+    // 이미지 저장
+    public partial class MainForm
+    {
+        private bool SaveImage(byte[] imgBytes, string outputPath, string folderName, string imgName)
+        {
+            if (imgBytes == null || imgBytes.Length == 0)
+            {
+                MessageBox.Show("SaveImage: imgBytes가 null이거나 비어있습니다.");
+                return false;
+            }
+            if (string.IsNullOrWhiteSpace(outputPath))
+            {
+                MessageBox.Show("출력(저장) 경로가 설정되지 않았습니다.", "경로 오류");
+                return false;
+            }
+
+            if (string.IsNullOrWhiteSpace(folderName))
+            {
+                folderName = "ETC.";
+            }
+            if (string.IsNullOrWhiteSpace(imgName))
+            {
+                imgName = Path.GetRandomFileName() + ".png";
+            }
+
+            string cleanFolderName = Path.GetInvalidFileNameChars().Aggregate(folderName, (current, c) => current.Replace(c.ToString(), "_"));
+            string cleanFileName = Path.GetInvalidFileNameChars().Aggregate(imgName, (current, c) => current.Replace(c.ToString(), "_"));
+
+            try
+            {
+                string targetDirectory = Path.Combine(outputPath, cleanFolderName);
+
+                if (System.IO.Directory.Exists(targetDirectory) == false)
+                {
+                    System.IO.Directory.CreateDirectory(targetDirectory);
+                }
+
+                string finalPath = Path.Combine(targetDirectory, cleanFileName);
+
+                string baseNameOnly = Path.GetFileNameWithoutExtension(cleanFileName);
+                string ext = Path.GetExtension(cleanFileName);
+                int count = 1;
+                while (File.Exists(finalPath))
+                {
+                    finalPath = Path.Combine(targetDirectory, $"{baseNameOnly} ({count}){ext}");
+                    count++;
+                }
+
+                File.WriteAllBytes(finalPath, imgBytes);
+                // MessageBox.Show("이미지 저장 성공"); // 다중 저장 시 너무 많이 뜸
+                return true;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"이미지 저장 중 오류 발생:\n{ex.Message}", "저장 오류");
+                return false;
+            }
+        }
+        private void SaveAllImages()
+        {
+            string outputDirectory = config.OutputPath;
+
+            if (string.IsNullOrWhiteSpace(outputDirectory))
+            {
+                MessageBox.Show("출력(저장) 경로가 설정되지 않았습니다.\n'설정' -> '작업 경로 설정'에서 경로를 지정하세요.", "경로 오류");
+                return;
+            }
+
+            int successCount = 0;
+            int skippedCount = 0;
+
+            foreach (Control control in _flp.Controls)
+            {
+                if (control is Panel panel && panel.Tag is TileData data)
+                {
+                    if (data.Image != null && data.ImgBytes != null)
+                    {
+                        string folderName = data.Job.Tokens.GetValueOrDefault("name", "Unsorted");
+                        string imgName = data.Job.Tokens.GetValueOrDefault("num", "unknown_image") + Path.GetExtension(data.Job.Url);
+
+                        SaveImage(data.ImgBytes, outputDirectory, folderName, imgName);
+                        successCount++;
+                    }
+                    else
+                    {
+                        skippedCount++;
+                    }
+                }
+            }
+
+            MessageBox.Show($"저장 완료: {successCount}개 저장, {skippedCount}개 (로드 실패) 건너뜀.", "전체 저장");
+        }
     }
 }
 namespace ImageLoader
@@ -1529,7 +1612,7 @@ namespace ImageLoader
             this._pnlCt.Anchor = (AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right);
             this._pnlCt.Location = new Point(12, 162);
             this._pnlCt.Name = "_pnlCt";
-            this._pnlCt.Size = new Size(484, 218);
+            this._pnlCt.Size = new Size(484, 220);
             this._pnlCt.TabIndex = 11;
             this._pnlCt.BorderStyle = BorderStyle.FixedSingle;
 
@@ -1579,96 +1662,4 @@ namespace ImageLoader
         }
     }
 
-    public partial class MainForm
-    {
-        private bool SaveImage(byte[] imgBytes, string outputPath, string folderName, string imgName)
-        {
-            if (imgBytes == null || imgBytes.Length == 0)
-            {
-                MessageBox.Show("SaveImage: imgBytes가 null이거나 비어있습니다.");
-                return false;
-            }
-            if (string.IsNullOrWhiteSpace(outputPath))
-            {
-                MessageBox.Show("출력(저장) 경로가 설정되지 않았습니다.", "경로 오류");
-                return false;
-            }
-
-            if (string.IsNullOrWhiteSpace(folderName))
-            {
-                folderName = "ETC.";
-            }
-            if (string.IsNullOrWhiteSpace(imgName))
-            {
-                imgName = Path.GetRandomFileName() + ".png";
-            }
-
-            string cleanFolderName = Path.GetInvalidFileNameChars().Aggregate(folderName, (current, c) => current.Replace(c.ToString(), "_"));
-            string cleanFileName = Path.GetInvalidFileNameChars().Aggregate(imgName, (current, c) => current.Replace(c.ToString(), "_"));
-
-            try
-            {
-                string targetDirectory = Path.Combine(outputPath, cleanFolderName);
-
-                if (System.IO.Directory.Exists(targetDirectory) == false)
-                {
-                    System.IO.Directory.CreateDirectory(targetDirectory);
-                }
-
-                string finalPath = Path.Combine(targetDirectory, cleanFileName);
-
-                string baseNameOnly = Path.GetFileNameWithoutExtension(cleanFileName);
-                string ext = Path.GetExtension(cleanFileName);
-                int count = 1;
-                while (File.Exists(finalPath))
-                {
-                    finalPath = Path.Combine(targetDirectory, $"{baseNameOnly} ({count}){ext}");
-                    count++;
-                }
-
-                File.WriteAllBytes(finalPath, imgBytes);
-                // MessageBox.Show("이미지 저장 성공"); // 다중 저장 시 너무 많이 뜸
-                return true;
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"이미지 저장 중 오류 발생:\n{ex.Message}", "저장 오류");
-                return false;
-            }
-        }
-        private void SaveAllImages()
-        {
-            string outputDirectory = config.OutputPath;
-
-            if (string.IsNullOrWhiteSpace(outputDirectory))
-            {
-                MessageBox.Show("출력(저장) 경로가 설정되지 않았습니다.\n'설정' -> '작업 경로 설정'에서 경로를 지정하세요.", "경로 오류");
-                return;
-            }
-
-            int successCount = 0;
-            int skippedCount = 0;
-
-            foreach (Control control in _flp.Controls)
-            {
-                if (control is Panel panel && panel.Tag is TileData data)
-                {
-                    if (data.Image != null && data.ImgBytes != null)
-                    {
-                        string folderName = data.Job.Tokens.GetValueOrDefault("name", "Unsorted");
-                        string imgName = data.Job.Tokens.GetValueOrDefault("num", "unknown_image") + Path.GetExtension(data.Job.Url);
-
-                        SaveImage(data.ImgBytes, outputDirectory, folderName, imgName);
-                        successCount++;
-                    }
-                    else
-                    {
-                        skippedCount++;
-                    }
-                }
-            }
-
-            MessageBox.Show($"저장 완료: {successCount}개 저장, {skippedCount}개 (로드 실패) 건너뜀.", "전체 저장");
-        }
-    }
 }

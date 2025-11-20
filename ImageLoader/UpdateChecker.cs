@@ -1,11 +1,7 @@
-﻿using System;
-using System.Net.Http;
-using System.Reflection;
+﻿using System.Reflection;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 
 namespace ImageLoader
 {
@@ -14,7 +10,7 @@ namespace ImageLoader
         private const string RELEASES_JSON_URL = "https://raw.githubusercontent.com/IZTACIYU/External_Image_Loader/refs/heads/main/version.json";
         private const string DOWNLOAD_PAGE_URL = "https://github.com/IZTACIYU/External_Image_Loader/releases/latest";
 
-        public async Task CheckAsync()
+       public async Task CheckAsync()
         {
             try
             {
