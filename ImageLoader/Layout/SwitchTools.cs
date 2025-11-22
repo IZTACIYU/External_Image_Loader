@@ -21,7 +21,7 @@
             }
             catch
             {
-                MessageBox.Show("NAME TAG DOES NOT EXISTS");
+                MessageBox.Show("NAME TAG DOES NOT EXISTS", "ERROR");
                 return new() { Code = "ERROR" };
             }
 

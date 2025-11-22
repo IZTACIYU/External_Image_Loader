@@ -3,10 +3,11 @@
     public class ExifWindow : Form, ICommit, IItemProvider<ToolStripButton>
     {
         public required SwitchTools ToolBars { get; set; }
-        public required Panel BackGround { get; set; } // Label로 바꾸기
+        public required Panel BackGround { get; set; }
         public required RichTextBox Prompts { get; set; }
         public FlowLayoutPanel? Characters { get; set; }
 
+        // ICommit
         public void Commit()
         {
             ToolBars.MountTo(this.Controls);
@@ -14,49 +15,59 @@
             this.Controls.Add(BackGround);
         }
 
+        // IItemProvider
         public ToolStripButton GetItem(string Name)
         {
             return ((IItemProvider<ToolStripButton>)ToolBars).GetItem(Name);
         }
+
+        public void ToExifPanel(Simplified data)
+        {
+            var kvp = data.KVP();
+
+            this.Prompts.Clear();
+
+            Font baseFont = this.Prompts.Font;
+            Color baseColor = this.Prompts.ForeColor;
+
+            // 폰트 객체 캐싱
+            // *** Font 객체는 GDI 리소스를 사용하므로, 나중에 꼭 Dispose() 해야함 ***
+            Font keyFont = new Font(baseFont, FontStyle.Bold);
+            Font valueFont = new Font(baseFont, FontStyle.Italic);
+
+            try
+            {
+                foreach (var kvpValue in kvp)
+                {
+                    var key = kvpValue.Key;
+                    var value = kvpValue.Value ?? "N/A";
+
+                    // 키값 서식 설정 (Bold, Gold)
+                    this.Prompts.SelectionFont = keyFont;
+                    this.Prompts.SelectionColor = COLOR.NAI_HEADER;
+                    this.Prompts.AppendText(key + ": ");
+
+                    // 벨류값 서식 설정 (Italic, LightGray)
+                    this.Prompts.SelectionFont = valueFont;
+                    this.Prompts.SelectionColor = COLOR.NAI_VALUE;
+                    this.Prompts.AppendText(value);
+
+                    this.Prompts.AppendText("\n");
+                }
+            }
+            finally
+            {
+                // 폰트 객체 리소스 해제
+                keyFont.Dispose();
+                valueFont.Dispose();
+
+                // 기본값 초기화
+                this.Prompts.SelectionFont = baseFont;
+                this.Prompts.SelectionColor = baseColor;
+
+                // 캐럿 최상단 이동
+                this.Prompts.Select(0, 0);
+            }
+        }
     }
 }
-
-
-//using System.Windows.Forms;
-
-//namespace ImageLoader
-//{
-//    public class ExifWindow : Form, ICommit, IItemProvider<Switch> // ToolStripButton -> Switch
-//    {
-//        public required SwitchTools ToolBars { get; set; }
-//        public required RichTextBox Informations { get; set; } // Prompts -> Informations
-//        public required Panel Contents { get; set; } // BackGround -> Contents
-//        public required RichTextBox Context { get; set; } // 신규
-//        public FlowLayoutPanel? Characters { get; set; }
-
-//        public void Commit()
-//        {
-//            // Dock 순서: Fill -> Top -> Top
-
-//            // 1. Context를 Contents 패널에 채웁니다.
-//            this.Contents.Controls.Add(this.Context);
-
-//            // 2. Contents 패널을 폼에 채웁니다 (Dock.Fill).
-//            this.Controls.Add(this.Contents);
-
-//            // 3. Info 패널을 Contents 위에 배치합니다 (Dock.Top).
-//            this.Controls.Add(this.Informations);
-
-//            // 4. 툴바를 Info 패널 위에 배치합니다 (Dock.Top).
-//            ToolBars.MountTo(this.Controls);
-
-//            // 툴바가 가려지는 것을 방지하기 위해 맨 앞으로 가져옵니다.
-//            ToolBars.BringToFront();
-//        }
-
-//        public Switch GetItem(string Name)
-//        {
-//            return ToolBars.GetItem(Name); // 인터페이스 구현
-//        }
-//    }
-//}

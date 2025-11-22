@@ -4,57 +4,62 @@ using System.Diagnostics;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 
+// ICommit => Form 클래스
+// IControlMountable => 그 외 클래스
+// IItemProvider => 동적 버튼 컨테이너 제공시
+
 namespace ImageLoader
 {
+    // Note
     public partial class MainForm
     {
-        public string IdentifyModel(string software, string prompt)
+        private System.ComponentModel.IContainer components = null;
+
+        private PathConfig config;
+
+        private LabelLinear _baseLiner;
+        private LabelLinear _codeParse;
+
+        private Label _lBs => _baseLiner.InputField.Header;
+        private TextBox _tBs => _baseLiner.InputField.InputBox;
+        private Button _btSav => _baseLiner.Button;
+
+        private Label _lIn => _codeParse.InputField.Header;
+        private TextBox _tIn => _codeParse.InputField.InputBox;
+        private Button _btPrs => _codeParse.Button;
+
+        private InputField _nameField;
+        private InputField _situField;
+
+        private Label _lblNum;
+        private NumericUpDown _numSt;
+        private NumericUpDown _numEn;
+
+        // 실행 컨트롤
+        private Label _lblPl;
+        private NumericUpDown _numPl;
+        private Button _btSt;
+        private Button _btSp;
+        private Button _btSaveAll; // 동적 생성
+
+        private Panel _pnlCt;
+        private FlowLayoutPanel _flp;
+
+        // 헤더 공통 폰트
+        private Font _headerFont;
+
+        // 툴바
+        private ToolBar _toolBar;
+
+        // 통신 및 토크나이저용
+        private const string Ptn = @"\{([^}]+)\}";
+        private readonly HttpClient _http = new()
         {
-            string nameTag = "";
-            if (string.IsNullOrEmpty(software) || string.IsNullOrEmpty(prompt))
-                return software;
-
-            var sf = software.Split(' ');
-            var pr = prompt.Split(',');
-
-            if (sf.Length == 0 || pr.Length == 0) return software;
-
-            if (sf.Last() == "37C2B166")
-                nameTag = software + "(NAI Diffusion Furry V3)";
-            else if (sf.Last() == "7BCCAA2C")
-                nameTag = software + "(NAI Diffusion Anime V3)";
-            else if (sf.Last() == "7ABFFA2A")
-            {
-                if (pr[0] == "fur dataset")
-                    nameTag = software + "(NAI Diffusion V4 Curated + Furry)";
-                else
-                    nameTag = software + "(NAI Diffusion V4 Curated)";
-            }
-            else if (sf.Last() == "37442FCA")
-            {
-                if (pr[0] == "fur dataset")
-                    nameTag = software + "(NAI Diffusion V4 Full + Furry)";
-                else
-                    nameTag = software + "(NAI Diffusion V4 Full)";
-            }
-            else if (sf.Last() == "C02D4F98")
-            {
-                if (pr[0] == "fur dataset")
-                    nameTag = software + "(NAI Diffusion V4.5 Curated + Furry)";
-                else
-                    nameTag = software + "(NAI Diffusion V4.5 Curated)";
-            }
-            else if (sf.Last() == "4BDE2A90")
-            {
-                if (pr[0] == "fur dataset")
-                    nameTag = software + "(NAI Diffusion V4.5 Full + Furry)";
-                else
-                    nameTag = software + "(NAI Diffusion V4.5 Full)";
-            }
-
-            return string.IsNullOrEmpty(nameTag) ? software : nameTag;
-        }
+            Timeout = TimeSpan.FromSeconds(15)
+        };
+        private CancellationTokenSource? _cts;
     }
+    // 이니셜라이져
     public partial class MainForm : Form
     {
         public MainForm()
@@ -62,7 +67,7 @@ namespace ImageLoader
             this.Initialize();
             this.LoadLoaderConfig();
             this.LoadPathConfig(this.config);
-            this.BackColor = COLOR.NAI_DARK;
+            //this.BackColor = COLOR.NAI_DARK;
 
             _ = new UpdateChecker().CheckAsync();
         }
@@ -103,7 +108,58 @@ namespace ImageLoader
         }
     }
 
-    // Body Combined With Head
+    // 모델 식별 ======> 모델번호가 왜 안맞지???
+    public partial class MainForm
+    {
+        public string IdentifyModel(string software, string prompt)
+        {
+            string nameTag = "";
+            if (string.IsNullOrEmpty(software) || string.IsNullOrEmpty(prompt))
+                return software;
+
+            var sf = software.Split(' ');
+            var pr = prompt.Split(',');
+
+            if (sf.Length == 0 || pr.Length == 0) return software;
+
+            if (sf.Last() == "37C2B166")
+                nameTag = software + " (NAI Diffusion Furry V3)";
+            else if (sf.Last() == "7BCCAA2C")
+                nameTag = software + " (NAI Diffusion Anime V3)";
+            else if (sf.Last() == "7ABFFA2A")
+            {
+                if (pr[0] == "fur dataset")
+                    nameTag = software + " (NAI Diffusion V4 Curated + Furry)";
+                else
+                    nameTag = software + " (NAI Diffusion V4 Curated)";
+            }
+            else if (sf.Last() == "37442FCA")
+            {
+                if (pr[0] == "fur dataset")
+                    nameTag = software + " (NAI Diffusion V4 Full + Furry)";
+                else
+                    nameTag = software + " (NAI Diffusion V4 Full)";
+            }
+            else if (sf.Last() == "C02D4F98")
+            {
+                if (pr[0] == "fur dataset")
+                    nameTag = software + " (NAI Diffusion V4.5 Curated + Furry)";
+                else
+                    nameTag = software + " (NAI Diffusion V4.5 Curated)";
+            }
+            else if (sf.Last() == "4BDE2A90" || sf.Last() == "5BB76870")
+            {
+                if (pr[0] == "fur dataset")
+                    nameTag = software + " (NAI Diffusion V4.5 Full + Furry)";
+                else
+                    nameTag = software + " (NAI Diffusion V4.5 Full)";
+            }
+
+            return string.IsNullOrEmpty(nameTag) ? software : nameTag;
+        }
+    }
+
+    // 메인 로직
     public partial class MainForm
     {
 
@@ -454,6 +510,9 @@ namespace ImageLoader
         }
         private void AddTile(Job job, Image? img, string note, bool ok, bool exifSuccess, byte[] imgBytes)
         {
+            bool isValid = !(imgBytes == null || imgBytes.Length == 0);
+            //bool isValid = (imgBytes != null || imgBytes.Length != 0);    // 왜 다르게 취급되는지? 이 방식은 오류뜸 => 오른쪽에서 NULL
+            //bool isValid = (imgBytes != null && imgBytes.Length != 0);    // 이러면 된다
 
             if (InvokeRequired)
             {
@@ -525,6 +584,44 @@ namespace ImageLoader
                 TextAlign = ContentAlignment.MiddleCenter
             };
 
+            // 이미지 이름 클릭으로 빠른 저장
+            if(isValid)
+            {
+                var imgName = imgTile.Title;
+                imgName.MouseEnter += (_, _) =>
+                {
+                    imgName.Cursor = Cursors.Hand;
+                };
+                imgName.MouseLeave += (_, _) =>
+                {
+                    imgName.Cursor = Cursors.Arrow;
+                };
+                imgName.Click += (_, _) =>
+                {
+                    string fileName = job.Tokens.GetValueOrDefault("name", "unknown_image");
+                    string imgName = job.Tokens.GetValueOrDefault("num", "unknown_image") + Path.GetExtension(job.Url);
+                    string savePath = config.OutputPath;
+                    bool trigger = SaveImage(imgBytes, savePath, fileName, imgName);
+
+                    if (trigger == true)
+                        MessageBox.Show("이미지 저장 성공");
+                };
+            }
+            // 이미지 exif라벨 클릭으로 빠른 확인
+            if(exifSuccess)
+            {
+                var label = imgTile.ExifLabel;
+                label.MouseEnter += (_, _) =>
+                {
+                    label.Cursor = Cursors.Hand;
+                };
+                label.MouseLeave += (_, _) =>
+                {
+                    label.Cursor = Cursors.Arrow;
+                };
+                label.Click += (_, _) => ShowExifWindow(imgBytes);
+            }
+
             imgTile.Meta.Links.Add(0, note.Length, job.Url);
             imgTile.Meta.LinkClicked += (s, e) =>
             {
@@ -538,136 +635,58 @@ namespace ImageLoader
             imgTile.Meta.Top = imgTile.Title.Bottom + 2; imgTile.Meta.Left = 10;
             imgTile.ExifLabel.Top = imgTile.Meta.Bottom + 4; imgTile.ExifLabel.Left = 10;
 
-            imgTile.Image.Click += (s, e) =>
+            if (isValid == true)
             {
-                if(imgTile.Image == null) return;
-                var viewer = new Form { Text = $"{title} - {job.Url}", Width = 900, Height = 700 };
-                var pic = new PictureBox { Dock = DockStyle.Fill, SizeMode = PictureBoxSizeMode.Zoom, Image = img };
-
-                // 버튼 정렬 패널
-                var pnlBot = new FlowLayoutPanel
+                imgTile.Image.MouseClick += (s, e) =>
                 {
-                    Dock = DockStyle.Bottom,
-                    FlowDirection = FlowDirection.LeftToRight,
-                    AutoSize = true,
-                    Padding = new Padding(5)
-                };
 
-                // 버튼 생성
-                var btOpen = new Button { Text = "브라우저로 열기", Width = 120 };
-                btOpen.Click += (_, _) => Process.Start(new ProcessStartInfo { FileName = job.Url, UseShellExecute = true });
-                pnlBot.Controls.Add(btOpen);
-
-                var btExif = new Button { Text = "EXIF 확인", Width = 100 };
-                // EXIF 존재시
-                if (exifSuccess)
-                {
-                    pnlBot.Controls.Add(btExif);
-
-                    // EXIF 버튼 지연 로딩
-                    btExif.Click += (_, _) =>
+                    if(e.Button == MouseButtons.Left)
                     {
-                        if (imgBytes == null) return;
-
-                        using (var tempMs = new MemoryStream(imgBytes))
+                        //if (imgTile.Image == null) return;
+                        var viewer = new ImageWindow { Text = $"{title} - {job.Url}", Width = 900, Height = 700 };
+                        viewer.Image = new PictureBox { Dock = DockStyle.Fill, SizeMode = PictureBoxSizeMode.Zoom, Image = img };
+                        viewer.FlowLayOut = new FlowLayoutPanel
                         {
-                            // 본 파싱
-                            Simplified data = ParseExifData(tempMs);
+                            Dock = DockStyle.Bottom,
+                            FlowDirection = FlowDirection.LeftToRight,
+                            AutoSize = true,
+                            Padding = new Padding(5)
+                        };
 
-                            if (data != null)
-                            {
+                        // BLOCK_01
+                        viewer.SetElement("브라우저로 열기", new() { Width = 120 });
+                        var btOpen = viewer.GetItem("브라우저로 열기");
+                        btOpen.Click += (_, _) => Process.Start(new ProcessStartInfo { FileName = job.Url, UseShellExecute = true });
 
-                                var exifPanel = new ExifWindow
-                                {
-                                    Text = "EXIF 상세 정보",
-                                    Width = 600,
-                                    Height = 900,
-                                    BackColor = COLOR.NAI_DARK,
-
-                                    ToolBars = new SwitchTools
-                                    {
-                                        Name = "_exifPanelToolBar",
-                                        Dock = DockStyle.Top,
-                                        GripStyle = ToolStripGripStyle.Hidden,
-                                        BackColor = COLOR.NAI_DARK,
-                                        //RenderMode = ToolStripRenderMode.System,
-
-                                        Buttons = new List<Switch>
-                                        {
-                                            { new Switch()
-                                                {
-                                                    Code = "Simplified",
-                                                    Name = "Simplified",
-                                                    Text = "Simplified",
-                                                    AutoToolTip = false,
-                                                    BackColor = COLOR.NAI_BUTTON,
-                                                    ForeColor = COLOR.NAI_VALUE,
-                                                }
-                                            },
-                                            { new Switch()
-                                                {
-                                                    Code = "Raw Parameters",
-                                                    Name = "Raw Parameters",
-                                                    Text = "Raw Parameters",
-                                                    AutoToolTip = false,
-                                                    BackColor = COLOR.NAI_BUTTON,
-                                                    ForeColor = COLOR.NAI_VALUE,
-                                                }
-                                            },
-                                        }
-                                    },
-                                    BackGround = new Panel
-                                    {
-                                        Padding = new Padding(10, 30, 10, 10),
-                                        Dock = DockStyle.Fill,
-                                        TabStop = false,    // NOTE: 캐럿 끄는 플래그
-                                        Font = new Font("Consolas", 9.75f),
-                                        //Location = new Point(0, 20),
-                                        BackColor = COLOR.NAI_DARK,
-                                    },
-                                    Prompts = new RichTextBox
-                                    {
-                                        Dock = DockStyle.Fill,
-                                        Multiline = true,
-                                        ReadOnly = true,
-                                        TabStop = false,    // NOTE: 캐럿 끄는 플래그
-                                        ScrollBars = RichTextBoxScrollBars.Vertical, // TODO: 이거 끄는법
-                                        Font = new Font("Consolas", 9.75f),
-                                        BorderStyle = BorderStyle.None,
-                                        //Location = new Point(0, 20),
-                                        BackColor = COLOR.NAI_DARK,
-                                    },
-                                };
-
-                                exifPanel.Prompts.ToExifPanel(data);
-                                exifPanel.Commit();
-                                exifPanel.Show();
-                            }
-                            else
-                            {
-                                MessageBox.Show("EXIF 데이터를 파싱할 수 없습니다.", "오류");
-                            }
+                        if (exifSuccess)
+                        {
+                            // BLOCK_02
+                            viewer.SetElement("EXIF 확인", new() { Width = 100 });
+                            var btExif = viewer.GetItem("EXIF 확인");
+                            btExif.Click += (_, _) => ShowExifWindow(imgBytes);
                         }
-                    };
-                }
 
-                var btSave = new Button { Text = "다운로드", Width = 100 };
-                btSave.Click += (_, _) =>
-                {
-                    string fileName = job.Tokens.GetValueOrDefault("name", "unknown_image");
-                    string imgName = job.Tokens.GetValueOrDefault("num", "unknown_image") + Path.GetExtension(job.Url);
-                    string savePath = config.OutputPath;
-                    bool trigger = SaveImage(imgBytes, savePath, fileName, imgName);
+                        // BLOCK_03
+                        viewer.SetElement("다운로드", new() { Width = 100 });
+                        var btSave = viewer.GetItem("다운로드");
+                        btSave.Click += (_, _) =>
+                        {
+                            string fileName = job.Tokens.GetValueOrDefault("name", "unknown_image");
+                            string imgName = job.Tokens.GetValueOrDefault("num", "unknown_image") + Path.GetExtension(job.Url);
+                            string savePath = config.OutputPath;
+                            bool trigger = SaveImage(imgBytes, savePath, fileName, imgName);
 
-                    if(trigger == true)
-                        MessageBox.Show("이미지 저장 성공");
+                            if (trigger == true)
+                                MessageBox.Show("이미지 저장 성공");
+                        };
+
+                        viewer.Commit();
+                        viewer.Show();
+                    }
+                    if(e.Button == MouseButtons.Right)
+                        Process.Start(new ProcessStartInfo { FileName = job.Url, UseShellExecute = true });
                 };
-                pnlBot.Controls.Add(btSave);
-
-                viewer.Controls.Add(pic);
-                viewer.Controls.Add(pnlBot);
-                viewer.Show();
-            };
+            }
             imgTile.MountTo(this._flp.Controls);
         }
 
@@ -691,60 +710,6 @@ namespace ImageLoader
             _flp.Controls.Clear();
             GC.Collect();
         }
-
-    }
-
-
-
-
-    // Note
-    public partial class MainForm
-    {
-        private System.ComponentModel.IContainer components = null;
-
-        private PathConfig config;
-
-        private LabelLinear _baseLiner;
-        private LabelLinear _codeParse;
-
-        private Label _lBs => _baseLiner.InputField.Header;
-        private TextBox _tBs => _baseLiner.InputField.InputBox;
-        private Button _btSav => _baseLiner.Button;
-
-        private Label _lIn => _codeParse.InputField.Header;
-        private TextBox _tIn => _codeParse.InputField.InputBox;
-        private Button _btPrs => _codeParse.Button;
-
-        private InputField _nameField;
-        private InputField _situField;
-
-        private Label _lblNum;
-        private NumericUpDown _numSt;
-        private NumericUpDown _numEn;
-
-        // 실행 컨트롤
-        private Label _lblPl;
-        private NumericUpDown _numPl;
-        private Button _btSt;
-        private Button _btSp;
-        private Button _btSaveAll; // 동적 생성
-
-        private Panel _pnlCt;
-        private FlowLayoutPanel _flp;
-
-        // 헤더 공통 폰트
-        private Font _headerFont;
-
-        // 툴바
-        private ToolBar _toolBar;
-
-        // 통신 및 토크나이저용
-        private const string Ptn = @"\{([^}]+)\}";
-        private readonly HttpClient _http = new()
-        {
-            Timeout = TimeSpan.FromSeconds(15)
-        };
-        private CancellationTokenSource? _cts;
     }
 
     // EXIF 관리
@@ -1003,6 +968,91 @@ namespace ImageLoader
             }
             catch { }
             return null;
+        }
+
+        private void ShowExifWindow(byte[] imgBytes)
+        {
+            if (imgBytes == null) return;
+
+            using (var tempMs = new MemoryStream(imgBytes))
+            {
+                // 본 파싱
+                Simplified data = ParseExifData(tempMs);
+
+                if (data != null)
+                {
+                    var exifPanel = new ExifWindow
+                    {
+                        Text = "EXIF 상세 정보",
+                        Width = 600,
+                        Height = 900,
+                        BackColor = COLOR.NAI_DARK,
+
+                        ToolBars = new SwitchTools
+                        {
+                            Name = "_exifPanelToolBar",
+                            Dock = DockStyle.Top,
+                            GripStyle = ToolStripGripStyle.Hidden,
+                            BackColor = COLOR.NAI_DARK,
+
+                            Buttons = new List<Switch>
+                            {
+                                {
+                                    new Switch()
+                                    {
+                                        Code = "Simplified",
+                                        Name = "Simplified",
+                                        Text = "Simplified",
+                                        AutoToolTip = false,
+                                        BackColor = COLOR.NAI_BUTTON,
+                                        ForeColor = COLOR.NAI_VALUE,
+                                    }
+                                },
+                                { 
+                                    new Switch()
+                                    {
+                                        Code = "Raw Parameters",
+                                        Name = "Raw Parameters",
+                                        Text = "Raw Parameters",
+                                        AutoToolTip = false,
+                                        BackColor = COLOR.NAI_BUTTON,
+                                        ForeColor = COLOR.NAI_VALUE,
+                                    }
+                                },
+                            }
+                        },
+                        BackGround = new Panel
+                        {
+                            Padding = new Padding(10, 30, 10, 10),
+                            Dock = DockStyle.Fill,
+                            TabStop = false,    // NOTE: 캐럿 끄는 플래그
+                            Font = new Font("Consolas", 9.75f),
+                            //Location = new Point(0, 20),
+                            BackColor = COLOR.NAI_DARK,
+                        },
+                        Prompts = new RichTextBox
+                        {
+                            Dock = DockStyle.Fill,
+                            Multiline = true,
+                            ReadOnly = true,
+                            TabStop = false,    // NOTE: 캐럿 끄는 플래그
+                            ScrollBars = RichTextBoxScrollBars.Vertical, // TODO: 이거 끄는법
+                            Font = new Font("Consolas", 9.75f),
+                            BorderStyle = BorderStyle.None,
+                            //Location = new Point(0, 20),
+                            BackColor = COLOR.NAI_DARK,
+                        },
+                    };
+
+                    exifPanel.ToExifPanel(data);
+                    exifPanel.Commit();
+                    exifPanel.Show();
+                }
+                else
+                {
+                    MessageBox.Show("EXIF 데이터를 파싱할 수 없습니다.", "오류");
+                }
+            }
         }
     }
 
@@ -1661,5 +1711,4 @@ namespace ImageLoader
             this.Text = "이미지 플로우 v1.2";
         }
     }
-
 }
