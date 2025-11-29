@@ -21,12 +21,15 @@ namespace ImageLoader
         private ConcurrentQueue<object> _eventQueue = new(); // 프론트엔드로 보낼 이벤트
         private bool _isRunning = false;
 
-        // 기존 로직 설정값
+        // 설정값 저장소
         private LoaderConfig _currentConfig = new();
         private PathConfig _pathConfig = new();
 
         public void Start()
         {
+            // [추가] 시작 시 저장된 설정 파일 로드
+            LoadConfigs();
+
             _listener = new HttpListener();
             _listener.Prefixes.Add(_url);
             _listener.Start();
@@ -35,6 +38,36 @@ namespace ImageLoader
             Process.Start(new ProcessStartInfo { FileName = _url, UseShellExecute = true });
 
             Task.Run(() => ListenLoop());
+        }
+
+        // [추가] 설정 파일 로드 메서드
+        private void LoadConfigs()
+        {
+            try
+            {
+                var exeDir = AppDomain.CurrentDomain.BaseDirectory;
+                var ldPath = Path.Combine(exeDir, "ImgLdConfig.json");
+                var ptPath = Path.Combine(exeDir, "PathConfig.json");
+
+                if (File.Exists(ldPath))
+                {
+                    var json = File.ReadAllText(ldPath);
+                    var loaded = JsonSerializer.Deserialize<LoaderConfig>(json);
+                    if (loaded != null) _currentConfig = loaded;
+                }
+
+                if (File.Exists(ptPath))
+                {
+                    var json = File.ReadAllText(ptPath);
+                    var loaded = JsonSerializer.Deserialize<PathConfig>(json);
+                    if (loaded != null) _pathConfig = loaded;
+                }
+                Console.WriteLine("Config loaded from files.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Failed to load config: {ex.Message}");
+            }
         }
 
         private async Task ListenLoop()
@@ -71,6 +104,11 @@ namespace ImageLoader
                 {
                     ServeUpdates(resp);
                 }
+                // [추가] 설정값 불러오기 API
+                else if (req.HttpMethod == "GET" && path == "/api/config/load")
+                {
+                    HandleLoadConfig(resp);
+                }
                 else if (req.HttpMethod == "POST" && path == "/api/start")
                 {
                     await HandleStart(req, resp);
@@ -83,6 +121,10 @@ namespace ImageLoader
                 else if (req.HttpMethod == "POST" && path == "/api/save")
                 {
                     await HandleSave(req, resp);
+                }
+                else if (req.HttpMethod == "POST" && path == "/api/config/save")
+                {
+                    await HandleSaveConfig(req, resp);
                 }
                 else
                 {
@@ -98,7 +140,7 @@ namespace ImageLoader
             }
         }
 
-        // --- Core Logic (Adapted from MainForm) ---
+        // --- Core Logic ---
 
         private async Task HandleStart(HttpListenerRequest req, HttpListenerResponse resp)
         {
@@ -117,7 +159,7 @@ namespace ImageLoader
             int endNum = data.GetProperty("endNum").GetInt32();
             int parallel = data.GetProperty("parallel").GetInt32();
 
-            // 작업 생성 로직 (MainForm에서 가져옴)
+            // 작업 생성 로직
             var jobs = GenerateJobs(baseUrl, code, names, situations, startNum, endNum);
 
             if (jobs.Count == 0)
@@ -128,12 +170,75 @@ namespace ImageLoader
 
             _cts = new CancellationTokenSource();
             _isRunning = true;
-            _imageCache.Clear(); // 이전 캐시 클리어 (선택사항)
+            _imageCache.Clear();
 
             // 백그라운드 작업 시작
             _ = Task.Run(() => FetchAllAsync(jobs, parallel, _cts.Token));
 
             RespondJson(resp, new { status = "started", jobCount = jobs.Count });
+        }
+
+        private async Task HandleSaveConfig(HttpListenerRequest req, HttpListenerResponse resp)
+        {
+            try
+            {
+                using var reader = new StreamReader(req.InputStream, req.ContentEncoding);
+                var json = await reader.ReadToEndAsync();
+                var data = JsonSerializer.Deserialize<JsonElement>(json);
+
+                var loaderConfig = new LoaderConfig
+                {
+                    BaseURL = GetJsonString(data, "baseUrl"),
+                    Code = GetJsonString(data, "code"),
+                    NameToken = GetJsonString(data, "names"),
+                    SituationToken = GetJsonString(data, "situations"),
+                    St_Num = GetJsonInt(data, "startNum"),
+                    En_Num = GetJsonInt(data, "endNum"),
+                    Multi_Call_Num = GetJsonInt(data, "parallel")
+                };
+
+                var pathConfig = new PathConfig
+                {
+                    InputPath = GetJsonString(data, "inputPath"),
+                    OutputPath = GetJsonString(data, "outputPath")
+                };
+
+                _currentConfig = loaderConfig;
+                _pathConfig = pathConfig;
+
+                var exeDir = AppDomain.CurrentDomain.BaseDirectory;
+                var opt = new JsonSerializerOptions { WriteIndented = true };
+
+                File.WriteAllText(Path.Combine(exeDir, "ImgLdConfig.json"), JsonSerializer.Serialize(loaderConfig, opt));
+                File.WriteAllText(Path.Combine(exeDir, "PathConfig.json"), JsonSerializer.Serialize(pathConfig, opt));
+
+                RespondJson(resp, new { status = "ok", message = "Configuration saved successfully." });
+            }
+            catch (Exception ex)
+            {
+                RespondJson(resp, new { status = "error", message = ex.Message });
+            }
+        }
+
+        // [추가] 프론트엔드로 현재 설정값 전송
+        private void HandleLoadConfig(HttpListenerResponse resp)
+        {
+            // 프론트엔드 JS 변수명(camelCase)에 맞춰서 매핑
+            var responseData = new
+            {
+                baseUrl = _currentConfig.BaseURL ?? "",
+                code = _currentConfig.Code ?? "",
+                names = _currentConfig.NameToken ?? "",
+                situations = _currentConfig.SituationToken ?? "",
+                startNum = _currentConfig.St_Num,
+                endNum = _currentConfig.En_Num,
+                parallel = _currentConfig.Multi_Call_Num == 0 ? 4 : _currentConfig.Multi_Call_Num, // 기본값 처리
+
+                inputPath = _pathConfig.InputPath ?? "",
+                outputPath = _pathConfig.OutputPath ?? ""
+            };
+
+            RespondJson(resp, responseData);
         }
 
         private async Task FetchAllAsync(List<Job> jobs, int parallelism, CancellationToken ct)
@@ -186,26 +291,20 @@ namespace ImageLoader
 
                 var data = await resp.Content.ReadAsByteArrayAsync(ct);
 
-                // EXIF, Image Load 체크 (MainForm 로직 간소화)
-                bool exifSuccess = false;
                 string resolution = "Unknown";
-
                 using (var ms = new MemoryStream(data))
                 {
-                    // EXIF 체크 (MainForm의 CheckExif 로직이 필요하다면 여기에 복사하거나 static으로 참조)
-                    // 여기서는 간단히 ImageMagick으로 열리는지만 확인
                     try
                     {
                         using var img = new MagickImage(ms);
                         resolution = $"{img.Width}x{img.Height}";
                     }
-                    catch { return; } // 이미지 아님
+                    catch { return; }
                 }
 
                 string id = Guid.NewGuid().ToString();
                 _imageCache[id] = data;
 
-                // 타이틀 생성
                 var titleParts = new List<string>();
                 if (job.Tokens.ContainsKey("name")) titleParts.Add(job.Tokens["name"]);
                 if (job.Tokens.ContainsKey("situation")) titleParts.Add(job.Tokens["situation"]);
@@ -220,7 +319,7 @@ namespace ImageLoader
                     title,
                     url = job.Url,
                     resolution,
-                    jobTokens = job.Tokens // 저장용
+                    jobTokens = job.Tokens
                 });
             }
             catch (Exception ex)
@@ -232,7 +331,6 @@ namespace ImageLoader
 
         private List<Job> GenerateJobs(string baseUrl, string codePart, string namesStr, string sitsStr, int numStart, int numEnd)
         {
-            // MainForm의 GenerateJobs 로직 재구성
             var jobs = new List<Job>();
             bool hasName = codePart.Contains("{name}");
             bool hasNum = codePart.Contains("{num}");
@@ -256,8 +354,6 @@ namespace ImageLoader
                         if (hasSit && sit != null) { tempUrl = tempUrl.Replace("{situation}", Uri.EscapeDataString(sit)); job.Tokens["situation"] = sit; }
                         if (hasNum) { tempUrl = tempUrl.Replace("{num}", num.ToString()); job.Tokens["num"] = num.ToString(); }
 
-                        // 기타 토큰 처리는 UI상 복잡하여 생략하거나 필요 시 추가 구현
-
                         job.Url = baseUrl + tempUrl;
                         jobs.Add(job);
                     }
@@ -278,7 +374,6 @@ namespace ImageLoader
 
         private async Task HandleSave(HttpListenerRequest req, HttpListenerResponse resp)
         {
-            // 저장 로직 (간소화)
             using var reader = new StreamReader(req.InputStream);
             var json = await reader.ReadToEndAsync();
             var payload = JsonSerializer.Deserialize<JsonElement>(json);
@@ -289,8 +384,6 @@ namespace ImageLoader
             int saved = 0;
             foreach (var kvp in _imageCache)
             {
-                // 실제로는 Job 정보와 매핑해야 하지만, 여기선 간단히 저장 예시
-                // 완벽히 하려면 _imageCache에 Job 정보도 같이 담아야 함
                 string fName = $"{Guid.NewGuid()}.png";
                 File.WriteAllBytes(Path.Combine(path, fName), kvp.Value);
                 saved++;
@@ -298,8 +391,13 @@ namespace ImageLoader
             RespondJson(resp, new { msg = $"{saved} saved" });
         }
 
-
         // --- Helpers ---
+
+        private string GetJsonString(JsonElement root, string key)
+            => root.TryGetProperty(key, out var prop) ? prop.GetString() : "";
+
+        private int GetJsonInt(JsonElement root, string key)
+            => root.TryGetProperty(key, out var prop) && prop.TryGetInt32(out int val) ? val : 0;
 
         private void ServeImage(HttpListenerResponse resp, string id)
         {
@@ -318,7 +416,6 @@ namespace ImageLoader
 
         private void ServeUpdates(HttpListenerResponse resp)
         {
-            // 폴링 방식: 쌓인 이벤트를 모두 보냄
             var events = new List<object>();
             while (_eventQueue.TryDequeue(out var ev)) events.Add(ev);
 
@@ -385,14 +482,14 @@ namespace ImageLoader
         /* --- 1. Header Bar (Top) --- */
         .header-bar {
             height: var(--header-height);
-            background: #181818; /* 더 어두운 배경 */
+            background: #181818;
             border-bottom: 1px solid #333;
             display: flex;
             align-items: center;
-            justify-content: space-between; /* 좌우 끝 정렬 */
+            justify-content: space-between;
             padding: 0 20px;    
             flex-shrink: 0;
-            z-index: 200; /* 네비게이션보다 위에 */
+            z-index: 200;
         }
         .app-title {
             font-weight: bold;
@@ -401,7 +498,6 @@ namespace ImageLoader
             letter-spacing: 0.5px;
         }
         
-        /* Hamburger Menu Button */
         .menu-btn {
             background: transparent;
             border: none;
@@ -456,7 +552,6 @@ namespace ImageLoader
             flex: 1;
             display: none;
             width: 100%;
-            /* 전체 높이 - 헤더 - 네비 */
             height: calc(100vh - var(--header-height) - var(--nav-height));
             overflow: hidden;
             position: relative;
@@ -466,22 +561,22 @@ namespace ImageLoader
         /* --- Flow Panel (Right Sidebar) --- */
         .flow-panel {
             position: fixed;
-            top: var(--header-height); /* 헤더 바로 아래부터 시작 */
+            top: var(--header-height);
             right: 0;
             bottom: 0;
             width: 320px;
             background: #202020;
             border-left: 1px solid #333;
             box-shadow: -5px 0 15px rgba(0,0,0,0.5);
-            transform: translateX(100%); /* 기본적으로 숨김 (오른쪽 밖으로) */
+            transform: translateX(100%);
             transition: transform 0.3s ease-in-out;
-            z-index: 300; /* 콘텐츠 위에, 모달보다는 아래 */
+            z-index: 300;
             display: flex;
             flex-direction: column;
             padding: 20px;
         }
         .flow-panel.open {
-            transform: translateX(0); /* 보이게 이동 */
+            transform: translateX(0);
         }
         .flow-header {
             font-size: 1.1rem;
@@ -505,7 +600,6 @@ namespace ImageLoader
             justify-content: right;
         }
 
-        /* --- Existing Layout Styles --- */
         .sidebar { width: 320px; background: var(--panel-color); padding: 20px; display: flex; flex-direction: column; gap: 15px; border-right: 1px solid #333; overflow-y: auto; height: 100%; box-sizing: border-box; }
         .main-content { flex: 1; display: flex; flex-direction: column; padding: 20px; overflow: hidden; height: 100%; box-sizing: border-box; }
 
@@ -536,7 +630,6 @@ namespace ImageLoader
         .log-panel { height: 100px; background: #000; margin-top: 10px; padding: 10px; font-family: monospace; font-size: 0.8rem; overflow-y: auto; border-radius: 4px; color: #aaa; }
         .log-err { color: var(--error); }
 
-        /* Settings Page Styles */
         .settings-layout { display: flex; width: 100%; height: 100%; }
         .settings-sidebar { width: 250px; background: var(--panel-color); border-right: 1px solid #333; padding: 20px 0; display: flex; flex-direction: column; }
         .settings-menu-item { padding: 12px 20px; cursor: pointer; color: var(--text-sub); transition: 0.2s; border-left: 3px solid transparent; }
@@ -574,7 +667,7 @@ namespace ImageLoader
         <div style='color: #888; font-size: 0.9rem;'>
             <div class='group'>
                 <label>Quick Save</label>
-                <button class='btn-start' style='width:100%'>Save Settings</button>
+                <button class='btn-start' style='width:100%' onclick='saveSettings()'>Save Settings</button>
             </div>
         </div>
     </div>
@@ -632,12 +725,24 @@ namespace ImageLoader
     <div id='view-settings' class='view-container'>
         <div class='settings-layout'>
             <div class='settings-sidebar'>
-                <div class='settings-menu-item active' onclick='switchSettingTab(this, ""set-general"")'>General</div>
-                <div class='settings-menu-item' onclick='switchSettingTab(this, ""set-directory"")'>Directory</div>
+                <div class='settings-menu-item active' onclick='switchSettingTab(this, ""set-directory"")'>Directory</div>
+                <div class='settings-menu-item' onclick='switchSettingTab(this, ""set-general"")'>General</div>
                 <div class='settings-menu-item' onclick='switchSettingTab(this, ""set-about"")'>About</div>
             </div>
 
             <div class='settings-content'>
+
+                <div id='set-directory' class='settings-section active'>
+                    <div class='settings-header'>Directory Settings</div>
+                    <div class='group' style='margin-bottom: 20px;'>
+                        <label>Input Path</label>
+                        <input type='text' id='cfg_inputPath' value=''>
+                    </div>
+                    <div class='group' style='margin-bottom: 20px;'>
+                        <label>Output Path</label>
+                        <input type='text' id='cfg_outputPath' value=''>
+                    </div>
+                </div>
 
                 <div id='set-general' class='settings-section'>
                     <div class='settings-header'>Appearance</div>
@@ -648,18 +753,6 @@ namespace ImageLoader
                             <option>Light Mode</option>
                             <option>System Default</option>
                         </select>
-                    </div>
-                </div>
-
-                <div id='set-directory' class='settings-section active'>
-                    <div class='settings-header'>Directory Settings</div>
-                    <div class='group' style='margin-bottom: 20px;'>
-                        <label>Input Path</label>
-                        <input type='text' value=''>
-                    </div>
-                    <div class='group' style='margin-bottom: 20px;'>
-                        <label>Output Path</label>
-                        <input type='text' value=''>
                     </div>
                 </div>
 
@@ -689,10 +782,37 @@ namespace ImageLoader
     </div>
 
     <script>
+        // --- On Load Logic (Load Settings) ---
+        window.onload = async function() {
+            try {
+                const res = await fetch('/api/config/load');
+                if(res.ok) {
+                    const data = await res.json();
+                    
+                    // Main Loader Settings
+                    if(data.baseUrl) document.getElementById('baseUrl').value = data.baseUrl;
+                    if(data.code) document.getElementById('code').value = data.code;
+                    if(data.names) document.getElementById('names').value = data.names;
+                    if(data.situations) document.getElementById('situations').value = data.situations;
+                    if(data.startNum) document.getElementById('startNum').value = data.startNum;
+                    if(data.endNum) document.getElementById('endNum').value = data.endNum;
+                    if(data.parallel) document.getElementById('parallel').value = data.parallel;
+
+                    // Directory Settings
+                    if(data.inputPath) document.getElementById('cfg_inputPath').value = data.inputPath;
+                    if(data.outputPath) document.getElementById('cfg_outputPath').value = data.outputPath;
+
+                    log('Settings loaded from server.');
+                }
+            } catch(e) {
+                console.error('Failed to load settings', e);
+                log('Failed to load settings (First run?)');
+            }
+        };
+
         // --- Flow Panel Logic ---
         function toggleFlowPanel() {
             const panel = document.getElementById('flowPanel');
-            // 'open' 클래스를 토글하여 CSS transform 효과 적용
             panel.classList.toggle('open');
         }
 
@@ -751,6 +871,42 @@ namespace ImageLoader
             await fetch('/api/stop', { method: 'POST' });
             setRunning(false);
             log('Stopped by user.');
+        }
+        
+        async function saveSettings() {
+            const payload = {
+                baseUrl: document.getElementById('baseUrl').value,
+                code: document.getElementById('code').value,
+                names: document.getElementById('names').value,
+                situations: document.getElementById('situations').value,
+                startNum: parseInt(document.getElementById('startNum').value) || 0,
+                endNum: parseInt(document.getElementById('endNum').value) || 0,
+                parallel: parseInt(document.getElementById('parallel').value) || 1,
+                
+                inputPath: document.getElementById('cfg_inputPath').value,
+                outputPath: document.getElementById('cfg_outputPath').value
+            };
+
+            try {
+                const res = await fetch('/api/config/save', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+                
+                if(data.status === 'ok') {
+                    log('Settings saved successfully.');
+                    alert('설정이 저장되었습니다.');
+                    toggleFlowPanel();
+                } else {
+                    log('Error saving settings: ' + data.message, true);
+                    alert('저장 실패: ' + data.message);
+                }
+            } catch (e) {
+                console.error(e);
+                log('Communication error while saving.', true);
+            }
         }
 
         async function pollUpdates() {

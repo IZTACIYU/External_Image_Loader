@@ -21,22 +21,6 @@
     {
       "AbsoluteMoniker": "D:0:0:{C03833D9-ADEC-466C-B2B6-6E40506DB84D}|ImageLoader\\ImageLoader.csproj|c:\\users\\administrator\\desktop\\\uD638\uC900\\external_image_loader\\imageloader\\imageloader.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
       "RelativeMoniker": "D:0:0:{C03833D9-ADEC-466C-B2B6-6E40506DB84D}|ImageLoader\\ImageLoader.csproj|solutionrelative:imageloader\\imageloader.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{C03833D9-ADEC-466C-B2B6-6E40506DB84D}|ImageLoader\\ImageLoader.csproj|c:\\users\\administrator\\desktop\\\uD638\uC900\\external_image_loader\\imageloader\\mainform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{C03833D9-ADEC-466C-B2B6-6E40506DB84D}|ImageLoader\\ImageLoader.csproj|solutionrelative:imageloader\\mainform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{C03833D9-ADEC-466C-B2B6-6E40506DB84D}|ImageLoader\\ImageLoader.csproj|c:\\users\\administrator\\desktop\\\uD638\uC900\\external_image_loader\\imageloader\\note\\configure.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{C03833D9-ADEC-466C-B2B6-6E40506DB84D}|ImageLoader\\ImageLoader.csproj|solutionrelative:imageloader\\note\\configure.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{C03833D9-ADEC-466C-B2B6-6E40506DB84D}|ImageLoader\\ImageLoader.csproj|c:\\users\\administrator\\desktop\\\uD638\uC900\\external_image_loader\\imageloader\\layout\\switch.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{C03833D9-ADEC-466C-B2B6-6E40506DB84D}|ImageLoader\\ImageLoader.csproj|solutionrelative:imageloader\\layout\\switch.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{C03833D9-ADEC-466C-B2B6-6E40506DB84D}|ImageLoader\\ImageLoader.csproj|c:\\users\\administrator\\desktop\\\uD638\uC900\\external_image_loader\\imageloader\\subclass\\tiledata.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{C03833D9-ADEC-466C-B2B6-6E40506DB84D}|ImageLoader\\ImageLoader.csproj|solutionrelative:imageloader\\subclass\\tiledata.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -56,9 +40,9 @@
               "RelativeDocumentMoniker": "ImageLoader\\WebUiHost.cs",
               "ToolTip": "C:\\Users\\Administrator\\Desktop\\\uD638\uC900\\External_Image_Loader\\ImageLoader\\WebUiHost.cs",
               "RelativeToolTip": "ImageLoader\\WebUiHost.cs",
-              "ViewState": "AQIAAC8CAAAAAAAAAAAmwD8CAAApAAAA",
+              "ViewState": "AQIAANUCAAAAAAAAAAA2wPUCAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-11-29T04:41:04.381Z",
+              "WhenOpened": "2025-11-29T06:17:01.917Z",
               "EditorCaption": ""
             },
             {
@@ -69,61 +53,9 @@
               "RelativeDocumentMoniker": "ImageLoader\\Program.cs",
               "ToolTip": "C:\\Users\\Administrator\\Desktop\\\uD638\uC900\\External_Image_Loader\\ImageLoader\\Program.cs",
               "RelativeToolTip": "ImageLoader\\Program.cs",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAA4AAAAzAAAA",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAABAAAAAzAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-11-28T15:33:38.644Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 5,
-              "Title": "MainForm.cs",
-              "DocumentMoniker": "C:\\Users\\Administrator\\Desktop\\\uD638\uC900\\External_Image_Loader\\ImageLoader\\MainForm.cs",
-              "RelativeDocumentMoniker": "ImageLoader\\MainForm.cs",
-              "ToolTip": "C:\\Users\\Administrator\\Desktop\\\uD638\uC900\\External_Image_Loader\\ImageLoader\\MainForm.cs",
-              "RelativeToolTip": "ImageLoader\\MainForm.cs",
-              "ViewState": "AQIAAAAAAAAAAAAAAAA4wAAAAAAAAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-11-06T03:30:16.788Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 8,
-              "Title": "TileData.cs",
-              "DocumentMoniker": "C:\\Users\\Administrator\\Desktop\\\uD638\uC900\\External_Image_Loader\\ImageLoader\\SubClass\\TileData.cs",
-              "RelativeDocumentMoniker": "ImageLoader\\SubClass\\TileData.cs",
-              "ToolTip": "C:\\Users\\Administrator\\Desktop\\\uD638\uC900\\External_Image_Loader\\ImageLoader\\SubClass\\TileData.cs",
-              "RelativeToolTip": "ImageLoader\\SubClass\\TileData.cs",
-              "ViewState": "AQIAAAAAAAAAAAAAAADwvwAAAAAAAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-11-18T14:40:26.239Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 6,
-              "Title": "Configure.cs",
-              "DocumentMoniker": "C:\\Users\\Administrator\\Desktop\\\uD638\uC900\\External_Image_Loader\\ImageLoader\\Note\\Configure.cs",
-              "RelativeDocumentMoniker": "ImageLoader\\Note\\Configure.cs",
-              "ToolTip": "C:\\Users\\Administrator\\Desktop\\\uD638\uC900\\External_Image_Loader\\ImageLoader\\Note\\Configure.cs",
-              "RelativeToolTip": "ImageLoader\\Note\\Configure.cs",
-              "ViewState": "AQIAAAAAAAAAAAAAAADwvwAAAAAAAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-11-17T11:13:59.83Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 7,
-              "Title": "Switch.cs",
-              "DocumentMoniker": "C:\\Users\\Administrator\\Desktop\\\uD638\uC900\\External_Image_Loader\\ImageLoader\\Layout\\Switch.cs",
-              "RelativeDocumentMoniker": "ImageLoader\\Layout\\Switch.cs",
-              "ToolTip": "C:\\Users\\Administrator\\Desktop\\\uD638\uC900\\External_Image_Loader\\ImageLoader\\Layout\\Switch.cs",
-              "RelativeToolTip": "ImageLoader\\Layout\\Switch.cs",
-              "ViewState": "AQIAAAAAAAAAAAAAAADwvwAAAAAAAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-11-12T10:42:42.784Z",
               "EditorCaption": ""
             }
           ]
@@ -140,7 +72,7 @@
               "RelativeDocumentMoniker": "ImageLoader\\ImageLoader.csproj",
               "ToolTip": "C:\\Users\\Administrator\\Desktop\\\uD638\uC900\\External_Image_Loader\\ImageLoader\\ImageLoader.csproj",
               "RelativeToolTip": "ImageLoader\\ImageLoader.csproj",
-              "ViewState": "AQIAAAAAAAAAAAAAAADwvwoAAAAhAAAA",
+              "ViewState": "AQIAAAAAAAAAAAAAAADwvxsAAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
               "WhenOpened": "2025-11-18T15:53:10.147Z",
               "EditorCaption": ""
