@@ -368,68 +368,164 @@ namespace ImageLoader
             --accent: #bb86fc;
             --success: #03dac6;
             --error: #cf6679;
+            --header-height: 50px;
+            --nav-height: 40px;
         }
-        body { margin: 0; font-family: 'Segoe UI', sans-serif; background: var(--bg-color); color: var(--text-main); display: flex; height: 100vh; overflow: hidden; }
+        body { 
+            margin: 0; 
+            font-family: 'Segoe UI', sans-serif; 
+            background: var(--bg-color); 
+            color: var(--text-main); 
+            height: 100vh; 
+            overflow: hidden; 
+            display: flex; 
+            flex-direction: column; 
+        }
+
+        /* --- 1. Header Bar (Top) --- */
+        .header-bar {
+            height: var(--header-height);
+            background: #181818; /* 더 어두운 배경 */
+            border-bottom: 1px solid #333;
+            display: flex;
+            align-items: center;
+            justify-content: space-between; /* 좌우 끝 정렬 */
+            padding: 0 20px;    
+            flex-shrink: 0;
+            z-index: 200; /* 네비게이션보다 위에 */
+        }
+        .app-title {
+            font-weight: bold;
+            color: var(--accent);
+            font-size: 1.2rem;
+            letter-spacing: 0.5px;
+        }
         
-        /* Sidebar */
-        .sidebar { width: 320px; background: var(--panel-color); padding: 20px; display: flex; flex-direction: column; gap: 15px; border-right: 1px solid #333; overflow-y: auto; }
-        h2 { margin: 0 0 10px 0; color: var(--accent); font-size: 1.2rem; }
+        /* Hamburger Menu Button */
+        .menu-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-main);
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 4px;
+            display: flex;
+            align-items: right;
+            justify-content: right;
+            transition: background 0.2s;
+            width: 40px;
+            height: 40px;            
+            flex-grow: 0;
+            flex-shrink: 0;
+        }
+        .menu-btn:hover { background: #333; }
+        .menu-btn svg { fill: currentColor; width: 24px; height: 24px; }
+
+        /* --- 2. Navigation Bar (Below Header) --- */
+        .top-nav {
+            height: var(--nav-height);
+            background: #252526;
+            border-bottom: 1px solid #333;
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            gap: 15px;
+            flex-shrink: 0;
+        }
+        .nav-btn {
+            background: transparent;
+            border: 3.3px solid transparent;
+            color: var(--text-sub);
+            cursor: pointer;
+            font-size: 0.9rem;
+            padding: 0 10px;
+            height: 100%;
+            transition: 0.2s;
+            width: var(--text-width);
+            flex-grow: 0;
+            flex-shrink: 0;
+        }
+        .nav-btn:hover { color: var(--text-main); }
+        .nav-btn.active { 
+            color: var(--text-main); 
+            border-bottom-color: var(--accent); 
+        }
+
+        /* --- 3. View Containers --- */
+        .view-container {
+            flex: 1;
+            display: none;
+            width: 100%;
+            /* 전체 높이 - 헤더 - 네비 */
+            height: calc(100vh - var(--header-height) - var(--nav-height));
+            overflow: hidden;
+            position: relative;
+        }
+        .view-container.active { display: flex; }
+
+        /* --- Flow Panel (Right Sidebar) --- */
+        .flow-panel {
+            position: fixed;
+            top: var(--header-height); /* 헤더 바로 아래부터 시작 */
+            right: 0;
+            bottom: 0;
+            width: 320px;
+            background: #202020;
+            border-left: 1px solid #333;
+            box-shadow: -5px 0 15px rgba(0,0,0,0.5);
+            transform: translateX(100%); /* 기본적으로 숨김 (오른쪽 밖으로) */
+            transition: transform 0.3s ease-in-out;
+            z-index: 300; /* 콘텐츠 위에, 모달보다는 아래 */
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+        }
+        .flow-panel.open {
+            transform: translateX(0); /* 보이게 이동 */
+        }
+        .flow-header {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: var(--text-main);
+            border-bottom: 1px solid #333;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .close-flow-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-sub);
+            cursor: pointer;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: right;
+            justify-content: right;
+        }
+
+        /* --- Existing Layout Styles --- */
+        .sidebar { width: 320px; background: var(--panel-color); padding: 20px; display: flex; flex-direction: column; gap: 15px; border-right: 1px solid #333; overflow-y: auto; height: 100%; box-sizing: border-box; }
+        .main-content { flex: 1; display: flex; flex-direction: column; padding: 20px; overflow: hidden; height: 100%; box-sizing: border-box; }
+
         .group { display: flex; flex-direction: column; gap: 5px; }
         label { font-size: 0.85rem; color: var(--text-sub); }
-
-        /* Input Full Width Fix */
-        input, textarea { 
-            background: var(--input-bg); 
-            border: 1px solid #444; 
-            color: white; 
-            padding: 8px; 
-            border-radius: 4px; 
-            font-family: inherit; 
-            width: 100%; 
-            box-sizing: border-box; 
-        }
-
+        input, textarea, select { background: var(--input-bg); border: 1px solid #444; color: white; padding: 8px; border-radius: 4px; font-family: inherit; width: 100%; box-sizing: border-box; }
         textarea { resize: vertical; min-height: 60px; }
-        input:focus, textarea:focus { outline: none; border-color: var(--accent); }
-        
+        input:focus, textarea:focus, select:focus { outline: none; border-color: var(--accent); }
         .row { display: flex; gap: 10px; width: 100%; }
-        
         .btn-row { display: flex; gap: 10px; margin-top: 10px; }
-        
         button { flex: 1; padding: 10px; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; transition: 0.2s; }
         .btn-start { background: var(--accent); color: black; }
         .btn-stop { background: var(--error); color: black; display: none; }
         .btn-save { background: var(--input-bg); color: var(--success); border: 1px solid var(--success); }
         button:hover { opacity: 0.9; }
-        button:disabled { opacity: 0.5; cursor: not-allowed; }
 
-        /* Main Content */
-        .main { flex: 1; display: flex; flex-direction: column; padding: 20px; overflow: hidden; }
-        
-        /* [수정됨] Status Bar Layout: Column direction (Bar Top, Text Bottom) */
-        .status-container { 
-            display: flex; 
-            flex-direction: column; 
-            gap: 8px; 
-            margin-bottom: 15px; 
-        }
-        
-        .progress-container { 
-            width: 100%;    /* 전체 너비 사용 */
-            height: 8px;    /* 조금 더 두껍게 */
-            background: #333; 
-            border-radius: 4px; 
-            overflow: hidden; 
-        }
-        
+        .status-container { display: flex; flex-direction: column; gap: 8px; margin-bottom: 15px; }
+        .progress-container { width: 100%; height: 8px; background: #333; border-radius: 4px; overflow: hidden; }
         .progress-bar { height: 100%; background: var(--success); width: 0%; transition: width 0.3s; }
-        
-        .status-text { 
-            color: var(--text-sub); 
-            font-size: 0.9rem; 
-            text-align: left; /* 좌측 정렬 */
-        }
-        
+        .status-text { color: var(--text-sub); font-size: 0.9rem; text-align: left; }
         .gallery { flex: 1; overflow-y: auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; align-content: start; }
         .card { background: var(--panel-color); border-radius: 8px; overflow: hidden; border: 1px solid #333; transition: transform 0.2s; position: relative; }
         .card:hover { transform: translateY(-3px); border-color: var(--accent); }
@@ -437,70 +533,155 @@ namespace ImageLoader
         .card-info { padding: 10px; font-size: 0.8rem; }
         .card-title { font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 4px; }
         .card-meta { color: var(--text-sub); display: flex; justify-content: space-between; }
-
-        /* Log Console */
         .log-panel { height: 100px; background: #000; margin-top: 10px; padding: 10px; font-family: monospace; font-size: 0.8rem; overflow-y: auto; border-radius: 4px; color: #aaa; }
         .log-err { color: var(--error); }
 
-        /* Modal */
+        /* Settings Page Styles */
+        .settings-layout { display: flex; width: 100%; height: 100%; }
+        .settings-sidebar { width: 250px; background: var(--panel-color); border-right: 1px solid #333; padding: 20px 0; display: flex; flex-direction: column; }
+        .settings-menu-item { padding: 12px 20px; cursor: pointer; color: var(--text-sub); transition: 0.2s; border-left: 3px solid transparent; }
+        .settings-menu-item:hover { background: #2a2a2a; color: var(--text-main); }
+        .settings-menu-item.active { background: #2a2a2a; color: var(--accent); border-left-color: var(--accent); }
+        .settings-content { flex: 1; padding: 40px; overflow-y: auto; }
+        .settings-section { display: none; max-width: 600px; }
+        .settings-section.active { display: block; }
+        .settings-header { font-size: 1.5rem; margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 10px; color: var(--text-main); }
+
         .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); display: none; justify-content: center; align-items: center; z-index: 1000; }
         .modal img { max-width: 90%; max-height: 90%; box-shadow: 0 0 20px rgba(0,0,0,0.5); }
     </style>
 </head>
 <body>
-    <div class='sidebar'>
-        <h2>ImageFlow WebUI</h2>
-        <div class='group'>
-            <label>Base URL</label>
-            <input type='text' id='baseUrl' placeholder='고정 링크'>
+    <div class='header-bar'>
+        <div class='app-title'>ImageFlow</div>
+        <button class='menu-btn' onclick='toggleFlowPanel()' title='Open Flow Panel'>
+            <svg viewBox='0 0 24 24'>
+                <path d='M3 6h18v2H3V6zm0 5h18v2H3v-2zm0 5h18v2H3v-2z'/>
+            </svg>
+        </button>
+    </div>
+
+    <div class='top-nav'>
+        <button class='nav-btn active' onclick='switchPage(""main"")' id='nav-main'>ImageLoader</button>
+        <button class='nav-btn' onclick='switchPage(""settings"")' id='nav-settings'>Settings</button>
+    </div>
+
+    <div class='flow-panel' id='flowPanel'>
+        <div class='flow-header'>
+            <span>Flow Panel</span>
+            <button class='close-flow-btn' onclick='toggleFlowPanel()'>&times;</button>
         </div>
-        <div class='group'>
-            <label>Code (Template)</label>
-            <input type='text' id='code' placeholder='{name}, {situation}, {num}'>
-        </div>
-        <div class='group'>
-            <label>Name List ({name})</label>
-            <textarea id='names' placeholder='쉼표(,)로 구분'></textarea>
-        </div>
-        <div class='group'>
-            <label>Situation List ({situation})</label>
-            <textarea id='situations' placeholder='쉼표(,)로 구분'></textarea>
-        </div>
-        <div class='row'>
-            <div class='group' style='flex:1'>
-                <label>Start #</label>
-                <input type='number' id='startNum' value='0'>
+        <div style='color: #888; font-size: 0.9rem;'>
+            <div class='group'>
+                <label>Quick Save</label>
+                <button class='btn-start' style='width:100%'>Save Settings</button>
             </div>
-            <div class='group' style='flex:1'>
-                <label>End #</label>
-                <input type='number' id='endNum' value='0'>
-            </div>
-        </div>
-        <div class='group'>
-            <label>Parallel Requests</label>
-            <input type='number' id='parallel' value='4' min='1' max='64'>
-        </div>
-        <div class='btn-row'>
-            <button class='btn-start' id='btnStart' onclick='start()'>Start</button>
-            <button class='btn-stop' id='btnStop' onclick='stop()'>Stop</button>
-        </div>
-        <div class='group' style='margin-top:auto'>
-            <label>Save Path</label>
-            <input type='text' id='savePath' value='C:\ImageFlow_Output'>
-            <button class='btn-save' onclick='saveAll()' style='margin-top:5px'>Save All</button>
         </div>
     </div>
 
-    <div class='main'>
-        <div class='status-container'>
-            <div class='progress-container'>
-                <div class='progress-bar' id='progressBar'></div>
+    <div id='view-main' class='view-container active'>
+        <div class='sidebar'>
+            <div class='group'>
+                <label>Base URL</label>
+                <input type='text' id='baseUrl' placeholder='고정 링크'>
             </div>
-            <span id='statusText' class='status-text'>Ready</span>
+            <div class='group'>
+                <label>Code (Template)</label>
+                <input type='text' id='code' placeholder='{name}, {situation}, {num}'>
+            </div>
+            <div class='group'>
+                <label>Name List ({name})</label>
+                <textarea id='names' placeholder='쉼표(,)로 구분'></textarea>
+            </div>
+            <div class='group'>
+                <label>Situation List ({situation})</label>
+                <textarea id='situations' placeholder='쉼표(,)로 구분'></textarea>
+            </div>
+            <div class='row'>
+                <div class='group' style='flex:1'>
+                    <label>Start #</label>
+                    <input type='number' id='startNum' value='0'>
+                </div>
+                <div class='group' style='flex:1'>
+                    <label>End #</label>
+                    <input type='number' id='endNum' value='0'>
+                </div>
+            </div>
+            <div class='group'>
+                <label>Parallel Requests</label>
+                <input type='number' id='parallel' value='4' min='1' max='64'>
+            </div>
+            <div class='btn-row'>
+                <button class='btn-start' id='btnStart' onclick='start()'>Start</button>
+                <button class='btn-stop' id='btnStop' onclick='stop()'>Stop</button>
+            </div>
         </div>
-        
-        <div class='gallery' id='gallery'></div>
-        <div class='log-panel' id='logPanel'></div>
+
+        <div class='main-content'>
+            <div class='status-container'>
+                <div class='progress-container'>
+                    <div class='progress-bar' id='progressBar'></div>
+                </div>
+                <span id='statusText' class='status-text'>Ready</span>
+            </div>
+            <div class='gallery' id='gallery'></div>
+            <div class='log-panel' id='logPanel'></div>
+        </div>
+    </div>
+
+    <div id='view-settings' class='view-container'>
+        <div class='settings-layout'>
+            <div class='settings-sidebar'>
+                <div class='settings-menu-item active' onclick='switchSettingTab(this, ""set-general"")'>General</div>
+                <div class='settings-menu-item' onclick='switchSettingTab(this, ""set-directory"")'>Directory</div>
+                <div class='settings-menu-item' onclick='switchSettingTab(this, ""set-about"")'>About</div>
+            </div>
+
+            <div class='settings-content'>
+
+                <div id='set-general' class='settings-section'>
+                    <div class='settings-header'>Appearance</div>
+                    <div class='group'>
+                        <label>Color Theme</label>
+                        <select>
+                            <option>Dark Mode</option>
+                            <option>Light Mode</option>
+                            <option>System Default</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id='set-directory' class='settings-section active'>
+                    <div class='settings-header'>Directory Settings</div>
+                    <div class='group' style='margin-bottom: 20px;'>
+                        <label>Input Path</label>
+                        <input type='text' value=''>
+                    </div>
+                    <div class='group' style='margin-bottom: 20px;'>
+                        <label>Output Path</label>
+                        <input type='text' value=''>
+                    </div>
+                </div>
+
+                <div id='set-about' class='settings-section'>
+                   <div class='settings-header'>About</div>
+                   <p style='color: #aaa;'>ImageFlow WebUI v1.2.0</p>
+                   <p style='color: #888;'>Created with C# Console & HTML/JS Interface.</p>                    
+                   <p style='color: #888; margin-top: 10px;'>
+                       Created by 
+                       <a href='https://github.com/IZTACIYU' target='_blank' style='color: var(--accent); text-decoration: none; border-bottom: 1px dashed var(--accent);'>IZTACIYU</a>
+                   </p>
+                   <p style='color: #888; margin-top: 10px;'>
+                       Claim Issue to 
+                       <a href='https://github.com/IZTACIYU/External_Image_Loader/issues' target='_blank' style='color: var(--accent); text-decoration: none; border-bottom: 1px dashed var(--accent);'>here</a>
+                   </p>
+                   <p style='color: #888; margin-top: 10px;'>
+                       Source Code 
+                       <a href='https://github.com/IZTACIYU/External_Image_Loader/tree/WebUI/ImageLoader' target='_blank' style='color: var(--accent); text-decoration: none; border-bottom: 1px dashed var(--accent);'>here</a>
+                   </p>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div class='modal' id='modal' onclick='this.style.display=""none""'>
@@ -508,6 +689,32 @@ namespace ImageLoader
     </div>
 
     <script>
+        // --- Flow Panel Logic ---
+        function toggleFlowPanel() {
+            const panel = document.getElementById('flowPanel');
+            // 'open' 클래스를 토글하여 CSS transform 효과 적용
+            panel.classList.toggle('open');
+        }
+
+        // --- Navigation Logic ---
+        function switchPage(pageName) {
+            document.querySelectorAll('.view-container').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
+
+            document.getElementById('view-' + pageName).classList.add('active');
+            document.getElementById('nav-' + pageName).classList.add('active');
+        }
+
+        // --- Settings Tab Logic ---
+        function switchSettingTab(menuItem, sectionId) {
+            document.querySelectorAll('.settings-menu-item').forEach(el => el.classList.remove('active'));
+            menuItem.classList.add('active');
+
+            document.querySelectorAll('.settings-section').forEach(el => el.classList.remove('active'));
+            document.getElementById(sectionId).classList.add('active');
+        }
+
+        // --- Core Logic ---
         let isRunning = false;
         let pollInterval = null;
 
@@ -546,17 +753,6 @@ namespace ImageLoader
             log('Stopped by user.');
         }
 
-        async function saveAll() {
-            const path = document.getElementById('savePath').value;
-            const res = await fetch('/api/save', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ path: path }) 
-            });
-            const data = await res.json();
-            alert(data.msg || 'Done');
-        }
-
         async function pollUpdates() {
             try {
                 const res = await fetch('/api/updates');
@@ -588,12 +784,7 @@ namespace ImageLoader
                         <a href='${imgData.url}' target='_blank' style='color:#aaa'>Link</a>
                     </div>
                 </div>`;
-            
-            // [수정됨] prepend(앞에 추가) -> appendChild(뒤에 추가)
             document.getElementById('gallery').appendChild(div);
-            
-            // 자동 스크롤 (선택사항: 이미지가 추가될 때 화면을 아래로 내리고 싶으면 주석 해제)
-            // document.querySelector('.gallery').scrollTop = document.querySelector('.gallery').scrollHeight;
         }
 
         function updateProgress(data) {
